@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Spotify Integration</title>
+		<link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,100italic,300italic,400italic' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="../stylesheets/style.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<script src = "../javascripts/fb-login.js"></script>
+	</head>
+
+	<body>
+		<header class = "dark-box border-box font-white vertical-wrapper">
+			<span class = "vertical-align">
+				<ul class = "no-list inline center">
+					<li>Log In</li>
+				</ul>
+			</span>
+		</header>
+	
+		<div id = "login-spotify" class = "dark-box border-box login-box center">
+			<div class = "login-box-wrapper border-box">
+				<div class = "login-header">Facebook</div>
+				<!-- <input type = "text" placeholder = "Username" /> <br/>
+				<input type = "password" placeholder = "Password" /> <br/> 
+				<input type = "button" value = "Log In" onclick="checkLoginState();"/>-->
+
+				<fb:login-button scope="public_profile,email,user_friends,friends_actions.music,user_actions.music" onlogin="checkLoginState();">
+				</fb:login-button>
+			</div>
+		</div>
+
+		<div id = "login-lastfm" class = "dark-box border-box login-box center">
+			<div class = "login-box-wrapper border-box">
+				<div class = "login-header">last.fm</div>
+				<input type = "text" placeholder = "Username" /> <br/>
+				<input type = "password" placeholder = "Password" /> <br/>
+				<input type = "button" value = "Log In" />
+			</div>
+		</div>
+
+	</body>
+</html>
+
+
+<!-- <div id = "container" class = "dark-box border-box font-white">
+				Hello
+			</div> -->
