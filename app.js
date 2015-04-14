@@ -8,8 +8,8 @@ var http = require('http');
 var routes = require('./routes');
 
 var app = express();
-var server = app.listen(3000);
-var io = require('socket.io').listen(server); // this tells socket.io to use our express server
+//var server = app.listen(3000);
+//var io = require('socket.io').listen(server); // this tells socket.io to use our express server
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -26,11 +26,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', function(req, res, next) {
   res.render('index',
-});
-
-io.sockets.on('connection', function (socket) {
-    console.log('A new user connected!');
-    socket.emit('info', { msg: 'The world is round, there is no up or down.' });
 });
 
 // catch 404 and forward to error handler
