@@ -24,7 +24,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
+app.use('/', function(req, res, next) {
+  res.render('index',
+});
 
 io.sockets.on('connection', function (socket) {
     console.log('A new user connected!');
