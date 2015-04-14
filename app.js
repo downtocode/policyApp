@@ -8,7 +8,7 @@ var http = require('http');
 var routes = require('./routes');
 
 var app = express();
-var server = app.listen(3000);
+var server = app.listen(process.env.PORT || 5000)
 //var io = require('socket.io').listen(server); // this tells socket.io to use our express server
 
 // view engine setup
@@ -24,9 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', function(req, res, next) {
-  res.render('index', { title: 'Log In' });
-});
+app.use('/', routes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
