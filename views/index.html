@@ -17,24 +17,17 @@
 			</span>
 		</header>
 	
-		<div id = "login-spotify" class = "dark-box border-box login-box center">
-			<div class = "login-box-wrapper border-box">
-				<div class = "login-header">Facebook</div>
-				<!-- <input type = "text" placeholder = "Username" /> <br/>
-				<input type = "password" placeholder = "Password" /> <br/> 
-				<input type = "button" value = "Log In" onclick="checkLoginState();"/>-->
-
-				<fb:login-button scope="public_profile,email,user_friends,friends_actions.music,user_actions.music" onlogin="checkLoginState();">
-				</fb:login-button>
-			</div>
-		</div>
-
-		<div id = "login-lastfm" class = "dark-box border-box login-box center">
-			<div class = "login-box-wrapper border-box">
-				<div class = "login-header">last.fm</div>
-				<input type = "text" placeholder = "Username" /> <br/>
-				<input type = "password" placeholder = "Password" /> <br/>
-				<input type = "button" value = "Log In" />
+		<div id = "container" class = "login-box border-box center">
+			<div class = "display-table">
+				<p class = "display-table-cell font-18">
+					Welcome! Thank you for participating in this experiment. <br/>
+					To continue, please log in to your Facebook account below.
+					<!-- <input type = "text" placeholder = "Username" /> <br/>
+					<input type = "password" placeholder = "Password" /> <br/> 
+					<input type = "button" value = "Log In" onclick="checkLoginState();"/>-->
+					<fb:login-button scope="public_profile,email,user_friends,friends_actions.music,user_actions.music" onlogin="checkLoginState();" class = "input">
+					</fb:login-button>
+				</p>
 			</div>
 		</div>
 

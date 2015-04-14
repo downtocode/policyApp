@@ -1,10 +1,11 @@
 var user = {};
+var accessToken2 = 'CAACEdEose0cBAKwL2hEUdksZBy2upkCa50Peq3iKg2CVOaGR3d9ZB5zEPFyXFwkhL3WYK7NhOvkw3DEGUpvLkeR1PUAZAfvW9xGUPEm9ZCsZCMo8SB36v4rGks26pE5utggroZCVcNzrbzLPh3T63rZBfATDKVycaZBZBL77rVtLd9AWCedEeycey0QaGN4xW5ZAfvdeqmiC2zf6cUzeW1M7v8BD6LFwf2hbQZD';
 
 $(document).ready(function() {
 
   window.fbAsyncInit = function() {
   		FB.init({
-    		appId      : '486648534724015',//'1561259110790451',
+    		appId      : '150997527214', // '486648534724015',
     		cookie     : true,  // enable cookies to allow the server to access 
     		xfbml      : true,  // parse social plugins on this page
     		version    : 'v2.3' // use version 2.2
@@ -30,25 +31,51 @@ $(document).ready(function() {
 		});
 	//});
 
-	$(document).on("click", ".song-preview", function() {
+	$(document).on("click", ".song-selector-circle", function() {
 		var song = d3.select(this).data();
-		$('.selected-song').removeClass('selected-song');
-		$(this).addClass('selected-song');
+		$('.song-selector-circle.selected').removeClass('selected');
+		$(this).addClass('selected');
 		$("iframe").attr('src', song[0].top_track.preview_url);
 		$("#preview-album img").attr('src', song[0].top_track.album.images[0].url);
 		$("#preview-text").remove();
 		$("#preview-album").append("<div id = 'preview-text'><span id = 'like-dislike'> [ <span id = 'like' class = 'clickable'>Like</span> | <span id = 'dislike' class = 'clickable'>Dislike</span> ] </span><p></p></div>");
 	});
 
-	$(document).on("click", "#like", function() {
-		$("#preview-text p").text("You like this song!");
-		/*d3.select('.selected-song').data(function(d, i) {
-			console.log(d);
-		});*/
-	});
+	$(document).on({
+	    mouseenter: function () {
+	    	$(this).children('.preview-star').css('fill', '#AD8D26');
+			$(this).prevAll('svg').each(function() {
+				if ($(this).attr('class').indexOf('selected-star') < 0)
+					$(this).children('.preview-star').css('fill', '#AD8D26');
+			});
+			$(this).nextAll('svg').each(function() {
+				$(this).children('.preview-star').css('fill','none');
+			});
+	    },
+	    mouseleave: function () {
+	    	if ($(this).attr('class').indexOf('selected-star') < 0)
+	    		$(this).children('.preview-star').css('fill','none');
+	    	$(this).prevAll('svg').each(function() {
+				if ($(this).attr('class').indexOf('selected-star') < 0)
+					$(this).children('.preview-star').css('fill', 'none');
+			});
+			$(this).nextAll('svg').each(function() {
+				if ($(this).attr('class').indexOf('selected-star') >= 0)
+					$(this).children('.preview-star').css('fill', '#AD8D26');
+			});
+	        
+	    }
+	}, "svg");
 
-	$(document).on("click", "#dislike", function() {
-		$("#preview-text p").text("You don't like this song...");
+	$(document).on("click", "svg", function() {
+		$('.selected-star').attr('class', 'clickable');
+		$('.preview-star').css('fill', 'none');
+		$(this).children('.preview-star').css('fill', '#AD8D26');
+		$(this).attr('class', 'clickable selected-star');
+		$(this).prevAll('svg').each(function() {
+			$(this).children('.preview-star').css('fill', '#AD8D26');
+			$(this).attr('class', 'clickable selected-star');
+		});
 	});
 
 });
@@ -65,12 +92,12 @@ function getAccessToken() {
 		}
 	}
 
-    document.cookie = "fb_access=0;expires=0;";
-	window.location.href = 'index.html';
+  	document.cookie = 'fb_access=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+	window.location.href = '/';
 }
 
 function getUserInfo(accessToken) {
-	var accessToken = 'CAACEdEose0cBAKZBsBQTpEDXZBLtbADTxOCxnN7YG5KuhUmt82JB4IQISSlpZCWcLZCS913iHZBjh7vSL5rjKiZC3vyvLW5keHVo4dTxndaw0Kglff0pTZAVg3NGt89sI1SFLMkK5lBAqjXOpyikmrfMlFHL0ZClcWxvXZBHlORW4Rt87y5Uw3MWXulpSUN3JD8TsDdHJaocctZCZCkAw085K5GLmHUWZCTpnTQZD ';
+	var accessToken = accessToken2;
 	var url = 'https://graph.facebook.com/me';
 	console.log(accessToken);
 	$.ajax({
@@ -85,8 +112,8 @@ function getUserInfo(accessToken) {
 }
 
 function getFriendsMusic(accessToken, callback) {
-	var accessToken = 'CAACEdEose0cBAKZBsBQTpEDXZBLtbADTxOCxnN7YG5KuhUmt82JB4IQISSlpZCWcLZCS913iHZBjh7vSL5rjKiZC3vyvLW5keHVo4dTxndaw0Kglff0pTZAVg3NGt89sI1SFLMkK5lBAqjXOpyikmrfMlFHL0ZClcWxvXZBHlORW4Rt87y5Uw3MWXulpSUN3JD8TsDdHJaocctZCZCkAw085K5GLmHUWZCTpnTQZD ';
-    var artists = {};
+	var accessToken = accessToken2;
+	var artists = {};
     //url = '/me?fields=friends{music,name}&access_token='+accessToken;
 
     var url = 'https://graph.facebook.com/me?fields=friends{music,name}';
@@ -95,19 +122,7 @@ function getFriendsMusic(accessToken, callback) {
     //console.log(accessToken);
 
     makeFriendAPICall(url, accessToken, artists, function(response) {
-    	var count = 0;
-
-		for (var i in artists) {
-			var artist = artists[i];
-			getArtistTopSong(artist.name, artists, i, function(artists) {
-				count++;
-
-				if (count == Object.keys(artists).length) {
-					saveUserInfo(artists);
-				}
-			});
-		}
-		
+    	saveUserInfo(artists);
 	});
 }
 
@@ -118,8 +133,8 @@ function makeFriendAPICall(url, accessToken, artists, callback) {
 		dataType: "jsonp",
 		success: function(response) {
 			if (response.error != undefined) {
-				window.location.href = 'index.html';
-				document.cookie = "fb_access=0=0";
+				document.cookie = 'fb_access=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+				window.location.href = '/';
 				return;
 			} else {
 				if (response.data != undefined && response.data.length == 0) {
@@ -158,8 +173,9 @@ function makeFriendAPICall(url, accessToken, artists, callback) {
 	});
 }
 
-function getArtistTopSong(artistName, artists, i, callback) {
-	var artistNameSearch = artistName.replace(/ /g, '%20');
+function getArtistTopSong(randArtists, artists, i, callback) {
+	var artist = artists[Object.keys(artists)[i]];
+	var artistNameSearch = artist.name.replace(/ /g, '%20');
 	var url = 'https://api.spotify.com/v1/search?q='+artistNameSearch+'&type=artist'; 
 
 	$.ajax({
@@ -174,18 +190,16 @@ function getArtistTopSong(artistName, artists, i, callback) {
 					dataType: 'JSON',
 					success: function(top_track) {
 						if (top_track != null && top_track.tracks.length > 0) {
-							var artist = artists[i];
 							artist.top_track = top_track.tracks[0];
 							artist.song = top_track.tracks[0].name;
-							artists[i] = artist;
+							randArtists.push(artist);
 						}
 
 						callback(artists);
 					}
 				});
 			} else {
-				delete artists[i];
-				callback(artists);
+				getArtistTopSong(randArtists, artists, i+1, callback);
 			}
 
 		}
@@ -216,10 +230,10 @@ function getArtistDistribution(artists) {
 }
 
 function getDistributionValues(size) {
-	var len = Math.floor(size / 10);
+	var len = Math.floor( ( size - 1) / 10);
 	var lens = [];
 
-	for (var i = 0; i < size; i += len) {
+	for (var i = 0; i < size - 1 - len; i += len) {
 		var rand = Math.floor(Math.random() * len) + i;
 		lens.push(rand);
 	}
@@ -231,36 +245,46 @@ function saveUserInfo(artists) {
 	var artistsNumLiked = switchDictionaryAggregate(artists,"friends");
 	var artistsDistribution = getArtistDistribution(artistsNumLiked);
 	var randVals = getDistributionValues(artistsDistribution.length);
+	console.log(randVals);
 	var randArtists = [];
+	var count = 0;
 
 	for (var rand in randVals) {
-		var currArtist;
-		var count = randVals[rand];
+		var currArtist = artistsDistribution[randVals[rand]];
+		console.log(currArtist);
 
-		do {
-			if (randVals.indexOf(count) < 0) randVals.push(count);
-			currArtist = artistsDistribution[count];
-			var rand = Math.floor(Math.random() * 15);
-			var randPow = Math.floor(Math.random() * 2) + 1;
-			var randNum = Math.pow(-1, randPow) * rand;
-			count += randNum;
-		} while (randVals.indexOf(count) > -1 || currArtist.song == undefined);
-
-		randArtists.push(currArtist);
+		getArtistTopSong(randArtists, artists, randVals[rand], function(artists) {
+			count++;
+			if (count == randVals.length) {
+				displaySongs(randArtists);
+			}
+		});
 	}
 
-	d3.select("#friend-list").selectAll("li")
+}
+
+function displaySongs(randArtists) {
+	d3.select("#song-selector").selectAll("div")
 		.data(randArtists)
 		.enter()
-		.append("li")
-		.attr("class", "song-preview clickable")
-		.attr("id", function(i) { return "song-" + i; })
-		.html(function(d, i) { 
-			return "<span class = 'font-orange'>" + d.name + ":</span> " + d.song; 
-		});
+		.append("div")
+		.attr("class", "song-selector-circle clickable")
+		.attr("id", function(d, i) { return "song-" + i; });
 
-	$("#song-box").append("<iframe src = '' id = 'preview-iframe'></iframe>");
-	$("#song-box").append("<div id = 'preview-album'><img/><div id = 'preview-text'></div></div>");
+	$(".song-selector-circle").first().addClass("selected");
+
+	var firstArtist = randArtists[0];
+
+	$("#song-box div").append("<iframe src = '' id = 'preview-iframe'></iframe>");
+	$("#song-box div").append("<div id = 'preview-album'><div id = 'preview-text'></div></div>");
+	for (var i = 0; i < 5; i++) {
+		$("#preview-album").append('<svg height="26" width="26" class = "clickable"><polygon points=".25,10 6,10 8,5.5 10,10 15.5,10 11.5,13.5 13,18.5 8.25,15.25 3.75,18.5 5,13.5" class = "preview-star"/></svg>');
+	}
+
+	$("#preview-album").append("<br/><img/>");
+	$("iframe").attr('src', firstArtist.top_track.preview_url);
+	$("#preview-album img").attr('src', firstArtist.top_track.album.images[0].url);
+	$("#preview-text").html("<span class = 'font-black'>" + firstArtist.name + ": </span><span class = 'font-grey'>" + firstArtist.song + "</span>");
 }
 
 function getUserInfo(artists) {
