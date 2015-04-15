@@ -1,11 +1,11 @@
 var user = {};
-var accessToken2 = 'CAACEdEose0cBAKwL2hEUdksZBy2upkCa50Peq3iKg2CVOaGR3d9ZB5zEPFyXFwkhL3WYK7NhOvkw3DEGUpvLkeR1PUAZAfvW9xGUPEm9ZCsZCMo8SB36v4rGks26pE5utggroZCVcNzrbzLPh3T63rZBfATDKVycaZBZBL77rVtLd9AWCedEeycey0QaGN4xW5ZAfvdeqmiC2zf6cUzeW1M7v8BD6LFwf2hbQZD';
+var accessToken2 = 'CAACEdEose0cBAPZBdjW96aV4LfatwwY6ZAb4tkLZAE4XZCm5u6IoZB1V88ceM8V9rJRkYqXJvvMMFCN3vCL9NA2aFRWGCVgtFZBfmeaLMTPVKc3gGBUwsZAVwIxLe2cN7jqlVCA7GXhAyWs20i9lsYlNdIGmYX1jfY83IFGsD8muz526mNmypl1rQt77S1ybg6BjxxQ4Idqfj2cF6mrlyESF76flGwNuMEZD';
 
 $(document).ready(function() {
 
   window.fbAsyncInit = function() {
   		FB.init({
-    		appId      : '150997527214', // '486648534724015',
+    		appId      : '486648534724015',// '150997527214'
     		cookie     : true,  // enable cookies to allow the server to access 
     		xfbml      : true,  // parse social plugins on this page
     		version    : 'v2.3' // use version 2.2
@@ -37,8 +37,8 @@ $(document).ready(function() {
 		$(this).addClass('selected');
 		$("iframe").attr('src', song[0].top_track.preview_url);
 		$("#preview-album img").attr('src', song[0].top_track.album.images[0].url);
-		$("#preview-text").remove();
-		$("#preview-album").append("<div id = 'preview-text'><span id = 'like-dislike'> [ <span id = 'like' class = 'clickable'>Like</span> | <span id = 'dislike' class = 'clickable'>Dislike</span> ] </span><p></p></div>");
+		$("#preview-text").empty();
+		$("#preview-text").html("<span class = 'font-black'>" + song[0].name + ": </span><span class = 'font-grey'>" + song[0].song + "</span>");
 	});
 
 	$(document).on({
@@ -72,10 +72,13 @@ $(document).ready(function() {
 		$('.preview-star').css('fill', 'none');
 		$(this).children('.preview-star').css('fill', '#AD8D26');
 		$(this).attr('class', 'clickable selected-star');
+
 		$(this).prevAll('svg').each(function() {
 			$(this).children('.preview-star').css('fill', '#AD8D26');
 			$(this).attr('class', 'clickable selected-star');
 		});
+
+		var currData = d3.select('.selected').data();
 	});
 
 });

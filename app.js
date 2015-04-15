@@ -5,7 +5,10 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var http = require('http');
-var routes = require('./routes');
+var connect = require('connect'),
+  mongojs = require('mongojs'),
+  requireDir = require('requiredir');
+var routes = requireDir('./routes');
 
 var app = express();
 var server = app.listen(process.env.PORT || 5000)
@@ -24,7 +27,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
+var uri = "mongodb://heroku_app35837312:jfl6ps1binv31ke665qm7ss99f@ds061731.mongolab.com:61731/heroku_app35837312?replicaSet=rs-ds061731",
+    db = mongojs.connect(uri, ["test", "questions", "users"]);
+
+app.use(function(req,res,next) { 
+  req.db = db; 
+  next();
+}); 
+
+app.use('/', routes.index);
+app.use('/', routes.api);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
