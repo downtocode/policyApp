@@ -325,7 +325,7 @@ textarea, select {
 }
 
 #questionnaire-form textarea.choices {
-	width: 250px;
+	width: 200px;
 }
 
 #questionnaire-form input[type=text] {
