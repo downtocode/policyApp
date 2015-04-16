@@ -51,7 +51,7 @@ $(document).ready(function() {
 			var values = $(this).children("textarea").last().val();
 			var type = $(this).children("select").val();
 			if (question != "" && values != "" && type != "") {
-				var data = {questionnaire: questionnaire, question: question, values: values, type: type};
+				var data = {questionnaire: questionnaire.toLowerCase(), question: question, values: values, type: type};
 				fullData.push(data);
 			}
 		});

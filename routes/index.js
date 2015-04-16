@@ -17,6 +17,15 @@ router.get('/createQuestionnaire', function(req, res, next) {
 	res.render('createQuestions');
 });
 
+router.get('/questions/:name', function(req, res, next) {
+	var db = req.db;
+	var questionnaire = req.params.name;
+	db.questions.find({questionnaire: questionnaire}, function(err, questions) {
+		res.render('questions', {questions: questions, title: 'helloooo00oo'});
+	});
+	
+});
+
 router.get('/', function(req, res, next) {
 	res.render('index');
 });
