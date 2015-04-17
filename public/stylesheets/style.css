@@ -225,7 +225,7 @@ textarea, select {
 	color: #2A57C2;
 }
 
-#preview-text {
+#question-text {
 	margin: 10px;
 	font-size: 18px;
 }
@@ -235,17 +235,17 @@ textarea, select {
 	fill: none;
 }
 
-#song-box {
+#question-box {
 	height: 90% !important;
 }
 
-#song-selector {
+#question-selector {
 	height: 25px;
 	text-align: center;
 	display: inline-block;
 }
 
-.song-selector-circle {
+.question-selector-circle {
 	height: 9px;
 	width: 9px;
 	border-radius: 20px;
@@ -256,7 +256,7 @@ textarea, select {
 	cursor: pointer;
 }
 
-.song-selector-circle:hover, .song-selector-circle.selected {
+.question-selector-circle:hover, .question-selector-circle.selected {
 	background-color: #13619E;
 	/*#1B8FE8*/
 }

@@ -12,7 +12,7 @@
 			var loggedIn = false;
 			for (var cookie in cookies) {
 				var currCookie = cookies[cookie].split("=");
-				if (currCookie[0] === 'mps' && currCookie[1] === 'loggedIn') {
+				if (currCookie[0].trim() === 'mps' && currCookie[1].trim() === 'loggedIn') {
 					loggedIn = true;
 				}
 			}

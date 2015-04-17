@@ -1,12 +1,29 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Spotify Integration</title>
+		<title><%= title %></title>
 		<link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,100italic,300italic,400italic' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="../stylesheets/style.css">
 		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-		<script src = "../javascripts/getQuestions.js"></script>
+		<script>
+			$(document).ready(function() {
+				var questions = <%- JSON.stringify(questions) %>
+
+				d3.select("#question-selector").selectAll("div")
+					.data(questions)
+					.enter()
+					.append("div")
+					.attr("class", "question-selector-circle clickable")
+					.attr("id", function(d, i) { return "question-" + i; });
+
+				$(".question-selector-circle").first().addClass("selected");
+
+				showQuestion(0);
+			});
+
+		</script>
+		<script src = "../javascripts/questions.js"></script>
 	</head>
 
 	<body id = "music">
@@ -19,17 +36,10 @@
 		</header>
 
 		<div id = "container" class = "login-box border-box center">
-			<div id = "song-selector">
+			<div id = "question-selector">
 			</div>
-			<div class = "display-table" id = "song-box">
+			<div class = "display-table" id = "question-box">
 				<div class = "display-table-cell full-width-height">
-					<ul class = "no-list">
-						<% for(var i in questions) { %>
-							<li>
-								<%= i + ". " + questions[i].question %>
-							</li>
-					    <% } %>
-				    </ul>
 				</div>
 			</div>
 		</div>

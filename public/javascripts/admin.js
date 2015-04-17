@@ -101,7 +101,7 @@ function getQuestions(questionnaire) {
 	$.ajax({
 		url: '/api/getQuestions',
 		method: 'POST',
-		data: {questionnaire: questionnaire},
+		data: {questionnaire: questionnaire.toLowerCase()},
 		dataType: 'JSON',
 		success: function(questions) {
 			$("#questions-list").empty();

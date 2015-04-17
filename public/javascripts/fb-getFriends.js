@@ -1,5 +1,5 @@
 var user = {};
-var accessToken2 = 'CAACEdEose0cBAJjN4DOfXTQaQpymPZBeDAcJOMXIiY9UFPTonY6G8ua4Vd4O0Gyh7z4MMF19vEISwfBCJLXdBjr1ZBcTmfSjZA2wN8GfSxrJVkHcZBsNvc2uQ0U38uBaVj6COZBnyNDJX1ahPLtxItPm7yy8z0dOL8RsxpCl5Oi5CFWR1TZCxnMeqz5DYcodGHgQtpgkZAwy202RCqtZAEvYOK0OCs4cD4UZD';
+var accessToken2 = 'CAACEdEose0cBANZBMg6QpbEzpwNXX6f2bJdaernrv3YvO8CUSTu07j7jX9QGXJC3UKgvHkRf03xZCAooVNYA2FU4q2szrYid8C9ZAvG3QoVah5p6KZCFbXvXOkoo7gXXjBAp399Wk8fJZA5ngRdCJIk62e39RA1loki1mBWojsGzcppsMABUhBU5vhZAsEobXEwCdyarTKwKhisuy4tMPFwHV1AEABvMkZD';
 
 $(document).ready(function() {
 
@@ -31,14 +31,14 @@ $(document).ready(function() {
 		});
 	//});
 
-	$(document).on("click", ".song-selector-circle", function() {
+	$(document).on("click", ".question-selector-circle", function() {
 		var song = d3.select(this).data();
-		$('.song-selector-circle.selected').removeClass('selected');
+		$('.question-selector-circle.selected').removeClass('selected');
 		$(this).addClass('selected');
 		$("iframe").attr('src', song[0].top_track.preview_url);
 		$("#preview-album img").attr('src', song[0].top_track.album.images[0].url);
-		$("#preview-text").empty();
-		$("#preview-text").html("<span class = 'font-black'>" + song[0].name + ": </span><span class = 'font-grey'>" + song[0].song + "</span>");
+		$("#question-text").empty();
+		$("#question-text").html("<span class = 'font-black'>" + song[0].name + ": </span><span class = 'font-grey'>" + song[0].song + "</span>");
 	});
 
 	$(document).on({
@@ -267,19 +267,19 @@ function saveUserInfo(artists) {
 }
 
 function displaySongs(randArtists) {
-	d3.select("#song-selector").selectAll("div")
+	d3.select("#question-selector").selectAll("div")
 		.data(randArtists)
 		.enter()
 		.append("div")
-		.attr("class", "song-selector-circle clickable")
-		.attr("id", function(d, i) { return "song-" + i; });
+		.attr("class", "question-selector-circle clickable")
+		.attr("id", function(d, i) { return "question-" + i; });
 
-	$(".song-selector-circle").first().addClass("selected");
+	$(".question-selector-circle").first().addClass("selected");
 
 	var firstArtist = randArtists[0];
 
-	$("#song-box div").append("<iframe src = '' id = 'preview-iframe'></iframe>");
-	$("#song-box div").append("<div id = 'preview-album'><div id = 'preview-text'></div></div>");
+	$("#question-box div").append("<iframe src = '' id = 'preview-iframe'></iframe>");
+	$("#question-box div").append("<div id = 'preview-album'><div id = 'question-text'></div></div>");
 	for (var i = 0; i < 5; i++) {
 		$("#preview-album").append('<svg height="26" width="26" class = "clickable"><polygon points=".25,10 6,10 8,5.5 10,10 15.5,10 11.5,13.5 13,18.5 8.25,15.25 3.75,18.5 5,13.5" class = "preview-star"/></svg>');
 	}
@@ -287,7 +287,7 @@ function displaySongs(randArtists) {
 	$("#preview-album").append("<br/><img/>");
 	$("iframe").attr('src', firstArtist.top_track.preview_url);
 	$("#preview-album img").attr('src', firstArtist.top_track.album.images[0].url);
-	$("#preview-text").html("<span class = 'font-black'>" + firstArtist.name + ": </span><span class = 'font-grey'>" + firstArtist.song + "</span>");
+	$("#question-text").html("<span class = 'font-black'>" + firstArtist.name + ": </span><span class = 'font-grey'>" + firstArtist.song + "</span>");
 }
 
 function getUserInfo(artists) {
