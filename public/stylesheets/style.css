@@ -376,3 +376,6 @@ textarea, select {
 	opacity: 1;
 }
 
+#question-header {
+	margin-bottom: 10px;
+}

@@ -6,7 +6,7 @@ $(document).ready(function() {
 		$('.question-selector-circle.selected').removeClass('selected');
 		$(this).addClass('selected');
 		$("#question-text").empty();
-		$("#question-text").html("<span class = 'font-black'>" + question.question + "</span>");
+		$("#question-text").html("<div class = 'font-black' id = 'question-header'>" + capitalize(question.question) + "</div>");
 		var values = getValues(question.type, question.values);
 		showValues(question.type, values);	
 	});
@@ -17,9 +17,9 @@ function showQuestion(num) {
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	console.log(d3.selectAll(".question-selector-circle").data());
 	$("#question-box div").append("<div id = 'question-text'></div>");
-	$("#question-text").html("<span class = 'font-black'>" + question.question + "</span>");
+	$("#question-text").html("<div class = 'font-black' id = 'question-header'>" + capitalize(question.question) + "</div>");
 	var values = getValues(question.type, question.values);
-	showValues(question.type, values);	
+	showValues(question.type, values, num);	
 }
 
 function getValues(type, values) {
@@ -38,12 +38,12 @@ function getValues(type, values) {
 	return valuesArr;
 }
 
-function showValues(type, values) {
+function showValues(type, values, num) {
 	if (type === "checklist" || type === "radio") {
 		for (var i in values) {
-			$("#question-text").append("<br/><input type = '" + type + "' name = 'question-" + i + "'>" + values[i] + "</span>");
+			$("#question-text").append("<input type = '" + type + "' name = 'question-" + num + "'>" + capitalize(values[i]) + "</span><br/>");
 		}
 	} else {
-		$("#question-text").append("<br/><input type = 'range' name='question-0' min='" + values[0] + "' max='" + values[values.length - 1] + "'>")
+		$("#question-text").append(values[0] + "<input type = 'range' name='question-" + num + "' min='" + values[0] + "' max='" + values[values.length - 1] + "'>" + values[1] + "<br/>");
 	}
 }
