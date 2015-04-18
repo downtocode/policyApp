@@ -8,18 +8,8 @@
 		<script src = "../javascripts/functions.js"></script>
 		<script src = "../javascripts/admin.js"></script>
 		<script>
-			var cookies = document.cookie.split(";");
-			var loggedIn = false;
-			for (var cookie in cookies) {
-				var currCookie = cookies[cookie].split("=");
-				if (currCookie[0].trim() === 'mps' && currCookie[1].trim() === 'loggedIn') {
-					loggedIn = true;
-				}
-			}
-
-			if (!loggedIn) {
-				window.location.href = '/admin';
-			}
+			if (hasCookie('mps_admin') === null)
+				window.location.href = '/login/admin';
 		</script>
 	</head>
 

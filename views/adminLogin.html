@@ -6,15 +6,10 @@
 		<link rel="stylesheet" href="../stylesheets/style.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 		<script src = "../javascripts/admin.js"></script>
+		<script src = "../javascripts/functions.js"></script>
 		<script>
-			var cookies = document.cookie.split(";");
-			var loggedIn = false;
-			for (var cookie in cookies) {
-				var currCookie = cookies[cookie].split("=");
-				if (currCookie[0] === 'mps' && currCookie[1] === 'loggedIn') {
-					window.location.href = '/adminHome';
-				}
-			}
+			if (hasCookie('mps_admin') === 'loggedIn')
+				window.location.href = '/home/admin';
 		</script>
 	</head>
 

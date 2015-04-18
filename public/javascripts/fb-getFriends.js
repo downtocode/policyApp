@@ -20,7 +20,7 @@ $(document).ready(function() {
     	fjs.parentNode.insertBefore(js, fjs);
    	}(document, 'script', 'facebook-jssdk'));
 
-	var accessToken = getAccessToken();
+	var accessToken = hasCookie('fb_access');
 
 	getUserInfo(accessToken);
 
@@ -83,22 +83,6 @@ $(document).ready(function() {
 
 });
 
-function getAccessToken() {
-	var cookies = document.cookie.split(";");
-	var d = new Date();
-	var n = d.getTime();
-	var temp_cookie;
-	for (var cookie in cookies) {
-		temp_cookie = cookies[cookie].split("=");
-		if (temp_cookie[0] == "fb_access") {
-			return temp_cookie[1];
-		}
-	}
-
-  	document.cookie = 'fb_access=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-	window.location.href = '/';
-}
-
 function getUserInfo(accessToken) {
 	var accessToken = accessToken2;
 	var url = 'https://graph.facebook.com/me';
@@ -137,7 +121,7 @@ function makeFriendAPICall(url, accessToken, artists, callback) {
 		success: function(response) {
 			if (response.error != undefined) {
 				document.cookie = 'fb_access=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-				window.location.href = '/';
+				window.location.href = '/login/music';
 				return;
 			} else {
 				if (response.data != undefined && response.data.length == 0) {

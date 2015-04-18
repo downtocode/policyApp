@@ -18,7 +18,7 @@ $(document).ready(function() {
 	});
 
 	$(document).on("click", "#back-questionnaire", function() {
-		window.location.href = '/adminHome';
+		window.location.href = '/home/admin';
 	});
 
 	$(document).on("click", "#add-button", function() {
@@ -75,8 +75,8 @@ function checkAdminLogin() {
 				var time = now.getTime();
 				time += 3600 * 5000;
 				now.setTime(time);
-				document.cookie = "mps=loggedIn;expires="+now.toUTCString()+";path=/";
-				window.location.href = '/adminHome';
+				document.cookie = "mps_admin=loggedIn;expires="+now.toUTCString()+";path=/";
+				window.location.href = '/home/admin';
 			} else {
 				$("#login-error").text("Incorrect username/password. Please try again!");
 			}

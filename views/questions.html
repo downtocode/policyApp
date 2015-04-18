@@ -6,8 +6,16 @@
 		<link rel="stylesheet" href="../stylesheets/style.css">
 		<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<script src = "../javascripts/functions.js"></script>
+		<script src = "../javascripts/questions.js"></script>
 		<script>
+			var accessToken = hasCookie('fb_access');
+			if (accessToken === null) {
+				window.location.href = '/login/'+<%- JSON.stringify(name) %>
+			}
+
 			$(document).ready(function() {
+				getUserInfo(accessToken);
 				var questions = <%- JSON.stringify(questions) %>
 
 				d3.select("#question-selector").selectAll("div")
@@ -23,8 +31,6 @@
 			});
 
 		</script>
-		<script src = "../javascripts/functions.js"></script>
-		<script src = "../javascripts/questions.js"></script>
 	</head>
 
 	<body id = "music">

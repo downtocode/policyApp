@@ -11,36 +11,38 @@ function capitalize(str) {
 	return strCap.trim();
 }
 
-router.get('/home', function(req, res, next) {
-	res.render('fbHome');
+router.get('/home/:name', function(req, res, next) {
+	var db = req.db;
+	var name = req.params.name;
+	
+	if (name.toLowerCase() === "music" || name.toLowerCase() === "admin") {
+		res.render(name + 'Home');
+	}
+	else {
+		var questionnaire = name.replace(/-/g, " ").toLowerCase();
+		console.log(name, questionnaire);
+		db.questions.find({questionnaire: questionnaire}, function(err, questions) {
+			questionnaire = capitalize(questionnaire);
+			res.render('questions', {questions: questions, title: questionnaire, name: name});
+		});
+	}
 });
 
-router.get('/admin', function(req, res, next) {
-	res.render('login');
-});
-
-router.get('/adminHome', function(req, res, next) {
-	res.render('home');
+router.get('/login/:name', function(req, res, next) {
+	var name = req.params.name;
+	console.log(name);
+	if (name === 'admin')
+		res.render('adminLogin');
+	else 
+		res.render('questionsLogin', {name: name});
 });
 
 router.get('/createQuestionnaire', function(req, res, next) {
 	res.render('createQuestions');
 });
 
-router.get('/questions/:name', function(req, res, next) {
-	var db = req.db;
-	var questionnaire = req.params.name;
-	questionnaire = questionnaire.replace(/-/g, " ").toLowerCase();
-	db.questions.find({questionnaire: questionnaire}, function(err, questions) {
-		questionnaire = capitalize(questionnaire);
-		res.render('questions', {questions: questions, title: questionnaire});
-	});
-	
-});
-
 router.get('/', function(req, res, next) {
-	res.render('index');
+	res.render('questionsLogin', {name: 'music'});
 });
-
 
 module.exports = router;

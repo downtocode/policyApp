@@ -19,7 +19,7 @@ $(document).ready(function() {
 
 });
 
-function statusChangeCallback(response) {
+function statusChangeCallback(url, response) {
     // The response object is returned with a status field that lets the
     // app know the current login status of the person.
     // Full docs on the response object can be found in the documentation
@@ -27,11 +27,10 @@ function statusChangeCallback(response) {
     console.log(response);
     if (response.status === 'connected') {
     	// Logged into your app and Facebook.
-    	console.log(response);
     	var d = new Date();
     	var expiresTime = response.authResponse.expires + d.getTime();
     	document.cookie = "fb_access=" + response.authResponse.accessToken + "=" + expiresTime;
-    	window.location.href = '/home';
+    	window.location.href = url;
     } else if (response.status === 'not_authorized') {
       // The person is logged into Facebook, but not your app.
       	document.getElementById('status').innerHTML = 'Please log into this app.';
@@ -42,8 +41,8 @@ function statusChangeCallback(response) {
     }
 }
 
-function checkLoginState() {
+function checkLoginState(url) {
     FB.getLoginStatus(function(response) {
-    	statusChangeCallback(response);
+    	statusChangeCallback(url, response);
     });
 }
