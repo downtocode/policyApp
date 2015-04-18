@@ -27,6 +27,13 @@
 
 				$(".question-selector-circle").first().addClass("selected");
 
+				// create array for user answers
+				var emptyArr = []
+				for (var i in questions) {
+					emptyArr.push("|");
+				}
+				$("#user-questions").val(emptyArr);
+
 				showQuestion(0);
 			});
 
@@ -40,6 +47,7 @@
 					<li>Answer These Questions</li>
 				</ul>
 			</span>
+			<div class = "custom-button clickable" id = "submit-questionnaire">Submit!</div>
 		</header>
 
 		<div id = "container" class = "login-box border-box center">
@@ -50,5 +58,8 @@
 				</div>
 			</div>
 		</div>
+
+		<div id = "user"></div>
+		<div id = "user-questions"></div>
 	</body>
 </html>

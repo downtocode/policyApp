@@ -11,7 +11,7 @@ router.get('/api', function(req, res, next) {
 router.post('/api/adminLogin', function(req, res, next) {
 	var db = req.db;
 	var user = req.body;
-	db.users.find({username: user.username, password: user.password}, function(err, doc) {
+	db.accounts.find({username: user.username, password: user.password}, function(err, doc) {
 		if (doc.length == 1) {
 			res.send({'loggedIn': 'true'});
 		} else {
@@ -45,6 +45,19 @@ router.post('/api/getQuestions', function(req, res, next) {
 	db.questions.find(query, function(err, questions) {
 		res.send(questions);
 	});
+});
+
+router.post('/api/sendAnswers', function(req, res, next) {
+	var db = req.db;
+	var answers = req.body.answers;
+	var userId = answers[0].user_id;
+	for (var i in answers) {
+		var currDetails = {user_id: userId, question_id: answers[i].question_id};
+		db.userAnswers.update(currDetails, answers[i], {upsert:true}, function(err, success) {
+			console.log(success);
+		});
+	}
+	
 });
 
 module.exports = router;

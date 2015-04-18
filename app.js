@@ -28,7 +28,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 var uri = "mongodb://heroku_app35837312:jfl6ps1binv31ke665qm7ss99f@ds061731.mongolab.com:61731/heroku_app35837312?replicaSet=rs-ds061731",
-    db = mongojs.connect(uri, ["test", "questions", "users"]);
+    db = mongojs.connect(uri, ["test", "questions", "users", "accounts", "userAnswers"]);
 
 app.use(function(req,res,next) { 
   req.db = db; 

@@ -20,7 +20,6 @@ router.get('/home/:name', function(req, res, next) {
 	}
 	else {
 		var questionnaire = name.replace(/-/g, " ").toLowerCase();
-		console.log(name, questionnaire);
 		db.questions.find({questionnaire: questionnaire}, function(err, questions) {
 			questionnaire = capitalize(questionnaire);
 			res.render('questions', {questions: questions, title: questionnaire, name: name});
@@ -30,7 +29,6 @@ router.get('/home/:name', function(req, res, next) {
 
 router.get('/login/:name', function(req, res, next) {
 	var name = req.params.name;
-	console.log(name);
 	if (name === 'admin')
 		res.render('adminLogin');
 	else 

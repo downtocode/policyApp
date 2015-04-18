@@ -24,13 +24,22 @@ function statusChangeCallback(url, response) {
     // app know the current login status of the person.
     // Full docs on the response object can be found in the documentation
     // for FB.getLoginStatus().
-    console.log(response);
     if (response.status === 'connected') {
     	// Logged into your app and Facebook.
-    	var d = new Date();
-    	var expiresTime = response.authResponse.expires + d.getTime();
-    	document.cookie = "fb_access=" + response.authResponse.accessToken + "=" + expiresTime;
-    	window.location.href = url;
+      var accessToken = response.authResponse.accessToken;
+
+      $.ajax({
+        url: 'https://graph.facebook.com/oauth/access_token',
+        method: 'POST',
+        data: {grant_type: 'fb_exchange_token', client_id: '486648534724015', client_secret: '2774e05ae31b641f9e23c29c70102536', fb_exchange_token: accessToken},
+        success: function(response) {
+          //var d = new Date();
+          //var expiresTime = response.authResponse.expires + d.getTime();
+          console.log(response.split("="));
+          document.cookie = "fb_access=" + response.split("=")[1].split("&")[0] + ";expires=;path=/";
+          window.location.href = url;
+        }
+      });
     } else if (response.status === 'not_authorized') {
       // The person is logged into Facebook, but not your app.
       	document.getElementById('status').innerHTML = 'Please log into this app.';

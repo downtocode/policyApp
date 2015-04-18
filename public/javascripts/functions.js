@@ -23,7 +23,12 @@ function getUserInfo(accessToken) {
 		dataType: "JSON",
 		success: function(response) {
 			console.log(response);
-			user = response;
+			d3.select("#user")
+				.selectAll("div")
+				.data([response])
+				.enter()
+				.append("div")
+				.attr("class", "hidden user-info");
 		}
 	});
 }
