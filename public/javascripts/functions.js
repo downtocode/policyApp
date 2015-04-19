@@ -15,20 +15,14 @@ function hasCookie(cookieName) {
 	return null;
 }
 
-function getUserInfo(accessToken) {
+function getUserInfo(accessToken, callback) {
 	var url = 'https://graph.facebook.com/me';
 	$.ajax({
 		url: url,
 		data: {access_token: accessToken},
 		dataType: "JSON",
 		success: function(response) {
-			console.log(response);
-			d3.select("#user")
-				.selectAll("div")
-				.data([response])
-				.enter()
-				.append("div")
-				.attr("class", "hidden user-info");
+			callback(response);
 		}
 	});
 }

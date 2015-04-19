@@ -15,7 +15,7 @@
 			}
 
 			$(document).ready(function() {
-				getUserInfo(accessToken);
+				var questionnaireName = <%- JSON.stringify(title) %>
 				var questions = <%- JSON.stringify(questions) %>
 
 				d3.select("#question-selector").selectAll("div")
@@ -47,7 +47,7 @@
 					<li>Answer These Questions</li>
 				</ul>
 			</span>
-			<div class = "custom-button clickable" id = "submit-questionnaire">Submit!</div>
+			<div class = "custom-button clickable" id = "submit-more-page">Submit!</div>
 		</header>
 
 		<div id = "container" class = "login-box border-box center">

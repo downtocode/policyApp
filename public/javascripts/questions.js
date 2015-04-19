@@ -36,19 +36,52 @@ $(document).ready(function() {
 		$("#user-questions").val()[ind] = blah.join("|");
 	});
 
+	$(document).on("click", "#submit-more-page", function() {
+		$("#question-selector").css("display", "none");
+		$("#question-text").html("<div class = 'font-black question-header'>Thanks for answering these questions! Would you like to answer more?</div>");
+		$("#question-text").append("<input type = 'button' id = 'answer-more' value = 'Yes' class = 'clickable'/><input type = 'button' id = 'get-user-info' value = 'No' class = 'clickable'/>");
+	});
+
+	$(document).on("click", "#get-user-info", function() {
+		getUserInfo(accessToken, function(data) {
+			// ask for any missing information
+			// if none then submit
+			var dataWanted = ['birthday','education','work','gender', 'blah'];
+			var hasAllData = true;
+			$("#question-text").empty();
+			for (var i in dataWanted) {
+				if (!(dataWanted[i] in data)) {
+					$("#question-text").append(capitalize(dataWanted[i]) + " <input type = 'text' name = '" + dataWanted[i] + "'/>");
+					hasAllData = false;
+				}
+			}
+
+			if (hasAllData)
+				getAllAnswers(data);
+			else {
+				$("#question-text").prepend("Please fill out the following information about yourself.<br/>");
+				$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>");
+				d3.select("#user")
+					.selectAll("div")
+					.data([data])
+					.enter()
+					.append("div")
+					.attr("class", "hidden user-info");
+			}
+		});
+	});
+
+	$(document).on("click", "#answer-more", function() {
+		console.log(questionnaireName);
+	});
+
 	$(document).on("click", "#submit-questionnaire", function() {
-		var answersArr = $("#user-questions").val();
-		var tempArr, userAnswer;
-		var userAnswers = [];
-		var userID = d3.select(".user-info").data()[0].id;
-		$(".question-selector-circle").each(function(i) {
-			var questionID = d3.select(this).data()[0]._id;
-			tempArr = answersArr[i].split("|");
-			userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1]};
-			userAnswers.push(userAnswer);
+		var user = d3.select(".user-info").data()[0];
+		$("input[type=text]").each(function() {
+			user[$(this).attr("name")] = $(this).val();
 		});
 
-		submitQuestionniare(userAnswers);
+		getAllAnswers(user);
 	});
 
 });
@@ -93,20 +126,45 @@ function addQuestionImportance() {
 	$("#question-text").append("<span class = 'font-15'>Not Important <input type = 'range' name='1' min='1' max='5'> Very Important</span>");
 }
 
-function submitQuestionniare(answers) {
+function getAllAnswers(data) {
+	var answersArr = $("#user-questions").val();
+	var tempArr, userAnswer;
+	var userAnswers = [];
+	var userID = data.id;
+	$(".question-selector-circle").each(function(i) {
+		var questionID = d3.select(this).data()[0]._id;
+		tempArr = answersArr[i].split("|");
+		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1]};
+		userAnswers.push(userAnswer);
+	});
+
+	submitUserInfo(data);
+	submitQuestionnaire(userAnswers);
+}
+
+function submitQuestionnaire(answers) {
 	$.ajax({
 		url: '/api/sendAnswers',
 		method: 'POST',
 		contentType: 'application/json',
 		data: JSON.stringify({answers: answers}),
 		success: function(response) {	
-			console.log(response);
+			$("#question-text").html("Thank you!");
 		}
 	});
 }
 
-
-
-
+function submitUserInfo(data) {
+	console.log(data);
+	$.ajax({
+		url: '/api/sendUser',
+		method: 'POST',
+		contentType: 'application/json',
+		data: JSON.stringify(data),
+		success: function(response) {
+			console.log(response);
+		}
+	});
+}
 
 

@@ -53,11 +53,21 @@ router.post('/api/sendAnswers', function(req, res, next) {
 	var userId = answers[0].user_id;
 	for (var i in answers) {
 		var currDetails = {user_id: userId, question_id: answers[i].question_id};
-		db.userAnswers.update(currDetails, answers[i], {upsert:true}, function(err, success) {
-			console.log(success);
-		});
+		db.userAnswers.update(currDetails, answers[i], {upsert:true});
 	}
-	
+	res.send({success: 'success'});
+});
+
+router.post('/api/sendUser', function(req, res, next) {
+	var db = req.db;
+	var user = req.body;
+	var userID = user.id;
+	console.log(req.body);
+	db.users.update({id: userID}, req.body, {upsert: true}, function(err, success) {
+		console.log(success);
+		if (!err)
+			res.send(success);
+	});
 });
 
 module.exports = router;
