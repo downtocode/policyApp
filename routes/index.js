@@ -19,6 +19,7 @@ router.get('/home/:name', function(req, res, next) {
 		res.render(name + 'Home');
 	}
 	else {
+		console.log(name);
 		var questionnaire = name.replace(/-/g, " ").toLowerCase();
 		db.questions.find({questionnaire: questionnaire}, {}, {limit:10}, function(err, questions) {
 			questionnaire = capitalize(questionnaire);
