@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var ObjectId = require('mongodb').ObjectID;
 
 router.get('/api', function(req, res, next) {
 	var db = req.db;
@@ -44,6 +45,22 @@ router.post('/api/getAllQuestions', function(req, res, next) {
 	var query = req.body;
 	db.questions.find(query, function(err, questions) {
 		console.log(questions);
+		res.send(questions);
+	});
+});
+
+router.post('/api/getRestQuestions', function(req, res, next) {
+	var db = req.db;
+	var data = req.body;
+	var questionIdStrs = data.questionIds;
+	var questionIds = [];
+
+	for (var i in questionIdStrs) {
+		questionIds.push(new ObjectId(questionIdStrs[i]));
+	}
+	
+
+	db.questions.find({"_id": {$nin: questionIds}, questionnaire: data.questionnaire }, function(err, questions) {
 		res.send(questions);
 	});
 });

@@ -52,7 +52,11 @@ $(document).ready(function() {
 	});
 
 	$(document).on("change", "input", function() {
-		var ind = $(".question-selector-circle").index($(".selected"));
+		if ($(".all-question").length == 0)
+			var ind = $(".question-selector-circle").index($(".selected"));
+		else
+			var ind = $(".question-selector-circle").length + $("#questionnaires-list li").index($(".all-question-selected"));
+
 		var blah = $("#user-questions").val()[ind].split("|");
 		if ($(this).attr("type").toLowerCase().trim() === "checkbox") {
 			var vals = "";
@@ -63,6 +67,16 @@ $(document).ready(function() {
 		} else 
 			blah[$(this).attr("name")] = $(this).val();
 		$("#user-questions").val()[ind] = blah.join("|");
+		
+	});
+
+	$(document).on("click", ".all-question", function() {
+		$("#question-text").empty();
+		$(".all-question-selected").removeClass("all-question-selected");
+		$(this).addClass("all-question-selected");
+		var data = d3.select(this).data()[0];
+		showValues(data.type, data.values.split(","));
+		addQuestionImportance();
 	});
 
 	$(document).on("click", "#submit-more-page", function() {
@@ -78,7 +92,11 @@ $(document).ready(function() {
 			// if none then submit
 			var dataWanted = ['birthday','education','work','gender', 'blah'];
 			var hasAllData = true;
+			$("#questionnaires").hide();
 			$("#question-text").empty();
+			$("#question-text").css("width", "75%");
+			$("#question-text").css("float", "none");
+			$(this).hide();
 			for (var i in dataWanted) {
 				if (!(dataWanted[i] in data)) {
 					$("#question-text").append(capitalize(dataWanted[i]) + " <input type = 'text' name = '" + dataWanted[i] + "'/>");
@@ -104,6 +122,8 @@ $(document).ready(function() {
 	$(document).on("click", "#answer-more", function() {
 		var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
 		getAllQuestions(questionnaireName);
+		$("#submit-more-page").show();
+		$("#submit-more-page").attr("id", "get-user-info");
 	});
 
 	$(document).on("click", "#submit-questionnaire", function() {
@@ -200,6 +220,17 @@ function getAllAnswers(data) {
 		userAnswers.push(userAnswer);
 	});
 
+	if ($(".all-question").length > 0) {
+		$(".all-question").each(function(i) {
+			var questionID = d3.select(this).data()[0]._id;
+			var ind = i + $("#question-text li").index($(this));
+			console.log(ind);
+			tempArr = answersArr[i].split("|");
+			userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1]};
+			userAnswers.push(userAnswer);
+		});
+	}
+
 	submitUserInfo(data);
 	submitQuestionnaire(userAnswers);
 }
@@ -229,11 +260,17 @@ function submitUserInfo(data) {
 }
 
 function getAllQuestions(questionnaire) {
+	var questionIds = [];
+	$(".question-selector-circle").each(function(i) {
+		questionIds.push(d3.select(this).data()[0]._id);
+	});
+
 	$.ajax({
-		url: "/api/getAllQuestions",
+		url: "/api/getRestQuestions",
 		method: "POST",
-		data: {questionnaire: questionnaire},
+		data: JSON.stringify({questionIds: questionIds, questionnaire: questionnaire}),
 		dataType: "JSON",
+		contentType: "application/json",
 		success: function(response) {
 			displayAllQuestions(response);
 		}		
@@ -247,15 +284,25 @@ function displayAllQuestions(questions) {
 									'<ol id = "questionnaires-list" class = "no-list">' +
 									'</ol>' +
 								'</div>' +
-								'<div id = "questions" class = "border-box">' +
-									'<div class = "font-20 questionnaire-title">Questions</div>' +
-									'<ol id = "questions-list">' +
-									'</ol>' +
+								'<div id = "question-text" class = "border-box">' +
 								'</div>' +
-							'</div>');
-	for (var i in questions) {
-		$("#questionnaires-list").append("<li>"+questions[i].question+"</li>")
-	}
+							'</div>'); 
+	var numPrev = $(".question-selector-circle").length;
+	$("#question-text").width("20%");
+	$("#question-box").height("100% !important");
+
+	d3.select("#questionnaires-list").selectAll("li")
+		.data(questions)
+		.enter()
+		.append("li")
+		.attr("class", "clickable all-question")
+		.attr("id", function(d, i) {
+			var currNum = numPrev + i;
+			return 'question-'+ currNum;
+		})
+		.text(function(d, i) {
+			return d.question;
+		});
 
 	for (var i in questions) {
 		$("#user-questions").val().push("|");

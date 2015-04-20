@@ -150,6 +150,10 @@ header {
 	font-weight: 200;
 }
 
+header > span {
+	width: 100%;
+}
+
 header ul {
 	padding: 0px;
 	margin: 0px;
@@ -347,6 +351,7 @@ input[type=button] {
 	/*background: rgba(256,256,256,.3);*/
 	text-align: right;
 	width: 40%;
+	border-right: 1px dotted rgb(100, 100, 100);
 }
 
 #questions {
@@ -363,8 +368,7 @@ input[type=button] {
 #questionnaires-wrapper > div {
 	overflow: auto;
 	height: 75%;
-	border-radius: 10px;
-	padding: 10px;
+	padding: 10px 20px;
 	float: left;
 }
 
@@ -387,7 +391,7 @@ input[type=button] {
 	top: 10px;
 }
 
-#submit-more-page {
+#submit-more-page, #submit-questionnaire, #get-user-info {
 	right: 10px;
 	font-size: 20px;
 	top: 13px;
