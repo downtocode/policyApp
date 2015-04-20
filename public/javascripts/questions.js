@@ -18,6 +18,28 @@ $(document).ready(function() {
     	fjs.parentNode.insertBefore(js, fjs);
    	}(document, 'script', 'facebook-jssdk'));
 
+   	$(document).on("keydown", function(e) {
+   		var key = event.which;
+   		switch(key) {
+   			case 37: // left
+   				var ind = $('.question-selector-circle').index($('.selected'));
+   				if (ind > 0) {
+   					$('.selected').removeClass('selected');
+	   				$($('.question-selector-circle')[ind]).prev().addClass('selected');
+	   				showQuestion(ind-1);		
+   				}
+   				break;
+
+   			case 39: // right
+   				var ind = $('.question-selector-circle').index($('.selected'));
+   				if (ind < $('.question-selector-circle').length - 1) {
+   					$('.selected').removeClass('selected');
+	   				$($('.question-selector-circle')[ind]).next().addClass('selected');
+	   				showQuestion(ind+1);
+	   			}
+   				break;
+   		}
+   	});
 
 	$(document).on("click", ".question-selector-circle", function() {
 		var question = d3.select(this).data()[0];
@@ -32,12 +54,20 @@ $(document).ready(function() {
 	$(document).on("change", "input", function() {
 		var ind = $(".question-selector-circle").index($(".selected"));
 		var blah = $("#user-questions").val()[ind].split("|");
-		blah[$(this).attr("name")] = $(this).val();
+		if ($(this).attr("type").toLowerCase().trim() === "checkbox") {
+			var vals = "";
+			$("#question-list-larger :checked").each(function() {
+				vals += $(this).val() + ",";
+			});
+			blah[$(this).attr("name")] = vals.substring(0, vals.length-1);
+		} else 
+			blah[$(this).attr("name")] = $(this).val();
 		$("#user-questions").val()[ind] = blah.join("|");
 	});
 
 	$(document).on("click", "#submit-more-page", function() {
 		$("#question-selector").css("display", "none");
+		$(this).css("display", "none");
 		$("#question-text").html("<div class = 'font-black question-header'>Thanks for answering these questions! Would you like to answer more?</div>");
 		$("#question-text").append("<input type = 'button' id = 'answer-more' value = 'Yes' class = 'clickable'/><input type = 'button' id = 'get-user-info' value = 'No' class = 'clickable'/>");
 	});
@@ -72,7 +102,8 @@ $(document).ready(function() {
 	});
 
 	$(document).on("click", "#answer-more", function() {
-		console.log(questionnaireName);
+		var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
+		getAllQuestions(questionnaireName);
 	});
 
 	$(document).on("click", "#submit-questionnaire", function() {
@@ -84,11 +115,22 @@ $(document).ready(function() {
 		getAllAnswers(user);
 	});
 
+	$(document).on("click", "#submit-consent", function() {
+		var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
+		$("header li").text(capitalize(questionnaireName));
+		$("#consent-form").fadeOut(500, function() {
+			$("#container").fadeIn(100);
+			$("header").append('<div class = "custom-button clickable" id = "submit-more-page">Submit!</div>');
+			showQuestion(0);
+		});
+		
+	});
+
 });
 
 function showQuestion(num) {
 	var question = d3.selectAll(".question-selector-circle").data()[num];
-	$("#question-box div").append("<div id = 'question-text'></div>");
+	$("#question-box div").html("<div id = 'question-text'></div>");
 	$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(question.question) + "</div>");
 	var values = getValues(question.type, question.values);
 	showValues(question.type, values);	
@@ -112,18 +154,38 @@ function getValues(type, values) {
 }
 
 function showValues(type, values) {
-	if (type === "checklist" || type === "radio") {
+	if (type.toLowerCase().trim() === "checkbox" || type.toLowerCase().trim() === "radio") {
+		$("#question-text").append("<ul id = 'question-list-larger' class = 'no-list font-15'></ul>");
 		for (var i in values) {
-			$("#question-text").append("<input type = '" + type + "' name = '0'>" + capitalize(values[i]) + "</span><br/>");
+			$("#question-list-larger").append("<li class = 'inline-block center'><input type = '" + type + "' name = '0' value = '"+values[i]+"'><br/><span class = 'question-text-text'>" + capitalize(values[i]) + "</span></li>");		
 		}
+
+		$("#question-list-larger li").width(100 / values.length + "%");
+	
 	} else {
-		$("#question-text").append("<span class = 'font-15'>" + values[0] + " <input type = 'range' name='0' min='" + values[0] + "' max='" + values[values.length - 1] + "'> " + values[1] + "</span><br/>");
+		//$("#question-text").append("<span class = 'font-15'>" + values[0] + " <input type = 'range' name='0' min='" + values[0] + "' max='" + values[values.length - 1] + "'> " + values[1] + "</span><br/>");
+		$("#question-text").append("<input type = 'range' name='0' min='0' max='100'><ul id = 'question-list' class = 'no-list font-15'></ul>");
+
+		for (value in values) {
+			if (value < (values.length - 1) / 2)
+				$("#question-list").append("<li class = 'inline-block left'>" + values[value] + "</li>");
+			else if (value == (values.length - 1) / 2)
+				$("#question-list").append("<li class = 'inline-block center'>" + values[value] + "</li>");
+			else 
+				$("#question-list").append("<li class = 'inline-block right'>" + values[value] + "</li>");
+		}
+
+		$("#question-list li").width(100 / values.length + "%");
+			
 	}
 }
 
 function addQuestionImportance() {
 	$("#question-text").append("<div class = 'font-black importance-header'>How important is this topic for you?</div>");
-	$("#question-text").append("<span class = 'font-15'>Not Important <input type = 'range' name='1' min='1' max='5'> Very Important</span>");
+	$("#question-text").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
+	$("#importance-list").append("<li class = 'inline-block left'>Not Important</li>");
+	$("#importance-list").append("<li class = 'inline-block right'>Very Important</li>");	
+	$("#importance-list li").width("50%");
 }
 
 function getAllAnswers(data) {
@@ -155,7 +217,6 @@ function submitQuestionnaire(answers) {
 }
 
 function submitUserInfo(data) {
-	console.log(data);
 	$.ajax({
 		url: '/api/sendUser',
 		method: 'POST',
@@ -166,5 +227,46 @@ function submitUserInfo(data) {
 		}
 	});
 }
+
+function getAllQuestions(questionnaire) {
+	$.ajax({
+		url: "/api/getAllQuestions",
+		method: "POST",
+		data: {questionnaire: questionnaire},
+		dataType: "JSON",
+		success: function(response) {
+			displayAllQuestions(response);
+		}		
+	});
+}
+
+function displayAllQuestions(questions) {
+	$(".display-table").html('<div class = "display-table-cell font-18" id = "questionnaires-wrapper">' +
+								'<div id = "questionnaires" class = "border-box">' +
+									'<div class = "font-20 questionnaire-title">Questions</div>' +
+									'<ol id = "questionnaires-list" class = "no-list">' +
+									'</ol>' +
+								'</div>' +
+								'<div id = "questions" class = "border-box">' +
+									'<div class = "font-20 questionnaire-title">Questions</div>' +
+									'<ol id = "questions-list">' +
+									'</ol>' +
+								'</div>' +
+							'</div>');
+	for (var i in questions) {
+		$("#questionnaires-list").append("<li>"+questions[i].question+"</li>")
+	}
+
+	for (var i in questions) {
+		$("#user-questions").val().push("|");
+	}
+	
+}
+
+
+
+
+
+
 
 

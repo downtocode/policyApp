@@ -27,10 +27,10 @@ $(document).ready(function() {
 		$("#questions-form").append('<div class = "question">' +
 				'<label for = "question-'+numQuestions+'">Q'+numQuestions+' </label><textarea type = "text" name = "question-'+numQuestions+' " placeholder = "Question"></textarea>' +
 				'<select>' +
-					'<option>--Type--</option>' +
-					'<option>Slider</option>' +
-					'<option>Radio</option>' +
-					'<option>Checklist</option>' +
+					'<option value = "">--Type--</option>' +
+					'<option value = "range">Slider</option>' +
+					'<option value = "radio">Radio</option>' +
+					'<option value = "checkbox">Checklist</option>' +
 				'</select>' +
 			'<textarea name = "choices-1" class = "choices" placeholder = "Range, or Values by Commas"></textarea>' +
 			'</div><br/>');
@@ -93,20 +93,22 @@ function getQuestionnaires() {
 			for (var i in questionnaires) {
 				$("#questionnaires-list").append("<li class = 'clickable'>" + capitalize(questionnaires[i]) + "</li>");
 			}
+
+			getQuestions(questionnaires[0]);
 		}
 	});
 }
 
 function getQuestions(questionnaire) {
 	$.ajax({
-		url: '/api/getQuestions',
+		url: '/api/getAllQuestions',
 		method: 'POST',
 		data: {questionnaire: questionnaire.toLowerCase()},
 		dataType: 'JSON',
 		success: function(questions) {
 			$("#questions-list").empty();
 			for (var i in questions) {
-				$("#questions-list").append("<li>" + capitalize(questions[i].question) + "</li>");
+				$("#questions-list").append("<li>" + capitalize(questions[i].question) + ": " + questions[i].type + "<br/>["+ questions[i].values +"]</li>");
 			}
 		}
 	});

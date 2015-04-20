@@ -17,6 +17,9 @@
 			$(document).ready(function() {
 				var questionnaireName = <%- JSON.stringify(title) %>
 				var questions = <%- JSON.stringify(questions) %>
+				$("header li").text("Consent Form");
+
+				$("#container").css("display", "none");
 
 				d3.select("#question-selector").selectAll("div")
 					.data(questions)
@@ -34,7 +37,6 @@
 				}
 				$("#user-questions").val(emptyArr);
 
-				showQuestion(0);
 			});
 
 		</script>
@@ -44,10 +46,9 @@
 		<header class = "dark-box border-box font-white vertical-wrapper">
 			<span class = "vertical-align">
 				<ul class = "no-list inline center">
-					<li>Answer These Questions</li>
+					<li></li>
 				</ul>
 			</span>
-			<div class = "custom-button clickable" id = "submit-more-page">Submit!</div>
 		</header>
 
 		<div id = "container" class = "login-box border-box center">
@@ -57,6 +58,11 @@
 				<div class = "display-table-cell full-width-height">
 				</div>
 			</div>
+		</div>
+
+		<div id = "consent-form" class = "border-box">
+			<p>Text for consent form</p>
+			<input type = 'button' id = 'submit-consent' value = 'I Agree' class = 'custom-button clickable'/>
 		</div>
 
 		<div id = "user"></div>

@@ -39,10 +39,20 @@ router.post('/api/addQuestionnaire', function(req, res, next) {
 	});
 });
 
-router.post('/api/getQuestions', function(req, res, next) {
+router.post('/api/getAllQuestions', function(req, res, next) {
 	var db = req.db;
 	var query = req.body;
 	db.questions.find(query, function(err, questions) {
+		console.log(questions);
+		res.send(questions);
+	});
+});
+
+router.post('/api/getQuestions', function(req, res, next) {
+	var db = req.db;
+	var query = req.body;
+	db.questions.find(query, {}, {limit:10}, function(err, questions) {
+		console.log(questions);
 		res.send(questions);
 	});
 });
