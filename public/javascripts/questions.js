@@ -169,7 +169,7 @@ function showQuestion(num) {
 	$("#question-box div").html("<div id = 'question-text'></div>");
 	$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(question.question) + "</div>");
 	$("#question-text").append("<div class = 'horizontal-line'></div>");
-	if (question.treatment.toLowerCase() != 'control')
+	if (question.treatment_type.toLowerCase() != 'control')
 		$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
 	var values = getValues(question.type, question.values);
 	showValues(question.type, values);	
