@@ -512,6 +512,10 @@ input[type=button] {
 	margin-top: 50px;
 }
 
+#importance-section {
+	width: 500px;
+}
+
 
 /***************** CONSENT FORM ******************/
 #consent-form {
