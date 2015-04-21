@@ -61,7 +61,7 @@ router.post('/api/getRestQuestions', function(req, res, next) {
 	
 
 	db.questions.find({"_id": {$nin: questionIds}, questionnaire: data.questionnaire }, function(err, questions) {
-		var treatments = ['treatment_g', 'treatment_l', 'treatment_s', 'treatment_i'];
+		var treatments = ['treatment_g', 'treatment_l', 'treatment_s', 'control'];
 		var rand = Math.floor(Math.random() * treatments.length);
 
 		for (var q in questions) {

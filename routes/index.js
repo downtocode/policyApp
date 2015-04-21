@@ -32,7 +32,7 @@ router.get('/home/:name', function(req, res, next) {
 
 			for (var q in questions) {
 				var question = questions[q];
-				var treatments = ['treatment_g', 'treatment_l', 'treatment_s', 'treatment_i', 'control'];
+				var treatments = ['treatment_g', 'treatment_l', 'treatment_s', 'control'];
 				var rand = Math.floor(Math.random() * treatments.length);
 				//rand = 2;
 				question.treatment_type = treatments[rand];

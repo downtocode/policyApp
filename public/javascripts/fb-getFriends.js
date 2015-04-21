@@ -168,6 +168,21 @@ $(document).ready(function() {
 			if (!hasAllData)
 				$("#question-text").prepend("Please fill out the following information about yourself.<br/><br/>");
 
+			$("#question-text").append("<br/>How are you feeling?<br/>");
+			$("#question-text").append("<input type = 'range' name='feeling' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
+			$(".importance-list").append("<li class = 'inline-block center'>Very<br/>Happy</li>");
+			$(".importance-list").append("<li class = 'inline-block center'>Happy</li>");
+			$(".importance-list").append("<li class = 'inline-block center'>Stressed</li>");
+			$(".importance-list").append("<li class = 'inline-block center'>Anxious</li>");
+			$(".importance-list").append("<li class = 'inline-block center'>Depressed</li>");
+			$(".importance-list li").width("20%");
+
+			$("#question-text").append("<br/>Political Views<br/>");
+			$("#question-text").append("<input type = 'range' name='political-view' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
+			$(".importance-list:last").append("<li class = 'inline-block left'>Democrat</li>");
+			$(".importance-list:last").append("<li class = 'inline-block right'>Republican</li>");
+			$(".importance-list:last li").width("50%");
+
 			$("#question-text").append("<br/><br/>Please provide us with any feedback you have!<br/><textarea name = 'comments' id = 'user-comments' class = 'font-15' width = ></textarea>");
 
 			$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>");
@@ -396,20 +411,19 @@ function showQuestion(num) {
 	$("iframe").attr('src', question.url);
 	//$("#preview-album img").attr('src', question.info.album.images[0].url);
 	$("#question-text").html("<span class = 'font-black'>" + question.artist + ": </span><span class = 'font-grey'>" + question.song + "</span>");
-	if (question.treatment.length > 0) {
-		switch(question.treatment_type) {
-			case "treatment_i":
-				$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + " Last FM Listeners</div>");
-				break;
-			case "treatment_g":
-				$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + " Last FM Scrobbles</div>");
-				break;
-			case "treatment_s":
-				$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + "</div>");
-				break;
-			case "treatment_l":
-				$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>Your friend Juan David gave this song " + question.treatment + " stars</div>");
-				break;
+	if (question.treatment_type.toLowerCase() != "control") {
+		if (question.treatment.length > 0) {
+			switch(question.treatment_type) {
+				case "treatment_g":
+					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + " Last FM Scrobbles</div>");
+					break;
+				case "treatment_s":
+					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + "</div>");
+					break;
+				case "treatment_l":
+					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>Your friend Juan David gave this song " + question.treatment + " stars</div>");
+					break;
+			}
 		}
 	}
 
