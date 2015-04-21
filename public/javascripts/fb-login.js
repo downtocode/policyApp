@@ -35,7 +35,6 @@ function statusChangeCallback(url, response) {
         success: function(response) {
           //var d = new Date();
           //var expiresTime = response.authResponse.expires + d.getTime();
-          console.log(response.split("="));
           document.cookie = "fb_access=" + response.split("=")[1].split("&")[0] + ";expires=;path=/";
           window.location.href = url;
         }

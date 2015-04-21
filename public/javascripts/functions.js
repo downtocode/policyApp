@@ -2,6 +2,14 @@ function capitalize(string) {
 	return string.charAt(0).toUpperCase() + string.substring(1,string.length);
 }
 
+function capitalizeSentence(string) {
+	var strArr = string.split(" ");
+	for (var word in strArr) {
+		strArr[word] = capitalize(strArr[word]);
+	}
+	return strArr.join(" ");
+}
+
 function hasCookie(cookieName) {
 	var cookies = document.cookie.split(";");
 	for (var cookie in cookies) {

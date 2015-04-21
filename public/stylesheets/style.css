@@ -7,6 +7,16 @@ html, body {
 	font-weight: 300;
 }
 
+#fb_login_button { 
+    width: 80px; 
+}
+
+#fb_login_button span, 
+#fb_login_button iframe {.
+    width: 80px !important;
+    height: 25px !important;
+}
+
 body#music {
 	background: url('../images/music-bg.jpg');
 	background-size: cover;
@@ -55,6 +65,14 @@ li {
 
 .no-list {
 	list-style: none;
+}
+
+.float-left {
+	float: left;
+}
+
+.float-right {
+	float: right;
 }
 
 .right {
@@ -140,6 +158,13 @@ li {
 
 .border-box {
 	box-sizing: border-box;
+}
+
+.horizontal-line {
+	width: 50%;
+	height:0px;
+	border-bottom: 1px dotted black;
+	margin: 13px auto;
 }
 
 header {
@@ -261,9 +286,9 @@ input[type=button] {
 }
 
 #preview-iframe {
-	height: 0px;
-	width: 0px;
-	border: 0px;
+	height: 250px;
+	width: auto;
+	border: 1px;
 }
 
 #preview-album img {
@@ -325,7 +350,7 @@ input[type=button] {
 	margin: 5px auto;
 }
 
-#question-list-larger li input, #question-list-larger li span {
+#question-list-larger li input, #question-list-larger li span:not(.question-text-text) {
 	margin-left: 0px !important;
 }
 
@@ -340,6 +365,18 @@ input[type=button] {
 
 #questionnaires-list, #questions-list {
 
+}
+
+#question-treatment {
+	margin-bottom: 25px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 75%;
+}
+
+#user-comments {
+	width: 400px;
+	height: 100px;
 }
 
 /***************** ADMIN CSS ******************/
@@ -472,7 +509,7 @@ input[type=button] {
 }
 
 .importance-header {
-	margin-top: 75px;
+	margin-top: 50px;
 }
 
 

@@ -45,10 +45,8 @@ $(document).ready(function() {
 		var question = d3.select(this).data()[0];
 		$('.question-selector-circle.selected').removeClass('selected');
 		$(this).addClass('selected');
-		$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(question.question) + "</div>");
-		var values = getValues(question.type, question.values);
-		showValues(question.type, values);	
-		addQuestionImportance();
+		var ind = $('.question-selector-circle').index($('.selected'));
+		showQuestion(ind);
 	});
 
 	$(document).on("change", "input", function() {
@@ -87,6 +85,7 @@ $(document).ready(function() {
 	});
 
 	$(document).on("click", "#get-user-info", function() {
+		$(this).hide();
 		getUserInfo(accessToken, function(data) {
 			// ask for any missing information
 			// if none then submit
@@ -104,18 +103,19 @@ $(document).ready(function() {
 				}
 			}
 
-			if (hasAllData)
-				getAllAnswers(data);
-			else {
-				$("#question-text").prepend("Please fill out the following information about yourself.<br/>");
-				$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>");
-				d3.select("#user")
-					.selectAll("div")
-					.data([data])
-					.enter()
-					.append("div")
-					.attr("class", "hidden user-info");
-			}
+			if (!hasAllData)
+				$("#question-text").prepend("Please fill out the following information about yourself.<br/><br/>");
+
+			$("#question-text").append("<br/><br/>Please provide us with any feedback you have!<br/><textarea name = 'comments' id = 'user-comments' class = 'font-15' width = ></textarea>");
+
+			$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>");
+			d3.select("#user")
+				.selectAll("div")
+				.data([data])
+				.enter()
+				.append("div")
+				.attr("class", "hidden user-info");
+
 		});
 	});
 
@@ -128,7 +128,7 @@ $(document).ready(function() {
 
 	$(document).on("click", "#submit-questionnaire", function() {
 		var user = d3.select(".user-info").data()[0];
-		$("input[type=text]").each(function() {
+		$("input[type=text], textarea").each(function() {
 			user[$(this).attr("name")] = $(this).val();
 		});
 
@@ -137,7 +137,7 @@ $(document).ready(function() {
 
 	$(document).on("click", "#submit-consent", function() {
 		var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
-		$("header li").text(capitalize(questionnaireName));
+		$("header li").text(capitalizeSentence(questionnaireName));
 		$("#consent-form").fadeOut(500, function() {
 			$("#container").fadeIn(100);
 			$("header").append('<div class = "custom-button clickable" id = "submit-more-page">Submit!</div>');
@@ -152,9 +152,18 @@ function showQuestion(num) {
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	$("#question-box div").html("<div id = 'question-text'></div>");
 	$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(question.question) + "</div>");
+	$("#question-text").append("<div class = 'horizontal-line'></div>");
+	$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
 	var values = getValues(question.type, question.values);
 	showValues(question.type, values);	
 	addQuestionImportance();
+	if (question.treatment.length > 500 && (question.treatment_type.toLowerCase() === "treatment_s" || question.treatment_type.toLowerCase() === "treatment_i" ||
+		question.treatment_type.toLowerCase() === "treatment_g" )) {
+		$("#question-treatment").addClass("float-left");
+		$("#question-treatment").css("width", "40%");
+		$("#question-list-larger").addClass("float-right");
+		$("#importance-section").addClass("float-right");
+	}
 }
 
 function getValues(type, values) {
@@ -177,10 +186,10 @@ function showValues(type, values) {
 	if (type.toLowerCase().trim() === "checkbox" || type.toLowerCase().trim() === "radio") {
 		$("#question-text").append("<ul id = 'question-list-larger' class = 'no-list font-15'></ul>");
 		for (var i in values) {
-			$("#question-list-larger").append("<li class = 'inline-block center'><input type = '" + type + "' name = '0' value = '"+values[i]+"'><br/><span class = 'question-text-text'>" + capitalize(values[i]) + "</span></li>");		
+			$("#question-list-larger").append("<li class = 'inline-block center'><input type = '" + type + "' name = '0' value = '"+values[i]+"'><span class = 'question-text-text'>" + capitalize(values[i]) + "</span></li><br/>");		
 		}
 
-		$("#question-list-larger li").width(100 / values.length + "%");
+		//$("#question-list-larger li").width(100 / values.length + "%");
 	
 	} else {
 		//$("#question-text").append("<span class = 'font-15'>" + values[0] + " <input type = 'range' name='0' min='" + values[0] + "' max='" + values[values.length - 1] + "'> " + values[1] + "</span><br/>");
@@ -201,8 +210,8 @@ function showValues(type, values) {
 }
 
 function addQuestionImportance() {
-	$("#question-text").append("<div class = 'font-black importance-header'>How important is this topic for you?</div>");
-	$("#question-text").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
+	$("#question-text").append("<div id = 'importance-section'><div class = 'font-black importance-header'>How important is this topic for you?</div></div>");
+	$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
 	$("#importance-list").append("<li class = 'inline-block left'>Not Important</li>");
 	$("#importance-list").append("<li class = 'inline-block right'>Very Important</li>");	
 	$("#importance-list li").width("50%");
@@ -215,18 +224,20 @@ function getAllAnswers(data) {
 	var userID = data.id;
 	$(".question-selector-circle").each(function(i) {
 		var questionID = d3.select(this).data()[0]._id;
+		var treatment = d3.select(this).data()[0].treatment_type;
 		tempArr = answersArr[i].split("|");
-		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1]};
+		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment};
 		userAnswers.push(userAnswer);
 	});
 
 	if ($(".all-question").length > 0) {
 		$(".all-question").each(function(i) {
 			var questionID = d3.select(this).data()[0]._id;
+			var treatment = d3.select(this).data()[0].treatment_type;
 			var ind = i + $("#question-text li").index($(this));
 			console.log(ind);
 			tempArr = answersArr[i].split("|");
-			userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1]};
+			userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment};
 			userAnswers.push(userAnswer);
 		});
 	}

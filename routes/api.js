@@ -61,6 +61,20 @@ router.post('/api/getRestQuestions', function(req, res, next) {
 	
 
 	db.questions.find({"_id": {$nin: questionIds}, questionnaire: data.questionnaire }, function(err, questions) {
+		var treatments = ['treatment_g', 'treatment_l', 'treatment_s', 'treatment_i'];
+		var rand = Math.floor(Math.random() * treatments.length);
+
+		for (var q in questions) {
+			var question = questions[q];
+			question.treatment_type = treatments[rand];
+			question.treatment = question[treatments[rand]];
+
+			//treatments.splice(rand,1);
+			for (var i in treatments) {
+				delete question[treatments[i]];
+			}
+		}
+
 		res.send(questions);
 	});
 });
@@ -68,8 +82,17 @@ router.post('/api/getRestQuestions', function(req, res, next) {
 router.post('/api/getQuestions', function(req, res, next) {
 	var db = req.db;
 	var query = req.body;
+
 	db.questions.find(query, {}, {limit:10}, function(err, questions) {
-		console.log(questions);
+		res.send(questions);
+	});
+});
+
+router.post('/api/getQuestionsControl', function(req, res, next) {
+	var db = req.db;
+	var query = req.body;
+
+	db.questions.find(query, {}, {limit:10}, function(err, questions) {
 		res.send(questions);
 	});
 });

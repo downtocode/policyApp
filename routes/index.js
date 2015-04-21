@@ -14,16 +14,41 @@ function capitalize(str) {
 router.get('/home/:name', function(req, res, next) {
 	var db = req.db;
 	var name = req.params.name;
-	
-	if (name.toLowerCase() === "music" || name.toLowerCase() === "admin") {
+
+	if (name.toLowerCase() === "admin") {
 		res.render(name + 'Home');
 	}
 	else {
-		console.log(name);
 		var questionnaire = name.replace(/-/g, " ").toLowerCase();
-		db.questions.find({questionnaire: questionnaire}, {}, {limit:10}, function(err, questions) {
+		var lim = 10;
+		var query = {questionnaire: questionnaire};
+
+		if (name.toLowerCase() === "music") {
+			lim = 5;
+			query.main = 1;
+		}  
+
+		db.questions.find(query, {}, {limit:lim}, function(err, questions) {
+			for (var q in questions) {
+				var question = questions[q];
+				var treatments = ['treatment_g', 'treatment_l', 'treatment_s', 'treatment_i'];
+				var rand = Math.floor(Math.random() * treatments.length);
+				rand = 2;
+				question.treatment_type = treatments[rand];
+				question.treatment = question[treatments[rand]];
+
+				//treatments.splice(rand,1);
+				for (var i in treatments) {
+					delete question[treatments[i]];
+				}
+				
+			}
+
 			questionnaire = capitalize(questionnaire);
-			res.render('questions', {questions: questions, title: questionnaire, name: name});
+			if (name.toLowerCase() === "music")
+				res.render(name + 'Home',{questions: questions, title: questionnaire, name: name});
+			else
+				res.render('questions', {questions: questions, title: questionnaire, name: name});
 		});
 	}
 });
