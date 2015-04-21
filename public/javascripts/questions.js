@@ -226,7 +226,7 @@ function showValues(type, values) {
 	}
 }
 
-function addQuestionImportance() {
+function addQuestionImportance(num) {
 	$("#question-text").append("<div id = 'importance-section'><div class = 'font-black importance-header'>How important is this topic for you?</div></div>");
 	$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
 	$("#importance-list").append("<li class = 'inline-block left'>Not Important</li>");

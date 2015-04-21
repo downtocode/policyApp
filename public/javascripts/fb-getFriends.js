@@ -415,7 +415,7 @@ function showQuestion(num) {
 		if (question.treatment.length > 0) {
 			switch(question.treatment_type) {
 				case "treatment_g":
-					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + " Last FM Scrobbles</div>");
+					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment_i + " Last FM Listeners</div>");
 					break;
 				case "treatment_s":
 					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + "</div>");
