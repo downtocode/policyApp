@@ -264,6 +264,7 @@ input[type=button] {
 	bottom: 25px;
 	left: 25px;
 	right: 25px;
+	overflow: auto;
 }
 
 .full-box {
@@ -338,7 +339,7 @@ input[type=button] {
 	/*#1B8FE8*/
 }
 
-#question-list, #importance-list {
+#question-list, #importance-list, .importance-list {
 	padding: 0px;
 	width: 320px;
 	margin: 5px auto;
@@ -354,7 +355,7 @@ input[type=button] {
 	margin-left: 0px !important;
 }
 
-#importance-list {
+#importance-list, .importance-list {
 	width: 400px;
 }
 

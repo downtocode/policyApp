@@ -90,7 +90,7 @@ $(document).ready(function() {
 		getUserInfo(accessToken, function(data) {
 			// ask for any missing information
 			// if none then submit
-			var dataWanted = ['birthday','education','work','gender', 'ethnicity'];
+			var dataWanted = ['birthday','education','work','gender', 'income', 'ethnicity'];
 			var hasAllData = true;
 			$("#questionnaires").hide();
 			$("#question-text").empty();
@@ -107,11 +107,21 @@ $(document).ready(function() {
 			if (!hasAllData)
 				$("#question-text").prepend("Please fill out the following information about yourself.<br/><br/>");
 
+			$("#question-text").append("<br/>How are you feeling?<br/>");
+			$("#question-text").append("<input type = 'range' name='feeling' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
+			$(".importance-list").append("<li class = 'inline-block center'>Very<br/>Happy</li>");
+			$(".importance-list").append("<li class = 'inline-block center'>Happy</li>");
+			$(".importance-list").append("<li class = 'inline-block center'>Stressed</li>");
+			$(".importance-list").append("<li class = 'inline-block center'>Anxious</li>");
+			$(".importance-list").append("<li class = 'inline-block center'>Depressed</li>");
+			$(".importance-list li").width("20%");
+
 			$("#question-text").append("<br/>Political Views<br/>");
-			$("#question-text").append("<input type = 'range' name='political-view' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
-			$("#importance-list").append("<li class = 'inline-block left'>Democrat</li>");
-			$("#importance-list").append("<li class = 'inline-block right'>Republican</li>");
-			$("#importance-list li").width("50%");
+			$("#question-text").append("<input type = 'range' name='political-view' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
+			$(".importance-list:last").append("<li class = 'inline-block left'>Democrat</li>");
+			$(".importance-list:last").append("<li class = 'inline-block right'>Republican</li>");
+			$(".importance-list:last li").width("50%");
+
 			$("#question-text").append("<br/>Please provide us with any feedback you have!<br/><textarea name = 'comments' id = 'user-comments' class = 'font-15' width = ></textarea>");
 
 			$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>");
@@ -159,7 +169,8 @@ function showQuestion(num) {
 	$("#question-box div").html("<div id = 'question-text'></div>");
 	$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(question.question) + "</div>");
 	$("#question-text").append("<div class = 'horizontal-line'></div>");
-	$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
+	if (question.treatment.toLowerCase() != 'control')
+		$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
 	var values = getValues(question.type, question.values);
 	showValues(question.type, values);	
 	addQuestionImportance();
