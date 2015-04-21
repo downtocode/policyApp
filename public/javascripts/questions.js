@@ -86,10 +86,11 @@ $(document).ready(function() {
 
 	$(document).on("click", "#get-user-info", function() {
 		$(this).hide();
+		$("#error-msg").remove();
 		getUserInfo(accessToken, function(data) {
 			// ask for any missing information
 			// if none then submit
-			var dataWanted = ['birthday','education','work','gender', 'blah'];
+			var dataWanted = ['birthday','education','work','gender', 'ethnicity'];
 			var hasAllData = true;
 			$("#questionnaires").hide();
 			$("#question-text").empty();
@@ -98,7 +99,7 @@ $(document).ready(function() {
 			$(this).hide();
 			for (var i in dataWanted) {
 				if (!(dataWanted[i] in data)) {
-					$("#question-text").append(capitalize(dataWanted[i]) + " <input type = 'text' name = '" + dataWanted[i] + "'/>");
+					$("#question-text").append(capitalize(dataWanted[i]) + "<input type = 'text' name = '" + dataWanted[i] + "'/><br/>");
 					hasAllData = false;
 				}
 			}
@@ -106,7 +107,12 @@ $(document).ready(function() {
 			if (!hasAllData)
 				$("#question-text").prepend("Please fill out the following information about yourself.<br/><br/>");
 
-			$("#question-text").append("<br/><br/>Please provide us with any feedback you have!<br/><textarea name = 'comments' id = 'user-comments' class = 'font-15' width = ></textarea>");
+			$("#question-text").append("<br/>Political Views<br/>");
+			$("#question-text").append("<input type = 'range' name='political-view' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
+			$("#importance-list").append("<li class = 'inline-block left'>Democrat</li>");
+			$("#importance-list").append("<li class = 'inline-block right'>Republican</li>");
+			$("#importance-list li").width("50%");
+			$("#question-text").append("<br/>Please provide us with any feedback you have!<br/><textarea name = 'comments' id = 'user-comments' class = 'font-15' width = ></textarea>");
 
 			$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>");
 			d3.select("#user")
@@ -128,7 +134,7 @@ $(document).ready(function() {
 
 	$(document).on("click", "#submit-questionnaire", function() {
 		var user = d3.select(".user-info").data()[0];
-		$("input[type=text], textarea").each(function() {
+		$("input[type=text], textarea, input[type=range]").each(function() {
 			user[$(this).attr("name")] = $(this).val();
 		});
 
@@ -235,8 +241,7 @@ function getAllAnswers(data) {
 			var questionID = d3.select(this).data()[0]._id;
 			var treatment = d3.select(this).data()[0].treatment_type;
 			var ind = i + $("#question-text li").index($(this));
-			console.log(ind);
-			tempArr = answersArr[i].split("|");
+			tempArr = answersArr[ind].split("|");
 			userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment};
 			userAnswers.push(userAnswer);
 		});
@@ -289,35 +294,44 @@ function getAllQuestions(questionnaire) {
 }
 
 function displayAllQuestions(questions) {
-	$(".display-table").html('<div class = "display-table-cell font-18" id = "questionnaires-wrapper">' +
-								'<div id = "questionnaires" class = "border-box">' +
-									'<div class = "font-20 questionnaire-title">Questions</div>' +
-									'<ol id = "questionnaires-list" class = "no-list">' +
-									'</ol>' +
-								'</div>' +
-								'<div id = "question-text" class = "border-box">' +
-								'</div>' +
-							'</div>'); 
-	var numPrev = $(".question-selector-circle").length;
-	$("#question-text").width("20%");
-	$("#question-box").height("100% !important");
+	console.log(questions);
+	if (questions.length > 0) {
+		$(".display-table").html('<div class = "display-table-cell font-18" id = "questionnaires-wrapper">' +
+									'<div id = "questionnaires" class = "border-box">' +
+										'<div class = "font-20 questionnaire-title">Questions</div>' +
+										'<ol id = "questionnaires-list" class = "no-list">' +
+										'</ol>' +
+									'</div>' +
+									'<div id = "question-text" class = "border-box">' +
+									'</div>' +
+								'</div>'); 
+		var numPrev = $(".question-selector-circle").length;
+		$("#question-text").width("20%");
+		$("#question-box").height("100% !important");
 
-	d3.select("#questionnaires-list").selectAll("li")
-		.data(questions)
-		.enter()
-		.append("li")
-		.attr("class", "clickable all-question")
-		.attr("id", function(d, i) {
-			var currNum = numPrev + i;
-			return 'question-'+ currNum;
-		})
-		.text(function(d, i) {
-			return d.question;
-		});
+		d3.select("#questionnaires-list").selectAll("li")
+			.data(questions)
+			.enter()
+			.append("li")
+			.attr("class", "clickable all-question")
+			.attr("id", function(d, i) {
+				var currNum = numPrev + i;
+				return 'question-'+ currNum;
+			})
+			.text(function(d, i) {
+				return d.question;
+			});
 
-	for (var i in questions) {
-		$("#user-questions").val().push("|");
+		for (var i in questions) {
+			$("#user-questions").val().push("|");
+		}
+	} else {
+		$(".display-table").html('<div class = "display-table-cell font-18" id = "questionnaires-wrapper">' +
+			'<span id = "error-msg">Sorry! There are actually no more questions to answer. Please click submit to finish this questionnaire. Thanks!</span></div>'+
+			'<div id = "question-text" class = "border-box">' +
+			'</div>');
 	}
+	
 	
 }
 

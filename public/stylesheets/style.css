@@ -12,7 +12,7 @@ html, body {
 }
 
 #fb_login_button span, 
-#fb_login_button iframe {.
+#fb_login_button iframe {
     width: 80px !important;
     height: 25px !important;
 }

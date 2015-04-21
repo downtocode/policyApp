@@ -122,12 +122,26 @@ $(document).ready(function() {
 		else
 			var ind = $(".question-selector-circle").length + $("#questionnaires-list li").index($(".all-question-selected"));
 
-		$("#user-questions").val()[ind] = $(".selected-star").length;		
+		var blah = $("#user-questions").val()[ind].split("|");
+		blah[0] = $(".selected-star").length;
+		$("#user-questions").val()[ind] = blah.join("|");		
+	});
+
+	$(document).on("change", "input", function() {
+		if ($(".all-question").length == 0)
+			var ind = $(".question-selector-circle").index($(".selected"));
+		else
+			var ind = $(".question-selector-circle").length + $("#questionnaires-list li").index($(".all-question-selected"));
+
+		var blah = $("#user-questions").val()[ind].split("|");
+		blah[1] = $(this).val();
+		$("#user-questions").val()[ind] = blah.join("|");	
 	});
 
 	$(document).on("click", "#submit-more-page", function() {
 		$("#question-selector").css("display", "none");
 		$(this).css("display", "none");
+		$("#importance-section").remove();
 		$("svg, iframe").remove();
 		$("#question-text").html("<div class = 'font-black question-header'>Thanks for answering these questions! Would you like to answer more?</div>");
 		$("#question-text").append("<input type = 'button' id = 'answer-more' value = 'Yes' class = 'clickable'/><input type = 'button' id = 'get-user-info' value = 'No' class = 'clickable'/>");
@@ -399,6 +413,8 @@ function showQuestion(num) {
 		}
 	}
 
+	addMusicKnowledge();
+
 }
 
 function showAllQuestion(question) {
@@ -512,7 +528,8 @@ function getAllAnswers(data) {
 	$(".question-selector-circle").each(function(i) {
 		var questionID = d3.select(this).data()[0]._id;
 		var treatment = d3.select(this).data()[0].treatment_type;
-		userAnswer = {user_id: userID, question_id: questionID, question: answersArr[i], treatment: treatment};
+		tempArr = answersArr[i].split("|");
+		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], knowledge: tempArr[1], treatment: treatment};
 		userAnswers.push(userAnswer);
 	});
 
@@ -521,7 +538,8 @@ function getAllAnswers(data) {
 			var questionID = d3.select(this).data()[0]._id;
 			var treatment = d3.select(this).data()[0].treatment_type;
 			var ind = i + $("#question-text li").index($(this));
-			userAnswer = {user_id: userID, question_id: questionID, question: answersArr[i], treatment: treatment};
+			tempArr = answersArr[ind].split("|");
+			userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], knowledge: tempArr[1], treatment: treatment};
 			userAnswers.push(userAnswer);
 		});
 	}
@@ -552,4 +570,14 @@ function submitUserInfo(data) {
 			console.log(response);
 		}
 	});
+}
+
+function addMusicKnowledge() {
+	$("iframe").after("<div id = 'importance-section'><div class = 'font-black importance-header'>Have you heard this song before?</div></div>");
+	$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
+	$("#importance-list").append("<li class = 'inline-block center'>Never <br/>Heard It</li>");
+	$("#importance-list").append("<li class = 'inline-block center'>Sounds Familiar</li>");
+	$("#importance-list").append("<li class = 'inline-block center'>Know <br/>This Song</li>");
+	$("#importance-list").append("<li class = 'inline-block center'>Know <br/>This Artist</li>");	
+	$("#importance-list li").width("25%");
 }
