@@ -8,6 +8,7 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 		<script src = "../javascripts/functions.js"></script>
 		<script src = "../javascripts/questions.js"></script>
+		<script src = "../javascripts/inviteFriends.js"></script>
 		<script>
 			var accessToken = hasCookie('fb_access');
 			if (accessToken === null) {
@@ -20,11 +21,15 @@
 				$("header li").text("Consent Form");
 				$("#container").css("display", "none");
 
+				if (questions === null)
+					window.location.href = '/login/'+<%- JSON.stringify(name) %>
+				else console.log(questions);
+
 				d3.select("#question-selector").selectAll("div")
 					.data(questions)
 					.enter()
 					.append("div")
-					.attr("class", "question-selector-circle clickable")
+					.attr("class", "question-selector-circle clickable hidden")
 					.attr("id", function(d, i) { return "question-" + i; });
 
 				$(".question-selector-circle").first().addClass("selected");
@@ -42,6 +47,20 @@
 	</head>
 
 	<body id = "music">
+
+		<div id = "invite-modal-wrapper" class = "border-box display-table">
+			<div class = "border-box display-table-cell full-width-height">
+				<div id = "invite-modal" class = "center">
+					Invite your friends to use the application!<br/>
+					<input type = "search" results = "5" id = "invite-search">
+					<div id = "invite-friends-section">
+						<ul id = "invite-friends-list" class = "list-style-none display-inline left">
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<header class = "dark-box border-box font-white vertical-wrapper">
 			<span class = "vertical-align">
 				<ul class = "no-list inline center">

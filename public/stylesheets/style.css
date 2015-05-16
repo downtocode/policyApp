@@ -57,6 +57,10 @@ li {
 	font-weight: 600;
 }
 
+.italics {
+	font-style: italic;
+}
+
 .center {
 	text-align: center;
 	margin-left: auto;
@@ -121,6 +125,10 @@ li {
 
 .font-15 {
 	font-size: 15px;
+}
+
+.font-16 {
+	font-size: 16px;
 }
 
 .font-18 {
@@ -189,7 +197,8 @@ header ul {
 	margin-bottom: 20px;
 }
 
-input[type=text], input[type=password], textarea, select {
+input[type=text], input[type=search], input[type=password], textarea, select {
+	-webkit-appearance: none;
 	background-color: rgba(250,250,250,.6);
 	font-size: 18px;
 	padding: 5px 10px;
@@ -197,6 +206,10 @@ input[type=text], input[type=password], textarea, select {
 	border-radius: 15px;
 	margin: 10px;
 	width: 200px;
+}
+
+input[type=search] {
+	padding: 5px 0px;
 }
 
 input[type='range'] {
@@ -234,7 +247,7 @@ textarea, select {
 	border-radius: 5px;
 }
 
-.login-box input:focus, textarea:focus, select:focus {
+.login-box input:focus, textarea:focus, select:focus, input[type=search]:focus {
 	border: 1px solid rgb(100,100,100);
 	outline: none;
 }
@@ -302,7 +315,7 @@ input[type=button] {
 
 #question-text {
 	margin: 10px;
-	font-size: 18px;
+	font-size: 17px;
 	width: 75%;
 	margin-left: auto;
 	margin-right: auto;
@@ -330,7 +343,7 @@ input[type=button] {
 	border: 1px solid #13619E;
 	background-color: rgba(232,229,137,.5);
 	margin: 10px 5px;
-	display: inline-block;
+	/*display: inline-block;*/
 	cursor: pointer;
 }
 
@@ -345,9 +358,13 @@ input[type=button] {
 	margin: 5px auto;
 }
 
+#question-answers {
+	/*margin: 5px;*/
+}
+
 #question-list-larger {
 	padding: 0px;
-	width: 500px;
+	display: inline-block;
 	margin: 5px auto;
 }
 
@@ -364,12 +381,8 @@ input[type=button] {
 	margin-left: 10px;
 }
 
-#questionnaires-list, #questions-list {
-
-}
-
 #question-treatment {
-	margin-bottom: 25px;
+	/*margin-bottom: 20px;*/
 	margin-left: auto;
 	margin-right: auto;
 	width: 75%;
@@ -415,7 +428,6 @@ input[type=button] {
 }
 
 .custom-button {
-	position: absolute;
 	display: inline-block;
 	padding: 0px 9px 2px 9px;
 	color: #FFF;
@@ -424,16 +436,26 @@ input[type=button] {
 }
 
 #add-questionnaire {
+	position: absolute;
 	left: 10px;
 	font-size: 25px;
 	top: 10px;
 }
 
-#submit-more-page, #submit-questionnaire, #get-user-info {
+#download-answers {
+	position: absolute;
+	left: 60px;
+	top: 10px;
+	width: 35px;
+	padding: 5px 7px;
+}
+
+/*#submit-questionnaire {
+	position: absolute;
 	right: 10px;
 	font-size: 20px;
 	top: 13px;
-}
+} */
 
 .custom-button:hover {
 	background-color: rgba(50, 50, 50, .9);
@@ -510,7 +532,7 @@ input[type=button] {
 }
 
 .importance-header {
-	margin-top: 50px;
+	margin-top: 30px;
 }
 
 #importance-section {
@@ -534,6 +556,7 @@ input[type=button] {
 }
 
 #submit-consent {
+	position: absolute;
 	right: 25px; 
 }
 
@@ -542,7 +565,53 @@ input[type=button] {
 	width: 40%;
 }
 
+/***************** INVITE FRIENDS MODAL ******************/
 
+#invite-modal-wrapper {
+	position: fixed;
+	z-index: 1000;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,.7);
+}
+
+#invite-modal {
+	width: 500px;
+	height: 400px;
+	background-color: rgba(230,230,230,.9);
+	opacity: 1;
+	box-shadow: rgba(0, 0, 0, .5);
+	border-radius: 15px;
+	z-index: 1001;
+	padding: 10px;
+}
+
+#invite-friends-section {
+	height: 285px;
+	width: 100%;
+	overflow: auto;
+}
+
+#invite-friends-list {
+	padding: 0px;
+	margin: 0px;
+}
+
+#invite-friends-list li {
+	font-size: 14px;
+	cursor: pointer;
+	width: 33.333%;
+	box-sizing: border-box;
+}
+
+#invite-friends-list img {
+	width: 25px;
+	padding: 0px 5px;
+}
+
+#invite-button {
+	float: right;
+}
 
 
 

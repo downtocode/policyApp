@@ -1,3 +1,5 @@
+var appId = '486648534724015';
+
 $(document).ready(function() {
 
   window.fbAsyncInit = function() {
@@ -16,6 +18,10 @@ $(document).ready(function() {
     	js.src = "//connect.facebook.net/en_US/sdk.js";
     	fjs.parentNode.insertBefore(js, fjs);
    	}(document, 'script', 'facebook-jssdk'));
+
+  $(document).on("keyup", function() {
+    console.log($("iframe").contents());
+  });
 
 });
 
@@ -36,7 +42,15 @@ function statusChangeCallback(url, response) {
           //var d = new Date();
           //var expiresTime = response.authResponse.expires + d.getTime();
           document.cookie = "fb_access=" + response.split("=")[1].split("&")[0] + ";expires=;path=/";
-          window.location.href = url;
+          FB.ui({
+            method: 'send',
+            redirect_uri: 'https://stark-crag-5229.herokuapp.com'+url,
+            link: 'https://stark-crag-5229.herokuapp.com',
+          });
+
+          /*window.location.href = 'http://www.facebook.com/dialog/send?app_id='+appId+
+          '&link=https://stark-crag-5229.herokuapp.com'+
+          '&redirect_uri=localhost:5000'+url;*/
         }
       });
     } else if (response.status === 'not_authorized') {
@@ -54,3 +68,25 @@ function checkLoginState(url) {
     	statusChangeCallback(url, response);
     });
 }
+
+function showModal(url) {
+  $("body").prepend('<div id = "invite-modal-wrapper" class = "border-box display-table">'+
+      '<div class = "border-box display-table-cell full-width-height">'+
+        '<div id = "invite-modal" class = "center">'+
+          'Please invite your friends to use the application!<br/>'+
+          '<input type = "search" results = "5" id = "invite-search">'+
+          '<div id = "invite-friends-section">'+
+            '<ul id = "invite-friends-list" class = "list-style-none display-inline left">'+
+            '</ul>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>');
+
+  $("#invite-modal").append("<input type = 'button' class = 'custom-button clickable' id = 'invite-button' value = 'Invite!' />");
+}
+
+
+
+
+

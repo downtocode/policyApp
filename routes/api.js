@@ -120,6 +120,74 @@ router.post('/api/sendUser', function(req, res, next) {
 	});
 });
 
+router.post('/api/sendCSV', function(req, res, next) {
+	var db = req.db;
+
+	db.users.find({}, function(err, users) {
+		db.questions.find({}, function(err, questions) {
+			db.userAnswers.find({}, function(err, userAnswers) {
+				// write header and make header array
+				var header = "user"
+				var lineArr = []
+				for (var i in questions) {
+					header += ",opinion_" + questions[i]._id + "," + "importance_" + questions[i]._id + "," + "treatment_" + questions[i]._id;
+					lineArr.push(questions[i]._id);
+				}
+
+				var demographics = ['age', 'gender', 'location', 'education', 'work'];
+				for (var d in demographics) {
+					header += ",user_" + demographics[d];
+				}
+
+				var userDemographics = {}
+
+				for (var j in users) {
+					userDemographics[users[j]] = users[j];
+				}
+
+				var userAnswersArr = {}
+
+				for (var k in userAnswers) {
+					if (userAnswers[k].user_id in userAnswersArr) {
+						userAnswersArr[userAnswers[k].user_id][userAnswers[k].question_id] = userAnswers[k];
+					} else {
+						var newDict = {};
+						newDict[userAnswers[k].question_id] = userAnswers[k];
+						userAnswersArr[userAnswers[k].user_id] = newDict;
+					}
+				}
+
+				var allLines = [header];
+
+				for (var p in userAnswersArr) {
+					var user = userAnswersArr[p];
+					var newLine = "" + p;
+					for (var s in lineArr) {
+						var currQuestion = lineArr[s];
+						if (currQuestion in user)
+							newLine += "," + user[currQuestion].question + "," + user[currQuestion].importance + "," + user[currQuestion].treatment;
+						else
+							newLine += "," + "," + ",";
+					}
+
+					for (var r in demographics) {
+						if (demographics[r] in userDemographics)
+							newLine += "," + userDemographics[user.user_id][demographics[r]];
+						else
+							newLine += ",";
+					}
+					allLines.push(newLine);
+				}
+
+				res.send(allLines);
+
+			});
+		});
+	});
+
+
+});
+
 module.exports = router;
 
 

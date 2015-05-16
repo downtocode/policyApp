@@ -21,6 +21,10 @@ $(document).ready(function() {
 		window.location.href = '/home/admin';
 	});
 
+	$(document).on("click", "#download-answers", function() {
+		downloadAnswers();
+	});
+
 	$(document).on("click", "#add-button", function() {
 		var numQuestions = $("#questions-form .question").length + 1;
 
@@ -108,7 +112,7 @@ function getQuestions(questionnaire) {
 		success: function(questions) {
 			$("#questions-list").empty();
 			for (var i in questions) {
-				$("#questions-list").append("<li>" + capitalize(questions[i].question) + ": " + questions[i].type + "<br/>["+ questions[i].values +"]</li>");
+				$("#questions-list").append("<li>" + capitalize(questions[i].question) + "<br/>" + questions[i].type + "<br/>["+ questions[i].values +"]</li>");
 			}
 		}
 	});
@@ -124,6 +128,24 @@ function addQuestionnaire(questions) {
 		success: function(res) {
 			$("#save-response").addClass(res.font);
 			$("#save-response").text(res.msg);
+		}
+	});
+}
+
+function downloadAnswers() {
+	$.ajax({
+		url: '/api/sendCSV',
+		method: 'POST',
+		dataType: 'JSON',
+		success: function(data) {
+			var data_str = data.join('\n');
+			var encodedUri = encodeURI(data_str);
+			console.log(data_str);
+			/*var link = document.createElement("a");
+			link.setAttribute("href", encodedUri);
+			link.setAttribute("download", "user_answers.csv");
+
+			link.click();*/
 		}
 	});
 }
