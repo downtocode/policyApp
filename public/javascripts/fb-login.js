@@ -42,10 +42,19 @@ function statusChangeCallback(url, response) {
           //var d = new Date();
           //var expiresTime = response.authResponse.expires + d.getTime();
           document.cookie = "fb_access=" + response.split("=")[1].split("&")[0] + ";expires=;path=/";
-          FB.ui({
-            method: 'send',
-            redirect_uri: 'https://stark-crag-5229.herokuapp.com'+url,
-            link: 'https://stark-crag-5229.herokuapp.com',
+          
+
+          $.ajax({
+            url: 'https://graph.facebook.com/me',
+            data: {access_token: accessToken},
+            dataType: "jsonp",
+            success: function(response) {
+              console.log(response);
+              /*FB.ui({
+                method: 'send',
+                redirect_uri: 'https://stark-crag-5229.herokuapp.com'+url,
+                link: 'https://stark-crag-5229.herokuapp.com?',
+              }*/
           });
 
           /*window.location.href = 'http://www.facebook.com/dialog/send?app_id='+appId+
