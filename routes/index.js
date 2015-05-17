@@ -55,8 +55,8 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 });
 
 router.get('/login/:name/:fid?', function(req, res, next) {
-	console.log(req.params);
 	var name = req.params.name;
+
 	if (name === 'admin')
 		res.render('adminLogin');
 	else 

@@ -54,9 +54,18 @@ function statusChangeCallback(url, response) {
                 redirect_uri: 'https://stark-crag-5229.herokuapp.com'+url,
                 link: '
               });*/
-              window.location.href = 'http://www.facebook.com/dialog/send?app_id='+appId+
+              var urlArray = window.location.href.split("/");
+              if (urlArray.length > 4) {
+                $.ajax({
+                  method: 'POST',
+                  url: '/api/addFriend',
+                  data: {userID: response.id, friendID: urlArray[urlArray.length - 2]}
+                });
+              }
+
+              /*window.location.href = 'http://www.facebook.com/dialog/send?app_id='+appId+
               '&link=https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+response.id+'/'+
-              '&redirect_uri=https://stark-crag-5229.herokuapp.com'+url;
+              '&redirect_uri=https://stark-crag-5229.herokuapp.com'+url;*/
             }
           });
 

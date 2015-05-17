@@ -120,6 +120,21 @@ router.post('/api/sendUser', function(req, res, next) {
 	});
 });
 
+router.post('/api/addFriend', function(req, res, next) {
+	var db = req.db;
+	var data = req.body;
+	db.friends.insert({userID: data.userID, friendID: data.friendID}, function(err, success) {
+		if (!err){
+			db.friends.find({friendID: data.friendID}, function(err, users) {
+				console.log(users);
+				if (users.length >= 5) {
+					console.log(data.friendID + " has " + users.length + " friends who took the quiz");
+				}
+			});
+		}
+	});
+});
+
 router.post('/api/sendCSV', function(req, res, next) {
 	var db = req.db;
 
