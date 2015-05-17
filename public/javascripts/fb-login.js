@@ -42,7 +42,6 @@ function statusChangeCallback(url, response) {
           //var d = new Date();
           //var expiresTime = response.authResponse.expires + d.getTime();
           document.cookie = "fb_access=" + response.split("=")[1].split("&")[0] + ";expires=;path=/";
-          
 
           $.ajax({
             url: 'https://graph.facebook.com/me',
@@ -50,7 +49,7 @@ function statusChangeCallback(url, response) {
             dataType: "jsonp",
             success: function(response) {
               var loginUrl = url.split("/")[2];
-              loginUrl = 'https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+response.id;
+              loginUrl = window.location.href+'login/'+loginUrl+'/'+response.id;
               console.log(loginUrl);
               FB.ui({
                 method: 'send',
