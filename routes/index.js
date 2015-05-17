@@ -54,7 +54,7 @@ router.get('/home/:name', function(req, res, next) {
 	}
 });
 
-router.get('/login/:name', function(req, res, next) {
+router.get('/login/:name/:fid', function(req, res, next) {
 	var name = req.params.name;
 	if (name === 'admin')
 		res.render('adminLogin');
