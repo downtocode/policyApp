@@ -18,67 +18,91 @@ $(document).ready(function() {
     	fjs.parentNode.insertBefore(js, fjs);
    	}(document, 'script', 'facebook-jssdk'));
 
-   	/*$(document).on("keydown", function(e) {
-   		var key = event.which;
-   		switch(key) {
-   			case 37: // left
-   				var ind = $('.question-selector-circle').index($('.selected'));
-   				if (ind > 0) {
-   					$('.selected').removeClass('selected');
-	   				$($('.question-selector-circle')[ind]).prev().addClass('selected');
-	   				showQuestion(ind-1);		
-   				}
-   				break;
 
-   			case 39: // right
-   				var ind = $('.question-selector-circle').index($('.selected'));
-   				if (ind < $('.question-selector-circle').length - 1) {
-   					$('.selected').removeClass('selected');
-	   				$($('.question-selector-circle')[ind]).next().addClass('selected');
-	   				showQuestion(ind+1);
-	   			}
-   				break;
-   		}
-   	});*/
+	// If user submits consent form
+	// Take them to the first question
+	$(document).on("click", "#submit-consent", function() {
+		var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
+		$("header li").text(capitalizeSentence(questionnaireName));
+		$("#consent-form").fadeOut(500, function() {
+			$("#container").fadeIn(100);
+			showQuestion(0);
+		});
+	});
 
-   	$(document).on("click", "#next-question", function() {
+
+	// If user clicks "Next" to see treatment.
+	$(document).on("click", "#show-treatment", function() {
+		// Get the index of the current question
    		var ind = $('.question-selector-circle').index($('.selected'));
-		$('.selected').removeClass('selected');
-		$($('.question-selector-circle')[ind]).next().addClass('selected');
-		showQuestion(ind + 1);		
-   	});
 
+   		showTreatment(ind);
+	});
+
+
+	// If user clicks on "Show Choices" for question answers
+	$(document).on("click", "#show-values", function() {
+		var question = d3.select(".question-selector-circle.selected").data()[0];
+		var values = getValues(question.type, question.values);
+		showValues(question.type, values);	
+		$("#show-values").attr("id", "next-important");
+		$("#next-important").val("Next");
+	});
+
+
+   	// If user clicks "Next" button to get importance value
    	$(document).on("click", "#next-important", function() {
    		addQuestionImportance();
    	});
 
-	$(document).on("click", ".question-selector-circle", function() {
-		var question = d3.select(this).data()[0];
-		$('.question-selector-circle.selected').removeClass('selected');
-		$(this).addClass('selected');
-		var ind = $('.question-selector-circle').index($('.selected'));
-		showQuestion(ind);
-	});
 
+	// If user clicks on "Next" button for next question
+   	$(document).on("click", "#next-question", function() {
+   		// Get the index of the current question
+   		var ind = $('.question-selector-circle').index($('.selected'));
+
+   		// Remove this question as the selected one
+		$('.selected').removeClass('selected');
+
+		// Make the next question the selected one
+		$($('.question-selector-circle')[ind]).next().addClass('selected');
+
+		// Show the next question
+		showQuestion(ind + 1);		
+   	});
+
+
+
+   	// If user selects an answer for any input
 	$(document).on("change", "input", function() {
+
+		// If this is an "Answer More" question at the end or regular first 10 questions
 		if ($(".all-question").length == 0)
 			var ind = $(".question-selector-circle").index($(".selected"));
 		else
 			var ind = $(".question-selector-circle").length + $("#questionnaires-list li").index($(".all-question-selected"));
 
-		var blah = $("#user-questions").val()[ind].split("|");
+		// Each of the user's answers is stored as an index in a hidden array variable with a "|"
+		// separating the answer to the question itself and how important the question is
+		var answerArr = $("#user-questions").val()[ind].split("|");
+
+		// If this is a checkbox, we need to go through each answer bc there are multiple
 		if ($(this).attr("type").toLowerCase().trim() === "checkbox") {
 			var vals = "";
 			$("#question-list-larger :checked").each(function() {
 				vals += $(this).val() + ",";
 			});
-			blah[$(this).attr("name")] = vals.substring(0, vals.length-1);
-		} else 
-			blah[$(this).attr("name")] = $(this).val();
-		$("#user-questions").val()[ind] = blah.join("|");
+			answerArr[$(this).attr("name")] = vals.substring(0, vals.length-1);
+		} else // Otherwise, this is a slider value or radio so we can add the one answer
+			answerArr[$(this).attr("name")] = $(this).val();
+
+		// Rejoin the first and second answers and set to array index
+		$("#user-questions").val()[ind] = answerArr.join("|");
 		
 	});
 
+	
+	// If user selects one of the "More Questions"
 	$(document).on("click", ".all-question", function() {
 		$("#question-text").empty();
 		$(".all-question-selected").removeClass("all-question-selected");
@@ -87,25 +111,42 @@ $(document).ready(function() {
 		showValues(data.type, data.values.split(","));
 	});
 
+
+	// If user submits first 10 questions
+	// Asked if they want to answer more questions
 	$(document).on("click", "#submit-more-page", function() {
 		$(this).css("display", "none");
 		$("#question-text").html("<div class = 'font-black question-header'>Thanks for answering these questions! Would you like to answer more?</div>");
 		$("#question-text").append("<input type = 'button' id = 'answer-more' value = 'Yes' class = 'clickable'/><input type = 'button' id = 'get-user-info' value = 'No' class = 'clickable'/>");
 	});
 
+
+	// If user selects that they want to answer more questions
+	$(document).on("click", "#answer-more", function() {
+		var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
+		getAllQuestions(questionnaireName);
+		$("#questionnaires-wrapper").append("<br/><input type = 'button' id = 'get-user-info' value = 'Submit!' class = 'clickable'/>");
+	});
+
+
+	// When user finishes submitting all questions and no longer wants to answer more
+	// Goes to page to get the user's information
 	$(document).on("click", "#get-user-info", function() {
 		$(this).hide();
 		$("#error-msg").remove();
+
 		getUserInfo(accessToken, function(data) {
-			// ask for any missing information
-			// if none then submit
+			// Gets all of the user's information that we can get from FB
 			var dataWanted = ['birthday','education','work','gender', 'income', 'ethnicity'];
 			var hasAllData = true;
+
 			$("#questionnaires").hide();
 			$("#question-text").empty();
 			$("#question-text").css("width", "75%");
 			$("#question-text").css("float", "none");
 			$(this).hide();
+
+			// Checks for what information we are missing
 			for (var i in dataWanted) {
 				if (!(dataWanted[i] in data)) {
 					$("#question-text").append(capitalize(dataWanted[i]) + "<input type = 'text' name = '" + dataWanted[i] + "'/><br/>");
@@ -116,24 +157,30 @@ $(document).ready(function() {
 			if (!hasAllData)
 				$("#question-text").prepend("Please fill out the following information about yourself.<br/><br/>");
 
-			$("#question-text").append("<br/>How are you feeling?<br/>");
-			$("#question-text").append("<input type = 'range' name='feeling' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
-			$(".importance-list").append("<li class = 'inline-block center'>Very<br/>Happy</li>");
-			$(".importance-list").append("<li class = 'inline-block center'>Happy</li>");
-			$(".importance-list").append("<li class = 'inline-block center'>Stressed</li>");
-			$(".importance-list").append("<li class = 'inline-block center'>Anxious</li>");
-			$(".importance-list").append("<li class = 'inline-block center'>Depressed</li>");
+			// Asks extra questions
+			$("#question-text").append("<br/>How are you feeling?<br/>"+
+				"<input type = 'range' name='feeling' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
+
+			$(".importance-list").append("<li class = 'inline-block center'>Very<br/>Happy</li>" +
+				"<li class = 'inline-block center'>Happy</li>" +
+				"<li class = 'inline-block center'>Stressed</li>" +
+				"<li class = 'inline-block center'>Anxious</li>" +
+				"<li class = 'inline-block center'>Depressed</li>");
+
 			$(".importance-list li").width("20%");
 
-			$("#question-text").append("<br/>Political Views<br/>");
-			$("#question-text").append("<input type = 'range' name='political-view' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
-			$(".importance-list:last").append("<li class = 'inline-block left'>Democrat</li>");
-			$(".importance-list:last").append("<li class = 'inline-block right'>Republican</li>");
+			$("#question-text").append("<br/>Political Views<br/>" +
+				"<input type = 'range' name='political-view' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
+			
+			$(".importance-list:last").append("<li class = 'inline-block left'>Democrat</li>" +
+				"<li class = 'inline-block right'>Republican</li>");
+
 			$(".importance-list:last li").width("50%");
 
-			$("#question-text").append("<br/>Please provide us with any feedback you have!<br/><textarea name = 'comments' id = 'user-comments' class = 'font-15' width = ></textarea>");
-
-			$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>");
+			$("#question-text").append("<br/>Please provide us with any feedback you have!<br/><textarea name = 'comments' id = 'user-comments' class = 'font-15' width = ></textarea>" +
+				"<br/><input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>");
+			
+			// Adds user information to a hidden div
 			d3.select("#user")
 				.selectAll("div")
 				.data([data])
@@ -142,53 +189,31 @@ $(document).ready(function() {
 				.attr("class", "hidden user-info");
 
 		});
+
 	});
 
-	$(document).on("click", "#answer-more", function() {
-		var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
-		getAllQuestions(questionnaireName);
-		$("#questionnaires-wrapper").append("<br/><input type = 'button' id = 'get-user-info' value = 'Submit!' class = 'clickable'/>");
-	});
 
+	// If user is done answering all questions about themselves
+	// Time to submit the entire questionnaire!
 	$(document).on("click", "#submit-questionnaire", function() {
+
+		// Get all the user data
 		var user = d3.select(".user-info").data()[0];
 		$("input[type=text], textarea, input[type=range]").each(function() {
 			user[$(this).attr("name")] = $(this).val();
 		});
 
+		// Get all the user answers
 		getAllAnswers(user);
 	});
 
-	$(document).on("click", "#submit-consent", function() {
-		var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
-		$("header li").text(capitalizeSentence(questionnaireName));
-		$("#consent-form").fadeOut(500, function() {
-			$("#container").fadeIn(100);
-			showQuestion(0);
-		});
-		
-	});
-
-	$(document).on("click", "#show-values", function() {
-		var question = d3.select(".question-selector-circle.selected").data()[0];
-		var values = getValues(question.type, question.values);
-		showValues(question.type, values);	
-		$("#show-values").attr("id", "next-important");
-		$("#next-important").val("Next");
-	});
-
 });
+
 
 function showQuestion(num) {
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	$("#question-box div").html("<div id = 'question-text'></div>");
 	$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(question.question) + "</div>");
-	$("#question-text").append("<div class = 'horizontal-line'></div>");
-	if (question.treatment_type.toLowerCase() != 'control')
-		$("#question-text").append("<div class = 'font-black font-16 italics' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
-
-	$("#question-text").append("<div id = 'question-answers' class = 'hidden'></div>");
-
 	/*if (question.treatment != undefined && question.treatment.length > 500 && (question.treatment_type.toLowerCase() === "treatment_s" || question.treatment_type.toLowerCase() === "treatment_i" ||
 		question.treatment_type.toLowerCase() === "treatment_g" )) {
 		$("#question-treatment").addClass("float-left");
@@ -203,14 +228,34 @@ function showQuestion(num) {
 		showValues(question.type, values);	
 		$("#question-text").append("<input type='button' class='custom-button clickable' id='next-important' value='Next'/>");
 	} else */
+
+	if ($("#next-question").length > 0) {
+		$("#next-question").attr('id','show-treatment');
+		$("#next-question").val('Next!')
+	} else {
+		$("#question-text").append("<input type='button' class='custom-button clickable' id='show-treatment' value='Next!'/>");
+	}
+
+}
+
+
+function showTreatment(num) {
+	var question = d3.selectAll(".question-selector-circle").data()[num];
+	$("#question-text").append("<div class = 'horizontal-line'></div>");
+	if (question.treatment_type.toLowerCase() != 'control')
+		$("#question-text").append("<div class = 'font-black font-16 italics' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
+
+	$("#question-text").append("<div id = 'question-answers' class = 'hidden'></div>");
+
 	if ($("#next-question").length > 0) {
 		$("#next-question").attr('id','show-values');
 		$("#next-question").val('Show Choices')
 	} else {
 		$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Show Choices'/>");
 	}
-		
+
 }
+
 
 function getValues(type, values) {
 	if (type === "checklist" || type === "radio") {
