@@ -229,31 +229,37 @@ function showQuestion(num) {
 		$("#question-text").append("<input type='button' class='custom-button clickable' id='next-important' value='Next'/>");
 	} else */
 
-	if ($("#next-question").length > 0) {
-		$("#next-question").attr('id','show-treatment');
-		$("#next-question").val('Next!')
+	$("#question-text").append("<div id = 'question-answers'></div>");
+
+	if (question.treatment_type.toLowerCase() != 'control') {
+		if ($("#next-question").length > 0) {
+			$("#next-question").attr('id','show-treatment');
+			$("#next-question").val('Next')
+		} else {
+			$("#question-text").append("<input type='button' class='custom-button clickable' id='show-treatment' value='Next'/>");
+		}
 	} else {
-		$("#question-text").append("<input type='button' class='custom-button clickable' id='show-treatment' value='Next!'/>");
+		if ($("#next-question").length > 0) {
+			$("#next-question").attr('id','show-values');
+			$("#next-question").val('Show Choices')
+		} else {
+			$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Show Choices'/>");
+		}
 	}
 
 }
 
 
 function showTreatment(num) {
+	$("#show-treatment").remove();
 	var question = d3.selectAll(".question-selector-circle").data()[num];
-	$("#question-text").append("<div class = 'horizontal-line'></div>");
+	//$("#question-text").append("<div class = 'horizontal-line'></div>");
 	if (question.treatment_type.toLowerCase() != 'control')
-		$("#question-text").append("<div class = 'font-black font-16 italics' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
+		$("#question-answers").append("<div class = 'font-black font-16 italics bold hidden' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
 
-	$("#question-text").append("<div id = 'question-answers' class = 'hidden'></div>");
+	$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Show Choices'/>");
 
-	if ($("#next-question").length > 0) {
-		$("#next-question").attr('id','show-values');
-		$("#next-question").val('Show Choices')
-	} else {
-		$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Show Choices'/>");
-	}
-
+	$("#question-treatment").slideDown('slow');
 }
 
 
@@ -275,12 +281,12 @@ function getValues(type, values) {
 
 function showValues(type, values) {
 	if (type.toLowerCase().trim() === "checkbox" || type.toLowerCase().trim() === "radio") {
-		$("#question-answers").append("<ul id = 'question-list-larger' class = 'no-list font-15'></ul>");
+		$("#question-answers").append("<ul id = 'question-list-larger' class = 'no-list font-15 hidden'></ul>");
 		for (var i in values) {
 			$("#question-list-larger").append("<li class = 'left'><input type = '" + type + "' name = '0' value = '"+values[i]+"'><span class = 'question-text-text'>" + capitalize(values[i]) + "</span></li>");		
 		}	
 	} else {
-		$("#question-answers").append("<div><input type = 'range' name='0' min='0' max='100' class><ul id = 'question-list' class = 'no-list font-15'></ul></div>");
+		$("#question-answers").append("<div class = 'hidden'><input type = 'range' name='0' min='0' max='100' class><ul id = 'question-list' class = 'no-list font-15'></ul></div>");
 
 		for (value in values) {
 			if (value < (values.length - 1) / 2)
@@ -295,7 +301,7 @@ function showValues(type, values) {
 			
 	}
 
-	$("#question-answers").slideDown('slow');
+	$("#question-answers .hidden").slideDown('slow');
 }
 
 function addQuestionImportance() {
