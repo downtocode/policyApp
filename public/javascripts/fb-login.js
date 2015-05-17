@@ -49,12 +49,12 @@ function statusChangeCallback(url, response) {
             dataType: "jsonp",
             success: function(response) {
               var loginUrl = url.split("/")[2];
-              loginUrl = window.location.href+'login/'+loginUrl+'/'+response.id;
+              loginUrl = window.location.href+'login/'+loginUrl+'/'+response.id+'/';
               console.log(loginUrl);
               FB.ui({
                 method: 'send',
                 redirect_uri: 'https://stark-crag-5229.herokuapp.com'+url,
-                link: loginUrl,
+                link: loginUrl
               });
             }
           });
