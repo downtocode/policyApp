@@ -63,6 +63,13 @@ function statusChangeCallback(url, response) {
                 });
               }
 
+              FB.ui({
+                method: 'send',
+                link: 'https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+response.id+'/'
+              }, function(response) {
+                window.location.href = 'https://stark-crag-5229.herokuapp.com'+url;
+              });
+
               /*window.location.href = 'http://www.facebook.com/dialog/send?app_id='+appId+
               '&link=https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+response.id+'/'+
               '&redirect_uri=https://stark-crag-5229.herokuapp.com'+url;*/

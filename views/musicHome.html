@@ -9,12 +9,12 @@
 		<script src = "../javascripts/functions.js"></script>
 		<script src = "../javascripts/fb-getFriends.js"></script>
 		<script>
+			var accessToken = hasCookie('fb_access');
+			if (accessToken === null) {
+				window.location.href = '/login/'+<%- JSON.stringify(name) %>
+			}
+			
 			$(document).ready(function() {
-				var accessToken = hasCookie('fb_access');
-				if (accessToken === null) {
-					window.location.href = '/login/'+<%- JSON.stringify(name) %>
-				}
-
 				var questionnaireName = <%- JSON.stringify(title) %>
 				var questions = <%- JSON.stringify(questions) %>
 				$("header li").text("Consent Form");
@@ -25,7 +25,7 @@
 						.data(questions)
 						.enter()
 						.append("div")
-						.attr("class", "question-selector-circle clickable")
+						.attr("class", "question-selector-circle clickable hidden")
 						.attr("id", function(d, i) { return "question-" + i; });
 
 					$(".question-selector-circle").first().addClass("selected");
