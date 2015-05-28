@@ -61,15 +61,20 @@ $(document).ready(function() {
    	$(document).on("click", "#next-question", function() {
    		// Get the index of the current question
    		var ind = $('.question-selector-circle').index($('.selected'));
+		var curr_question = d3.selectAll(".question-selector-circle").data()[ind];
+		var next_question = d3.selectAll(".question-selector-circle").data()[ind + 1];
 
-   		// Remove this question as the selected one
-		$('.selected').removeClass('selected');
+   		if ( curr_question.treatment_type.toLowerCase() == 'treatment_i' || next_question.treatment_type.toLowerCase() != "treatment_i" || $(".demographics-next").length > 0) {
+   			// Remove this question as the selected one
+			$('.selected').removeClass('selected');
 
-		// Make the next question the selected one
-		$($('.question-selector-circle')[ind]).next().addClass('selected');
+			// Make the next question the selected one
+			$($('.question-selector-circle')[ind]).next().addClass('selected');
 
-		// Show the next question
-		showQuestion(ind + 1);		
+			// Show the next question
+			showQuestion(ind + 1);		
+   		}
+   
    	});
 
 
@@ -119,8 +124,9 @@ $(document).ready(function() {
 	// Asked if they want to answer more questions
 	$(document).on("click", "#submit-more-page", function() {
 		$(this).css("display", "none");
-		$("#question-text").html("<div class = 'font-black question-header'>Thanks for answering these questions! Would you like to answer more?</div>");
-		$("#question-text").append("<input type = 'button' id = 'answer-more' value = 'Yes' class = 'clickable'/><input type = 'button' id = 'get-user-info' value = 'No' class = 'clickable'/>");
+		$("#question-text").html("<div class = 'font-black question-header'>Thanks for answering these questions!"); // Would you like to answer more?</div>");
+		$("#question-text").append("<input type = 'button' id = 'submit-questionnaire' value = 'Yes' class = 'clickable'/><input type = 'button' id = 'get-user-info' value = 'No' class = 'clickable'/>");
+		//answer-more
 	});
 
 
@@ -176,7 +182,7 @@ $(document).ready(function() {
 					}
 
 					if (!hasAllData)
-						$("#question-text").prepend("Please fill out the following information about yourself.<br/><br/>");
+						$("#question-text").prepend("Before you continue, please fill out the following information about yourself.<br/><br/>");
 
 					// Asks extra questions
 					$("#question-text").append("<br/>How are you feeling?<br/>"+
@@ -199,7 +205,7 @@ $(document).ready(function() {
 					$(".importance-list:last li").width("50%");
 
 					$("#question-text").append("<br/>Please provide us with any feedback you have!<br/><textarea name = 'comments' id = 'user-comments' class = 'font-15' width = ></textarea>" +
-						"<br/><input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>");
+						"<br/><input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable'/>");
 					
 					// Adds user information to a hidden div
 					d3.select("#user")
@@ -373,9 +379,14 @@ function addQuestionImportance() {
 		$("#importance-list li").width("50%");
 	}
 	
+	var curr_question_ind = $(".question-selector-circle").index($(".selected"));
+	var curr_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind];
+	var next_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind + 1];
 
-	if ($(".question-selector-circle").index($(".selected")) >= $(".question-selector-circle").length - 1) {
+	if (curr_question_ind == $(".question-selector-circle").length - 1) {
 		$("#question-text input[type=button]").attr('id','submit-more-page').val('Submit!');
+	} else if (next_question.treatment_type.toLowerCase() == "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
+		$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
 	} else {
 		$("#question-text input[type=button]").attr('id','next-question').val('Next');
 	}

@@ -35,15 +35,15 @@
 							// see how many friends are also using the app
 							// which means they have answers
 							// if more than 5, we want to use local treatments
-							if (true) {//if (app_friends.data.length > 5) {
+							if (friends.data.length > 5) {
 								var app_friends = [];
 								for (var i in friends.data)
 									app_friends.push(friends.data[i].id);
 
-								app_friends.push('1368751615');
+								/*app_friends.push('1368751615');
 								app_friends.push('10205628652891829');
 								app_friends.push('10153306689188552');
-								app_friends.push('10152909706628845');
+								app_friends.push('10152909706628845');*/
 
 								// set up question treatments
 								var treatments = ['treatment_g', 'treatment_s', 'control', 'treatment_l'];
@@ -99,7 +99,10 @@
 											question.treatment_type = 'treatment_g2';
 									}
 
-									question.treatment = question[question.treatment_type];
+									if (treatment == 'treatment_i') 
+										question.treatment = "Identity Treatment";
+									else
+										question.treatment = question[question.treatment_type];
 								}
 
 								for (var i in every_treatment) {
@@ -109,8 +112,6 @@
 								}
 								
 							}
-
-							console.log(local_treatments);
 
 							$.ajax({
 								url: '/api/getFriendData',
