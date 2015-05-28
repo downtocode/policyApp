@@ -52,8 +52,16 @@ router.get('/createQuestionnaire', function(req, res, next) {
 	res.render('createQuestions');
 });
 
+router.get('/references', function(req, res, next) {
+	res.render('references');
+});
+
 router.get('/', function(req, res, next) {
 	res.render('questionsLogin', {name: 'music'});
+});
+
+router.get('*', function(req, res, next) {
+	res.render('questionsLogin', {name: 'policy'});
 });
 
 

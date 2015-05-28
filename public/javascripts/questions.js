@@ -46,6 +46,7 @@ $(document).ready(function() {
 		var values = getValues(question.type, question.values);
 		showValues(question.type, values);	
 		$("#show-values").attr("id", "next-important");
+		$("#next-important").prop("disabled", true);
 		$("#next-important").val("Next");
 	});
 
@@ -75,6 +76,8 @@ $(document).ready(function() {
 
    	// If user selects an answer for any input
 	$(document).on("change", "input", function() {
+
+		$("input[type=button]").prop("disabled", false);
 
 		// If this is an "Answer More" question at the end or regular first 10 questions
 		if ($(".all-question").length == 0)
@@ -234,7 +237,15 @@ $(document).ready(function() {
 function showQuestion(num) {
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	$("#question-box div").html("<div id = 'question-text'></div>");
-	$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(question.question) + "</div>");
+
+	if (question.question.length > 300) {
+		var i = question.question.lastIndexOf(". ");
+		var q = question.question.substr(0, i);
+		$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(q) + ".</div>");
+	} else {
+		$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(question.question) + "</div>");		
+	}
+
 	/*if (question.treatment != undefined && question.treatment.length > 500 && (question.treatment_type.toLowerCase() === "treatment_s" || question.treatment_type.toLowerCase() === "treatment_i" ||
 		question.treatment_type.toLowerCase() === "treatment_g" )) {
 		$("#question-treatment").addClass("float-left");
@@ -267,7 +278,6 @@ function showQuestion(num) {
 			$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Show Choices'/>");
 		}
 	}
-
 }
 
 
@@ -276,11 +286,24 @@ function showTreatment(num) {
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	//$("#question-text").append("<div class = 'horizontal-line'></div>");
 	
-	if (question.treatment_type.toLowerCase() != 'control') 
-		$("#question-answers").append("<div class = 'font-black font-16 italics bold hidden' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
+	if (question.treatment_type.toLowerCase() != 'control') {
+		if (question.treatment != undefined && question.treatment.indexOf("[") >= 0) {
+			var question_arr = question.treatment.split("[");
+			var reference = question_arr[1].split("]")[0];
+			$("#question-answers").append("<div class = 'font-black font-16 italics bold hidden' id = 'question-treatment'>" + 
+				capitalize(question_arr[0]) + "[<a href='/references#"+reference+"' target='_blank'>" + reference + "</a>]</div>");
+		} else
+			$("#question-answers").append("<div class = 'font-black font-16 italics bold hidden' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
+		
+		if (question.treatment_type.toLowerCase() == 'treatment_s') {
+			$("#question-treatment").append("<div class = 'font-black' id = 'question-footnote'>" + capitalize(question.treatment_s_footnote) + "</div>")
+		}
 
+	}
+	
 
 	$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Show Choices'/>");
+
 
 	$("#question-treatment").slideDown('slow');
 }
@@ -303,6 +326,11 @@ function getValues(type, values) {
 }
 
 function showValues(type, values) {
+
+	if ($(".question-header").text().length > 300) {
+		$("#question-answers").append("<br/>Should " + $(".question-header").text().split(" ")[0] + ": <br/>");
+	}
+
 	if (type.toLowerCase().trim() === "checkbox" || type.toLowerCase().trim() === "radio") {
 		$("#question-answers").append("<ul id = 'question-list-larger' class = 'no-list font-15 hidden'></ul>");
 		for (var i in values) {
@@ -329,6 +357,7 @@ function showValues(type, values) {
 
 function addQuestionImportance() {
 	$("#question-answers").children().remove();
+	$("#question-answers").empty();
 	
 	if ($(".question-header").text().length > 300) {
 		$("#question-answers").append("<div id = 'importance-section'><div class = 'font-black importance-header'>How hard was it for you to answer this question?</div></div>");
@@ -350,6 +379,8 @@ function addQuestionImportance() {
 	} else {
 		$("#question-text input[type=button]").attr('id','next-question').val('Next');
 	}
+
+	$("#question-text input[type=button]").prop("disabled", true);
 
 	if ($("#question-treatment").text().length > 500) {
 		//question.treatment.length > 500 && (question.treatment_type.toLowerCase() === "treatment_s" || question.treatment_type.toLowerCase() === "treatment_i" ||
