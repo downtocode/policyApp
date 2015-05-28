@@ -135,6 +135,49 @@ router.post('/api/addFriend', function(req, res, next) {
 	});
 });
 
+router.get('/api/getDemographics', function(req, res, next) {
+	var db = req.db;
+	db.demographics.find({}, function(err, demographics) {
+		res.send(demographics);
+	});
+});
+
+router.post('/api/getFriendData', function(req, res, next) {
+	var db = req.db;
+	var data = req.body;
+
+	db.userAnswers.find( { user_id: { $in: data.friendIDs }, question_id: {$in: data.question_id} }, function (err, friendData) {
+		if (!err) {
+			var friend_answers = {};
+			var friend_counts = {};
+			for (var i in friendData) {
+				if (friendData[i].question_id in friend_answers) {
+					friend_counts[friendData[i].question_id] += 1;
+					if (friendData[i].question in friend_answers[friendData[i].question_id]) {
+						friend_answers[friendData[i].question_id][friendData[i].question] += 1;
+					} else {
+						friend_answers[friendData[i].question_id][friendData[i].question] = 1;
+					}
+				} else {
+					var temp = {};
+					temp[friendData[i].question] = 1;
+					friend_answers[friendData[i].question_id] = temp;
+					friend_counts[friendData[i].question_id] = 1;
+				}
+			}
+
+			for (var j in friend_answers) {
+				for (var k in friend_answers[j]) {
+					friend_answers[j][k] = Math.round(100 * (friend_answers[j][k]/friend_counts[j]), 2);
+				}
+			}
+
+			console.log(friend_answers);
+			res.send(friend_answers);
+		}
+	});
+});
+
 router.post('/api/sendCSV', function(req, res, next) {
 	var db = req.db;
 
@@ -199,8 +242,6 @@ router.post('/api/sendCSV', function(req, res, next) {
 			});
 		});
 	});
-
-
 });
 
 module.exports = router;

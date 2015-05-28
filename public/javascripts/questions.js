@@ -137,56 +137,77 @@ $(document).ready(function() {
 
 		getUserInfo(accessToken, function(data) {
 			// Gets all of the user's information that we can get from FB
-			var dataWanted = ['birthday','education','work','gender', 'income', 'ethnicity'];
-			var hasAllData = true;
+			$.ajax({
+				url: '/api/getDemographics',
+				dataType: 'JSON',
+				success: function(dataWanted) {
+					var hasAllData = true;
 
-			$("#questionnaires").hide();
-			$("#question-text").empty();
-			$("#question-text").css("width", "75%");
-			$("#question-text").css("float", "none");
-			$(this).hide();
+					$("#questionnaires").hide();
+					$("#question-text").empty();
+					$("#question-text").css("width", "75%");
+					$("#question-text").css("float", "none");
+					$(this).hide();
 
-			// Checks for what information we are missing
-			for (var i in dataWanted) {
-				if (!(dataWanted[i] in data)) {
-					$("#question-text").append(capitalize(dataWanted[i]) + "<input type = 'text' name = '" + dataWanted[i] + "'/><br/>");
-					hasAllData = false;
+					// Checks for what information we are missing
+					console.log(dataWanted);
+					for (var i in dataWanted) {
+						if (!(dataWanted[i].name in data)) {
+							
+							if (dataWanted[i].type.toLowerCase() == 'text')
+								$("#question-text").append(capitalize(dataWanted[i].question) + "<input type = 'text' name = '" + dataWanted[i].name + "'/><br/>");
+							
+							else if (dataWanted[i].type.toLowerCase() == 'range') {
+								$("#question-text").append("<br/>" + capitalize(dataWanted[i].question) + "<br/>"+
+									"<input type = 'range' name='" + capitalize(dataWanted[i].question) + "' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
+
+								var values = dataWanted[i].values.split(",");
+								for (var k in values) {
+									$(".importance-list:last").append("<li class = 'inline-block center'>" + values[k] + "</li>");
+								}
+								
+							}
+
+							hasAllData = false;
+						}
+					}
+
+					if (!hasAllData)
+						$("#question-text").prepend("Please fill out the following information about yourself.<br/><br/>");
+
+					// Asks extra questions
+					$("#question-text").append("<br/>How are you feeling?<br/>"+
+						"<input type = 'range' name='feeling' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
+
+					$(".importance-list").append("<li class = 'inline-block center'>Very<br/>Happy</li>" +
+						"<li class = 'inline-block center'>Happy</li>" +
+						"<li class = 'inline-block center'>Stressed</li>" +
+						"<li class = 'inline-block center'>Anxious</li>" +
+						"<li class = 'inline-block center'>Depressed</li>");
+
+					$(".importance-list li").width("20%");
+
+					$("#question-text").append("<br/>Political Views<br/>" +
+						"<input type = 'range' name='political-view' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
+					
+					$(".importance-list:last").append("<li class = 'inline-block left'>Democrat</li>" +
+						"<li class = 'inline-block right'>Republican</li>");
+
+					$(".importance-list:last li").width("50%");
+
+					$("#question-text").append("<br/>Please provide us with any feedback you have!<br/><textarea name = 'comments' id = 'user-comments' class = 'font-15' width = ></textarea>" +
+						"<br/><input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>");
+					
+					// Adds user information to a hidden div
+					d3.select("#user")
+						.selectAll("div")
+						.data([data])
+						.enter()
+						.append("div")
+						.attr("class", "hidden user-info");
 				}
-			}
-
-			if (!hasAllData)
-				$("#question-text").prepend("Please fill out the following information about yourself.<br/><br/>");
-
-			// Asks extra questions
-			$("#question-text").append("<br/>How are you feeling?<br/>"+
-				"<input type = 'range' name='feeling' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
-
-			$(".importance-list").append("<li class = 'inline-block center'>Very<br/>Happy</li>" +
-				"<li class = 'inline-block center'>Happy</li>" +
-				"<li class = 'inline-block center'>Stressed</li>" +
-				"<li class = 'inline-block center'>Anxious</li>" +
-				"<li class = 'inline-block center'>Depressed</li>");
-
-			$(".importance-list li").width("20%");
-
-			$("#question-text").append("<br/>Political Views<br/>" +
-				"<input type = 'range' name='political-view' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
+			});
 			
-			$(".importance-list:last").append("<li class = 'inline-block left'>Democrat</li>" +
-				"<li class = 'inline-block right'>Republican</li>");
-
-			$(".importance-list:last li").width("50%");
-
-			$("#question-text").append("<br/>Please provide us with any feedback you have!<br/><textarea name = 'comments' id = 'user-comments' class = 'font-15' width = ></textarea>" +
-				"<br/><input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>");
-			
-			// Adds user information to a hidden div
-			d3.select("#user")
-				.selectAll("div")
-				.data([data])
-				.enter()
-				.append("div")
-				.attr("class", "hidden user-info");
 
 		});
 
@@ -254,8 +275,10 @@ function showTreatment(num) {
 	$("#show-treatment").remove();
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	//$("#question-text").append("<div class = 'horizontal-line'></div>");
-	if (question.treatment_type.toLowerCase() != 'control')
+	
+	if (question.treatment_type.toLowerCase() != 'control') 
 		$("#question-answers").append("<div class = 'font-black font-16 italics bold hidden' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
+
 
 	$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Show Choices'/>");
 
@@ -290,11 +313,11 @@ function showValues(type, values) {
 
 		for (value in values) {
 			if (value < (values.length - 1) / 2)
-				$("#question-list").append("<li class = 'inline-block left'>" + values[value] + "</li>");
+				$("#question-list").append("<li class = 'inline-block center text-top border-box'>" + values[value] + "</li>");
 			else if (value == (values.length - 1) / 2)
-				$("#question-list").append("<li class = 'inline-block center'>" + values[value] + "</li>");
+				$("#question-list").append("<li class = 'inline-block center text-top border-box'>" + values[value] + "</li>");
 			else 
-				$("#question-list").append("<li class = 'inline-block right'>" + values[value] + "</li>");
+				$("#question-list").append("<li class = 'inline-block center text-top border-box'>" + values[value] + "</li>");
 		}
 
 		$("#question-list li").width(100 / values.length + "%");

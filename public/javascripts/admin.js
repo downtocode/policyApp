@@ -139,13 +139,13 @@ function downloadAnswers() {
 		dataType: 'JSON',
 		success: function(data) {
 			var data_str = data.join('\n');
-			var encodedUri = encodeURI(data_str);
-			console.log(data_str);
-			/*var link = document.createElement("a");
-			link.setAttribute("href", encodedUri);
-			link.setAttribute("download", "user_answers.csv");
+			var a = document.createElement('a');
+			a.href = 'data:attachment/csv,' + data_str;
+			a.target = '_blank';
+			a.download = 'myFile.csv';
 
-			link.click();*/
+			document.body.appendChild(a);
+			a.click();
 		}
 	});
 }

@@ -23,23 +23,142 @@
 
 				if (questions === null)
 					window.location.href = '/login/'+<%- JSON.stringify(name) %>
-				else console.log(questions);
+				else {
+					shuffle(questions);
 
-				d3.select("#question-selector").selectAll("div")
-					.data(questions)
-					.enter()
-					.append("div")
-					.attr("class", "question-selector-circle clickable hidden")
-					.attr("id", function(d, i) { return "question-" + i; });
+					$.ajax({
+						url: 'https://graph.facebook.com/me/friends',
+						data: {access_token: accessToken},
+						dataType: 'jsonp',
+						success: function(friends) {
+							var local_treatments = [];
+							// see how many friends are also using the app
+							// which means they have answers
+							// if more than 5, we want to use local treatments
+							if (true) {//if (app_friends.data.length > 5) {
+								var app_friends = [];
+								for (var i in friends.data)
+									app_friends.push(friends.data[i].id);
 
-				$(".question-selector-circle").first().addClass("selected");
+								app_friends.push('1368751615');
+								app_friends.push('10205628652891829');
+								app_friends.push('10153306689188552');
+								app_friends.push('10152909706628845');
 
-				// create array for user answers
-				var emptyArr = []
-				for (var i in questions) {
-					emptyArr.push("|");
+								// set up question treatments
+								var treatments = ['treatment_g', 'treatment_s', 'control', 'treatment_l'];
+								shuffle(treatments);
+								treatments.push('treatment_i');
+								var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control', 'treatment_l', 'treatment_i'];
+
+							} else { // otherwise just use regular treatments
+								var treatments = ['treatment_g', 'treatment_s', 'control'];
+								shuffle(treatments);
+								treatments.push('treatment_i');
+								var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control', 'treatment_i'];
+							}
+
+							var numEach = Math.floor(questions.length / treatments.length);
+							var numLeftover = questions.length - (numEach * treatments.length);
+							var extraTreatments = [];
+							var all_treatments = [];
+							var treatments2 = []
+
+							for (var t in treatments)
+								treatments2.push(treatments[t])
+
+							for (var j = 0; j < numLeftover; j++) {
+								var rand = Math.floor(Math.random() * treatments2.length);
+								extraTreatments.push(treatments2[rand]);
+								treatments2.splice(rand, 1);
+							}
+
+							for (var t in treatments) {
+								for (var i = 0; i < numEach; i++)
+									all_treatments.push(treatments[t]);
+								if (extraTreatments.indexOf(treatments[t]) > -1) 
+									all_treatments.push(treatments[t]);
+							}
+
+							console.log(all_treatments);
+
+
+							for (var q in questions) {
+								var question = questions[q];
+								var treatment = all_treatments[q];
+								question.treatment_type = treatment;
+								
+								if (treatment == 'treatment_l') {
+									local_treatments.push(q);
+								} else {
+									if (treatment == 'treatment_g') {
+										var rand_g = Math.floor(Math.random() * 2)
+										if (rand_g == 0)
+											question.treatment_type = 'treatment_g';
+										else
+											question.treatment_type = 'treatment_g2';
+									}
+
+									question.treatment = question[question.treatment_type];
+								}
+
+								for (var i in every_treatment) {
+									if (every_treatment[i] in question) {
+										delete question[every_treatment[i]];
+									}
+								}
+								
+							}
+
+							console.log(local_treatments);
+
+							$.ajax({
+								url: '/api/getFriendData',
+								contentType: 'application/json',
+								data: JSON.stringify({friendIDs: app_friends, question_id: ['5535b299675db983c13fbed6', '5535b299675db983c13fbeda']}),//question._id}),
+								dataType: 'JSON',
+								method: 'POST',
+								success: function(data) {
+									var count = 0;
+									for (var k in data) {
+										var str = "According to your Facebook friends who also took the survey";
+
+										for (var p in data[k]) {
+											str += ', ' + data[k][p] + '% answered "' + p + '"';
+										}
+
+										str += ".";
+
+										questions[local_treatments[count]].treatment = str;
+										count++;
+									}
+								}
+							});
+
+							console.log(questions);
+
+							d3.select("#question-selector").selectAll("div")
+								.data(questions)
+								.enter()
+								.append("div")
+								.attr("class", "question-selector-circle clickable hidden")
+								.attr("id", function(d, i) { return "question-" + i; });
+
+							$(".question-selector-circle").first().addClass("selected");
+
+							// create array for user answers
+							var emptyArr = []
+							for (var i in questions) {
+								emptyArr.push("|");
+							}
+							$("#user-questions").val(emptyArr);
+
+						}
+
+					});
+
+					
 				}
-				$("#user-questions").val(emptyArr);
 
 			});
 

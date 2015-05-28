@@ -30,21 +30,6 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 
 		db.questions.find(query, {}, {limit:lim}, function(err, questions) {
 
-			for (var q in questions) {
-				var question = questions[q];
-				var treatments = ['treatment_g', 'treatment_l', 'treatment_s', 'control'];
-				var rand = Math.floor(Math.random() * treatments.length);
-				//rand = 2;
-				question.treatment_type = treatments[rand];
-				question.treatment = question[treatments[rand]];
-
-				//treatments.splice(rand,1);
-				for (var i in treatments) {
-					delete question[treatments[i]];
-				}
-				
-			}
-
 			questionnaire = capitalize(questionnaire);
 			if (name.toLowerCase() === "music")
 				res.render(name + 'Home',{questions: questions, title: questionnaire, name: name});

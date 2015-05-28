@@ -73,11 +73,8 @@ function getFriends() {
 	});
 }
 
-function inviteFriends() {
-	FB.ui({
-		method: 'send',
-		link: 'https://stark-crag-5229.herokuapp.com',
-	});
+function inviteFriends(url) {
+	
 }
 
 

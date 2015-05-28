@@ -49,11 +49,7 @@ function statusChangeCallback(url, response) {
             dataType: "jsonp",
             success: function(response) {
               var loginUrl = url.split("/")[2];
-              /*FB.ui({
-                method: 'send',
-                redirect_uri: 'https://stark-crag-5229.herokuapp.com'+url,
-                link: '
-              });*/
+
               var urlArray = window.location.href.split("/");
               if (urlArray.length > 4) {
                 $.ajax({
@@ -69,11 +65,7 @@ function statusChangeCallback(url, response) {
               }, function(response) {
                 window.location.href = 'https://stark-crag-5229.herokuapp.com'+url;
               });
-
-              /*window.location.href = 'http://www.facebook.com/dialog/send?app_id='+appId+
-              '&link=https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+response.id+'/'+
-              '&redirect_uri=https://stark-crag-5229.herokuapp.com'+url;*/
-            }
+             }
           });
 
           
