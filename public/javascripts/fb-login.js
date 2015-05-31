@@ -43,7 +43,7 @@ function statusChangeCallback(url, response) {
           //var expiresTime = response.authResponse.expires + d.getTime();
           document.cookie = "fb_access=" + response.split("=")[1].split("&")[0] + ";expires=;path=/";
 
-          $.ajax({
+          /*$.ajax({
             url: 'https://graph.facebook.com/me',
             data: {access_token: accessToken},
             dataType: "jsonp",
@@ -66,9 +66,10 @@ function statusChangeCallback(url, response) {
                 window.location.href = 'https://stark-crag-5229.herokuapp.com'+url;
               });
              }
-          });
+          });*/
 
-          
+
+          window.location.href = 'https://stark-crag-5229.herokuapp.com'+url;
         }
       });
     } else if (response.status === 'not_authorized') {

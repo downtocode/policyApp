@@ -297,12 +297,12 @@ function showTreatment(num) {
 			var question_arr = question.treatment.split("[");
 			var reference = question_arr[1].split("]")[0];
 			$("#question-answers").append("<div class = 'font-black font-16 italics bold hidden' id = 'question-treatment'>" + 
-				capitalize(question_arr[0]) + "[<a href='/references#"+reference+"' target='_blank'>" + reference + "</a>]</div>");
+				capitalize(question_arr[0]) + "[Click <a href='/references#"+reference+"' target='_blank'>here</a>] to see reference</div>");
 		} else
 			$("#question-answers").append("<div class = 'font-black font-16 italics bold hidden' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
 		
 		if (question.treatment_type.toLowerCase() == 'treatment_s') {
-			$("#question-treatment").append("<div class = 'font-black' id = 'question-footnote'>" + capitalize(question.treatment_s_footnote) + "</div>")
+			$("#question-treatment").append("<div class = 'font-black bold' id = 'question-footnote'>" + capitalize(question.treatment_s_footnote) + "</div>")
 		}
 
 	}
@@ -425,6 +425,7 @@ function getAllAnswers(data) {
 		});
 	}
 
+	inviteFriends(userID);
 	submitUserInfo(data);
 	submitQuestionnaire(userAnswers);
 }
@@ -435,7 +436,7 @@ function submitQuestionnaire(answers) {
 		method: 'POST',
 		contentType: 'application/json',
 		data: JSON.stringify({answers: answers}),
-		success: function(response) {	
+		success: function(response) {
 			$("#question-text").html("Thank you!");
 		}
 	});
@@ -510,6 +511,27 @@ function displayAllQuestions(questions) {
 	}
 	
 	
+}
+
+function inviteFriends(userID) {
+	var loginUrl = url.split("/")[2];
+	var urlArray = window.location.href.split("/");
+
+	if (urlArray.length > 4) {
+		$.ajax({
+			method: 'POST',
+			url: '/api/addFriend',
+			data: {userID: userID, friendID: urlArray[urlArray.length - 2], questionnaire: urlArray[urlArray.length - 3]}
+		});
+	}
+
+	FB.ui({
+		method: 'send',
+		link: 'https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+userID'/'
+	}, function(response) {
+		$("#question-text").html("Thank you!");
+	});
+}
 }
 
 
