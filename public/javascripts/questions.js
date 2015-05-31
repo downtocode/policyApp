@@ -527,7 +527,7 @@ function inviteFriends(userID) {
 
 	FB.ui({
 		method: 'send',
-		link: 'https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+userID'/';
+		link: 'https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+userID+'/';
 	}, function(response) {
 		$("#question-text").html("Thank you!");
 	});
