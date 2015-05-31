@@ -532,7 +532,6 @@ function inviteFriends(userID) {
 		$("#question-text").html("Thank you!");
 	});
 }
-}
 
 
 
