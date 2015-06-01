@@ -82,7 +82,6 @@
 
 							console.log(all_treatments);
 
-
 							for (var q in questions) {
 								var question = questions[q];
 								var treatment = all_treatments[q];
@@ -99,8 +98,9 @@
 											question.treatment_type = 'treatment_g2';
 									}
 
-									if (treatment == 'treatment_i') 
+									if (treatment == 'treatment_i') {
 										question.treatment = "Identity Treatment";
+									}
 									else
 										question.treatment = question[question.treatment_type];
 								}
@@ -183,6 +183,7 @@
 
 		<header class = "dark-box border-box font-white vertical-wrapper">
 			<span class = "vertical-align">
+				<img id = "cornell-logo" src = "../images/cornell.png" />
 				<ul class = "no-list inline center">
 					<li></li>
 				</ul>

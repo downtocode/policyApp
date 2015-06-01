@@ -42,10 +42,17 @@ $(document).ready(function() {
 
 	// If user clicks on "Show Choices" for question answers
 	$(document).on("click", "#show-values", function() {
+		var ind = $('.question-selector-circle').index($('.selected'));
 		var question = d3.select(".question-selector-circle.selected").data()[0];
 		var values = getValues(question.type, question.values);
-		showValues(question.type, values);	
+		showQuestionText(ind);
+		showValues(question.type, values);
+
 		$("#show-values").attr("id", "next-important");
+		var button = $("#next-important");
+		$("#next-important").remove();
+
+		$("#question-text").append(button);
 		$("#next-important").prop("disabled", true);
 		$("#next-important").val("Next");
 	});
@@ -74,9 +81,7 @@ $(document).ready(function() {
 			// Show the next question
 			showQuestion(ind + 1);		
    		}
-   
    	});
-
 
 
    	// If user selects an answer for any input
@@ -125,7 +130,7 @@ $(document).ready(function() {
 	$(document).on("click", "#submit-more-page", function() {
 		$(this).css("display", "none");
 		$("#question-text").html("<div class = 'font-black question-header'>Thanks for answering these questions!"); // Would you like to answer more?</div>");
-		$("#question-text").append("<input type = 'button' id = 'submit-questionnaire' value = 'Yes' class = 'clickable'/><input type = 'button' id = 'get-user-info' value = 'No' class = 'clickable'/>");
+		//$("#question-text").append("<input type = 'button' id = 'submit-questionnaire' value = 'Yes' class = 'clickable'/><input type = 'button' id = 'get-user-info' value = 'No' class = 'clickable'/>");
 		//answer-more
 	});
 
@@ -243,33 +248,18 @@ $(document).ready(function() {
 function showQuestion(num) {
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	$("#question-box div").html("<div id = 'question-text'></div>");
+	$("#question-text").empty();
 
-	if (question.question.length > 300) {
+
+	if (question.title == 'moral_dilemma') {
 		var i = question.question.lastIndexOf(". ");
 		var q = question.question.substr(0, i);
-		$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(q) + ".</div>");
-	} else {
-		$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(question.question) + "</div>");		
+		$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(q) + ".</div>"); 
 	}
 
-	/*if (question.treatment != undefined && question.treatment.length > 500 && (question.treatment_type.toLowerCase() === "treatment_s" || question.treatment_type.toLowerCase() === "treatment_i" ||
-		question.treatment_type.toLowerCase() === "treatment_g" )) {
-		$("#question-treatment").addClass("float-left");
-		$("#question-treatment").css("width", "40%");
-		$("#question-list-larger").addClass("float-right");
-		$("#importance-section").addClass("float-right");
-	}*/
+	showTreatment(num);
 
-	/*if (question.treatment == undefined || question.treatment.length == 0 || question.treatment_type.toLowerCase() === "control") {
-		$("#question-answers").removeClass('hidden');
-		var values = getValues(question.type, question.values);
-		showValues(question.type, values);	
-		$("#question-text").append("<input type='button' class='custom-button clickable' id='next-important' value='Next'/>");
-	} else */
-
-	$("#question-text").append("<div id = 'question-answers'></div>");
-
-	if (question.treatment_type.toLowerCase() != 'control') {
+	/*if (question.treatment_type.toLowerCase() != 'control') {
 		if ($("#next-question").length > 0) {
 			$("#next-question").attr('id','show-treatment');
 			$("#next-question").val('Next')
@@ -283,23 +273,23 @@ function showQuestion(num) {
 		} else {
 			$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Show Choices'/>");
 		}
-	}
+	}*/	
 }
 
-
 function showTreatment(num) {
-	$("#show-treatment").remove();
+	//$("#show-treatment").remove();
 	var question = d3.selectAll(".question-selector-circle").data()[num];
-	//$("#question-text").append("<div class = 'horizontal-line'></div>");
+
+	$("#question-text").prepend("<div id = 'question-title'>" + capitalizeSentence(question.title) +"</div>");
 	
 	if (question.treatment_type.toLowerCase() != 'control') {
 		if (question.treatment != undefined && question.treatment.indexOf("[") >= 0) {
 			var question_arr = question.treatment.split("[");
 			var reference = question_arr[1].split("]")[0];
-			$("#question-answers").append("<div class = 'font-black font-16 italics bold hidden' id = 'question-treatment'>" + 
-				capitalize(question_arr[0]) + "[Click <a href='/references#"+reference+"' target='_blank'>here</a>] to see reference</div>");
+			$("#question-text").append("<div class = 'font-black font-15 italics bold' id = 'question-treatment'>" + 
+				capitalize(question_arr[0]) + "<div id = 'question-treatment-reference'>[Click <a href='/references#"+reference+"' target='_blank'>here</a> to see reference]</div></div>");
 		} else
-			$("#question-answers").append("<div class = 'font-black font-16 italics bold hidden' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
+			$("#question-text").append("<div class = 'font-black font-15 italics bold' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
 		
 		if (question.treatment_type.toLowerCase() == 'treatment_s') {
 			$("#question-treatment").append("<div class = 'font-black bold' id = 'question-footnote'>" + capitalize(question.treatment_s_footnote) + "</div>")
@@ -308,10 +298,19 @@ function showTreatment(num) {
 	}
 	
 
-	$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Show Choices'/>");
+	$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Next'/>");
+
+	//$("#question-treatment").slideDown('slow');
+}
 
 
-	$("#question-treatment").slideDown('slow');
+function showQuestionText(num) {
+	var question = d3.selectAll(".question-selector-circle").data()[num];
+	if (question.title != 'moral_dilemma') {
+		$("#question-text").append("<div class = 'font-black question-header'>" + capitalize(question.question) + "</div>");		
+	}
+
+	$("#question-text").append("<div id = 'question-answers'></div>");
 }
 
 
@@ -332,13 +331,12 @@ function getValues(type, values) {
 }
 
 function showValues(type, values) {
-
 	if ($(".question-header").text().length > 300) {
 		$("#question-answers").append("<br/>Should " + $(".question-header").text().split(" ")[0] + ": <br/>");
 	}
 
 	if (type.toLowerCase().trim() === "checkbox" || type.toLowerCase().trim() === "radio") {
-		$("#question-answers").append("<ul id = 'question-list-larger' class = 'no-list font-15 hidden'></ul>");
+		$("#question-answers").append("<div class = 'hidden'><ul id = 'question-list-larger' class = 'no-list font-15'></ul></div>");
 		for (var i in values) {
 			$("#question-list-larger").append("<li class = 'left'><input type = '" + type + "' name = '0' value = '"+values[i]+"'><span class = 'question-text-text'>" + capitalize(values[i]) + "</span></li>");		
 		}	
@@ -354,7 +352,7 @@ function showValues(type, values) {
 				$("#question-list").append("<li class = 'inline-block center text-top border-box'>" + values[value] + "</li>");
 		}
 
-		$("#question-list li").width(100 / values.length + "%");
+		$("#question-list li").width( (100 - 5 * values.length * 2) / values.length + "%");
 			
 	}
 
@@ -364,8 +362,13 @@ function showValues(type, values) {
 function addQuestionImportance() {
 	$("#question-answers").children().remove();
 	$("#question-answers").empty();
-	
-	if ($(".question-header").text().length > 300) {
+	$(".question-header").remove();
+		
+	var curr_question_ind = $(".question-selector-circle").index($(".selected"));
+	var curr_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind];
+	var next_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind + 1];
+
+	if (curr_question.title == 'moral_dilemma') {
 		$("#question-answers").append("<div id = 'importance-section'><div class = 'font-black importance-header'>How hard was it for you to answer this question?</div></div>");
 		$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
 		$("#importance-list").append("<li class = 'inline-block left'>Very Hard</li>");
@@ -378,14 +381,10 @@ function addQuestionImportance() {
 		$("#importance-list").append("<li class = 'inline-block right'>Very Important</li>");	
 		$("#importance-list li").width("50%");
 	}
-	
-	var curr_question_ind = $(".question-selector-circle").index($(".selected"));
-	var curr_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind];
-	var next_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind + 1];
 
 	if (curr_question_ind == $(".question-selector-circle").length - 1) {
-		$("#question-text input[type=button]").attr('id','submit-more-page').val('Submit!');
-	} else if (next_question.treatment_type.toLowerCase() == "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
+		$("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
+	} else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
 		$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
 	} else {
 		$("#question-text input[type=button]").attr('id','next-question').val('Next');
@@ -425,7 +424,8 @@ function getAllAnswers(data) {
 		});
 	}
 
-	inviteFriends(userID);
+	console.log('here');
+	sendFriendsDialog(userID);
 	submitUserInfo(data);
 	submitQuestionnaire(userAnswers);
 }
@@ -513,17 +513,22 @@ function displayAllQuestions(questions) {
 	
 }
 
-function inviteFriends(userID) {
-	var loginUrl = url.split("/")[2];
+function sendFriendsDialog(userID) {
+	console.log(userID);
+	console.log(FB);
+
 	var urlArray = window.location.href.split("/");
+	
 
 	if (urlArray.length > 4) {
+		var loginUrl = urlArray[urlArray.length - 3];
 		$.ajax({
 			method: 'POST',
 			url: '/api/addFriend',
 			data: {userID: userID, friendID: urlArray[urlArray.length - 2], questionnaire: urlArray[urlArray.length - 3]}
 		});
-	}
+	} else
+		var loginUrl = urlArray[urlArray.length - 2];
 
 	FB.ui({
 		method: 'send',
@@ -534,9 +539,15 @@ function inviteFriends(userID) {
 }
 
 
+function getQuestion() {
+	var ind = $(".question-selector-circle").index(".question-selector-circle.selected");
+	return d3.selectAll(".question-selector-circle").data()[ind];
+}
 
 
-
+function getQuestion(num) {
+	return d3.selectAll(".question-selector-circle").data()[num];
+}
 
 
 

@@ -196,6 +196,14 @@ header ul {
 	margin: 0px;
 }
 
+#cornell-logo {
+	position: absolute;
+	width: 40px;
+	left: 10px;
+	top: 5px;
+
+}
+
 .login-header {
 	font-size: 20px;
 	margin-bottom: 20px;
@@ -279,10 +287,12 @@ input[type=button] {
 #container {
 	position: absolute;
 	top: 50px;
-	bottom: 25px;
-	left: 25px;
-	right: 25px;
+	bottom: 0px;
+	left: 15%;
+	right: 15%;
 	overflow: auto;
+	box-shadow: 0px 2px 10px #888888;
+	background: rgba(256, 256, 256, .6);
 }
 
 .full-box {
@@ -321,7 +331,7 @@ input[type=button] {
 #question-text {
 	margin: 10px;
 	font-size: 17px;
-	width: 75%;
+	width: 85%;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -359,18 +369,23 @@ input[type=button] {
 
 #question-list, #importance-list, .importance-list {
 	padding: 0px;
-	width: 560px;
+	width: 600px;
 	margin: 5px auto;
 }
 
-#question-list li {
-	/*padding: 5px;*/
+#question-title {
+	font-size: 25px;
+	margin-bottom: 10px;
 }
 
 #question-list-larger {
 	padding: 0px;
 	display: inline-block;
 	margin: 5px auto;
+}
+
+#question-list li {
+	padding: 5px;
 }
 
 #question-list-larger li input, #question-list-larger li span:not(.question-text-text) {
@@ -387,10 +402,12 @@ input[type=button] {
 }
 
 #question-treatment {
-	/*margin-bottom: 20px;*/
-	margin-left: auto;
-	margin-right: auto;
-	width: 75%;
+	margin: 15px auto;
+	width: 90%;
+}
+
+#question-treatment-reference {
+	font-weight: 300;
 }
 
 #question-footnote {
@@ -546,7 +563,7 @@ input[type=button] {
 }
 
 .question-header, .importance-header {
-	margin-bottom: 10px;
+	margin-top: 10px;
 }
 
 .importance-header {

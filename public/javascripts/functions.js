@@ -3,7 +3,7 @@ function capitalize(string) {
 }
 
 function capitalizeSentence(string) {
-	var strArr = string.split(" ");
+	var strArr = string.split(/[\s_]+/);	
 	for (var word in strArr) {
 		strArr[word] = capitalize(strArr[word]);
 	}
