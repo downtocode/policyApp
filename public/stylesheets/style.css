@@ -33,6 +33,23 @@ input, textarea, select {
 	font-weight: 300;
 }
 
+a:visited {
+	color: #1C32FF;
+}
+
+a:active {
+	color: #1C32FF;
+}
+
+a {
+	text-decoration: none;
+	color: #1C32FF;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
 p {
 	line-height: 25px;
 }
@@ -128,7 +145,7 @@ li {
 }
 
 .font-15 {
-	font-size: 15px;
+	font-size: 15px !important;
 }
 
 .font-16 {
@@ -392,10 +409,6 @@ input[type=button] {
 	margin-left: 0px !important;
 }
 
-#importance-list, .importance-list {
-	width: 560px;
-}
-
 .question-text-text {
 	line-height: 20px;
 	margin-left: 10px;
@@ -563,10 +576,6 @@ input[type=button] {
 }
 
 .question-header, .importance-header {
-	margin-top: 10px;
-}
-
-.importance-header {
 	margin-top: 30px;
 }
 
@@ -660,3 +669,14 @@ input[type=button] {
 	margin-bottom: 10px;
 }
 
+.demographics-header {
+	margin-top: 30px;
+}
+
+.demographics-header input {
+	text-align: center;
+}
+
+.demographics-next {
+	margin-top: 30px;
+}

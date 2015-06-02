@@ -169,16 +169,21 @@ $(document).ready(function() {
 						if (!(dataWanted[i].name in data)) {
 							
 							if (dataWanted[i].type.toLowerCase() == 'text')
-								$("#question-text").append(capitalize(dataWanted[i].question) + "<input type = 'text' name = '" + dataWanted[i].name + "'/><br/>");
+								$("#question-text").append("<div class = 'font-15 demographics-header'>" +
+									capitalize(dataWanted[i].question) + 
+									": <br/><input class = 'font-15' type = 'text' name = '" + dataWanted[i].name + "'/></div>");
 							
 							else if (dataWanted[i].type.toLowerCase() == 'range') {
-								$("#question-text").append("<br/>" + capitalize(dataWanted[i].question) + "<br/>"+
-									"<input type = 'range' name='" + capitalize(dataWanted[i].question) + "' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
+								$("#question-text").append("<div class = 'font-15 demographics-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
+									"<input type = 'range' name='" + capitalize(dataWanted[i].question) + "' min='0' max='100'>" +
+									"<ul class = 'importance-list no-list font-15'></ul></div>");
 
 								var values = dataWanted[i].values.split(",");
 								for (var k in values) {
 									$(".importance-list:last").append("<li class = 'inline-block center'>" + values[k] + "</li>");
 								}
+
+								$(".importance-list:last li").width(100/ values.length + "%");
 								
 							}
 
@@ -187,10 +192,10 @@ $(document).ready(function() {
 					}
 
 					if (!hasAllData)
-						$("#question-text").prepend("Before you continue, please fill out the following information about yourself.<br/><br/>");
+						$("#question-text").prepend("Before you continue, please fill out the following information about yourself.");
 
 					// Asks extra questions
-					$("#question-text").append("<br/>How are you feeling?<br/>"+
+					/*$("#question-text").append("<br/>How are you feeling?<br/>"+
 						"<input type = 'range' name='feeling' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
 
 					$(".importance-list").append("<li class = 'inline-block center'>Very<br/>Happy</li>" +
@@ -209,8 +214,9 @@ $(document).ready(function() {
 
 					$(".importance-list:last li").width("50%");
 
-					$("#question-text").append("<br/>Please provide us with any feedback you have!<br/><textarea name = 'comments' id = 'user-comments' class = 'font-15' width = ></textarea>" +
-						"<br/><input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable'/>");
+					*/
+
+					$("#question-text").append("<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable'/>");
 					
 					// Adds user information to a hidden div
 					d3.select("#user")
@@ -388,14 +394,14 @@ function addQuestionImportance() {
 	if (curr_question.title == 'moral_dilemma') {
 		$("#question-answers").append("<div id = 'importance-section'><div class = 'font-black importance-header'>How hard was it for you to answer this question?</div></div>");
 		$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
-		$("#importance-list").append("<li class = 'inline-block left'>Very Hard</li>");
-		$("#importance-list").append("<li class = 'inline-block right'>Not Hard</li>");	
+		$("#importance-list").append("<li class = 'inline-block left'>Very Hard</li>" + 
+			"<li class = 'inline-block right'>Not Hard</li>");	
 		$("#importance-list li").width("50%");
 	} else {
 		$("#question-answers").append("<div id = 'importance-section'><div class = 'font-black importance-header'>How important is this topic for you?</div></div>");
 		$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
-		$("#importance-list").append("<li class = 'inline-block left'>Not Important</li>");
-		$("#importance-list").append("<li class = 'inline-block right'>Very Important</li>");	
+		$("#importance-list").append("<li class = 'inline-block left'>Not Important</li>" +
+			"<li class = 'inline-block right'>Very Important</li>");	
 		$("#importance-list li").width("50%");
 	}
 
