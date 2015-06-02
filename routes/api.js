@@ -244,6 +244,18 @@ router.post('/api/sendCSV', function(req, res, next) {
 	});
 });
 
+
+router.post('/api/petitionClick', function(req, res, next) {
+	var db = req.db;
+	var data = req.body;
+
+	db.petitions.update({user_id: data.user_id, petition: data.petition}, data, {upsert: true}, function(err, success) {
+		if (!err)
+			res.send(success);
+	});
+
+});
+
 module.exports = router;
 
 

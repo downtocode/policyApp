@@ -652,5 +652,11 @@ input[type=button] {
 	float: right;
 }
 
+#petitions {
+	margin-top: 20px;
+}
 
+#petitions div {
+	margin-bottom: 10px;
+}
 

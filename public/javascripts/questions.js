@@ -242,6 +242,23 @@ $(document).ready(function() {
 		getAllAnswers(user);
 	});
 
+
+	$(document).on("click", ".petition-link a", function() {
+		var petition = $(this).parent().text();
+		var link = $(this).text();
+		var userID = d3.select(".user-info").data()[0].id;
+		console.log(petition, link, userID);
+		
+		$.ajax({
+			url: '/api/petitionClick',
+			method: 'POST',
+			data: {petition: petition, link: link, user_id: userID},
+			success: function(response) {
+				console.log(response);
+			}
+		})
+	});
+
 });
 
 
@@ -405,39 +422,68 @@ function getAllAnswers(data) {
 	var tempArr, userAnswer;
 	var userAnswers = [];
 	var userID = data.id;
+	var petitions = {};
+
 	$(".question-selector-circle").each(function(i) {
-		var questionID = d3.select(this).data()[0]._id;
-		var treatment = d3.select(this).data()[0].treatment_type;
+		var question = d3.select(this).data()[0];
+		var questionID = question._id;
+		var treatment = question.treatment_type;
 		tempArr = answersArr[i].split("|");
 		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment};
 		userAnswers.push(userAnswer);
+
+		console.log(question, question.petitions_1);
+
+		if (question.type.toLowerCase() == 'range') {
+			if (tempArr[0] <= 50)
+				petitions[question.title] = question.petitions_1;
+			else
+				petitions[question.title] = question.petitions_2;
+		}
 	});
 
 	if ($(".all-question").length > 0) {
 		$(".all-question").each(function(i) {
-			var questionID = d3.select(this).data()[0]._id;
-			var treatment = d3.select(this).data()[0].treatment_type;
+			var question = d3.select(this).data()[0];
+			var questionID = question._id;
+			var treatment = question.treatment_type;
 			var ind = i + $("#question-text li").index($(this));
 			tempArr = answersArr[ind].split("|");
 			userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment};
 			userAnswers.push(userAnswer);
+
+			if (question.type.toLowerCase() == 'range') {
+				if (tempArr[0] <= 50)
+					petitions[question.title] = question.petitions_1;
+				else
+					petitions[question.title] = question.petitions_2;
+			}
+
 		});
 	}
 
-	console.log('here');
 	sendFriendsDialog(userID);
 	submitUserInfo(data);
-	submitQuestionnaire(userAnswers);
+	submitQuestionnaire(userAnswers, petitions);
+
 }
 
-function submitQuestionnaire(answers) {
+function submitQuestionnaire(answers, petitions) {
 	$.ajax({
 		url: '/api/sendAnswers',
 		method: 'POST',
 		contentType: 'application/json',
 		data: JSON.stringify({answers: answers}),
 		success: function(response) {
-			$("#question-text").html("Thank you!");
+			$("#question-text").html("Thank you! Based on your answers, we invite you to sign the petitions below: " +
+				"<div id = 'petitions' class = 'left font-16'></div>");
+
+			for (var p in petitions) {
+				if (petitions[p].length > 0) {
+					$("#petitions").append("<div class = 'petition-link'>" + capitalizeSentence(p) + 
+						": <a href = '" + petitions[p] + "' id = 'petition-" + p + "' target = _blank>" + petitions[p] + "</a></div>");
+				}
+			}
 		}
 	});
 }
@@ -514,12 +560,8 @@ function displayAllQuestions(questions) {
 }
 
 function sendFriendsDialog(userID) {
-	console.log(userID);
-	console.log(FB);
-
 	var urlArray = window.location.href.split("/");
 	
-
 	if (urlArray.length > 4) {
 		var loginUrl = urlArray[urlArray.length - 3];
 		$.ajax({
@@ -533,8 +575,6 @@ function sendFriendsDialog(userID) {
 	FB.ui({
 		method: 'send',
 		link: 'https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+userID+'/'
-	}, function(response) {
-		$("#question-text").html("Thank you!");
 	});
 }
 
