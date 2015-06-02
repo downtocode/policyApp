@@ -95,6 +95,7 @@ $(document).ready(function() {
 		else
 			var ind = $(".question-selector-circle").length + $("#questionnaires-list li").index($(".all-question-selected"));
 
+		// ['|', '|', '|']
 		// Each of the user's answers is stored as an index in a hidden array variable with a "|"
 		// separating the answer to the question itself and how important the question is
 		var answerArr = $("#user-questions").val()[ind].split("|");
@@ -185,6 +186,8 @@ $(document).ready(function() {
 
 								$(".importance-list:last li").width(100/ values.length + "%");
 								
+							} else if (dataWanted[i].type.toLowerCase() == 'radio') {
+
 							}
 
 							hasAllData = false;
@@ -192,7 +195,7 @@ $(document).ready(function() {
 					}
 
 					if (!hasAllData)
-						$("#question-text").prepend("Before you continue, please fill out the following information about yourself.");
+						$("#question-text").prepend("Now we'd like to know what people like you believe. Please answer a few questions about yourself.");
 
 					// Asks extra questions
 					/*$("#question-text").append("<br/>How are you feeling?<br/>"+
@@ -367,12 +370,7 @@ function showValues(type, values) {
 		$("#question-answers").append("<div class = 'hidden'><input type = 'range' name='0' min='0' max='100' class><ul id = 'question-list' class = 'no-list font-15'></ul></div>");
 
 		for (value in values) {
-			if (value < (values.length - 1) / 2)
-				$("#question-list").append("<li class = 'inline-block center text-top border-box'>" + values[value] + "</li>");
-			else if (value == (values.length - 1) / 2)
-				$("#question-list").append("<li class = 'inline-block center text-top border-box'>" + values[value] + "</li>");
-			else 
-				$("#question-list").append("<li class = 'inline-block center text-top border-box'>" + values[value] + "</li>");
+			$("#question-list").append("<li class = 'inline-block center text-top border-box'>" + values[value] + "</li>");
 		}
 
 		$("#question-list li").width( (100 - 5 * values.length * 2) / values.length + "%");

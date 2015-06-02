@@ -26,8 +26,10 @@
 				else {
 					shuffle(questions);
 
+					// gets friends using app
+					// /me/invitable_friends gets all friends
 					$.ajax({
-						url: 'https://graph.facebook.com/me/friends',
+						url: 'https://graph.facebook.com/me/friends', 
 						data: {access_token: accessToken},
 						dataType: 'jsonp',
 						success: function(friends) {
@@ -68,9 +70,9 @@
 								treatments2.push(treatments[t])
 
 							for (var j = 0; j < numLeftover; j++) {
-								var rand = Math.floor(Math.random() * treatments2.length);
-								extraTreatments.push(treatments2[rand]);
-								treatments2.splice(rand, 1);
+								var rand = Math.floor(Math.random() * treatments2.length); // ['treatment_g', 'treatment_s', 'control'];
+								extraTreatments.push(treatments2[rand]); // ['control']
+								treatments2.splice(rand, 1); // ['treatment_g', 'treatment_s'];
 							}
 
 							for (var t in treatments) {
@@ -148,6 +150,7 @@
 							$(".question-selector-circle").first().addClass("selected");
 
 							// create array for user answers
+							// ['70|40', '|', '|']
 							var emptyArr = []
 							for (var i in questions) {
 								emptyArr.push("|");

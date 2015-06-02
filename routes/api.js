@@ -188,7 +188,7 @@ router.post('/api/sendCSV', function(req, res, next) {
 				var header = "user"
 				var lineArr = []
 				for (var i in questions) {
-					header += ",opinion_" + questions[i]._id + "," + "importance_" + questions[i]._id + "," + "treatment_" + questions[i]._id;
+					header += ",opinion_" + questions[i].name + "," + "importance_" + questions[i].name + "," + "treatment_" + questions[i].name;
 					lineArr.push(questions[i]._id);
 				}
 
@@ -204,6 +204,8 @@ router.post('/api/sendCSV', function(req, res, next) {
 				}
 
 				var userAnswersArr = {}
+
+				// user_ids -> question_id -> user_question_answer
 
 				for (var k in userAnswers) {
 					if (userAnswers[k].user_id in userAnswersArr) {
@@ -234,7 +236,7 @@ router.post('/api/sendCSV', function(req, res, next) {
 						else
 							newLine += ",";
 					}
-					allLines.push(newLine);
+					allLines.push(newLine + "\n");
 				}
 
 				res.send(allLines);
