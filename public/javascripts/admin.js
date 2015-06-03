@@ -138,7 +138,7 @@ function downloadAnswers() {
 		method: 'POST',
 		dataType: 'JSON',
 		success: function(data) {
-			var data_str = data.join('\n');
+			var data_str = data.join('\r\n');
 			var a = document.createElement('a');
 			a.href = 'data:attachment/csv,' + data_str;
 			a.target = '_blank';

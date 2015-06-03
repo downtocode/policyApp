@@ -395,7 +395,7 @@ input[type=button] {
 	margin-bottom: 10px;
 }
 
-#question-list-larger {
+#question-list-larger, .question-list-larger {
 	padding: 0px;
 	display: inline-block;
 	margin: 5px auto;
@@ -476,11 +476,11 @@ input[type=button] {
 	border-radius: 7px;
 }
 
-.custom-button:hover:enabled {
+input[type=button]:hover:enabled {
 	background-color: rgba(50, 50, 50, .9);
 }
 
-.custom-button:disabled {
+input[type=button]:disabled {
 	cursor: default;
 	opacity: .6;
 }

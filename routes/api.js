@@ -184,63 +184,66 @@ router.post('/api/sendCSV', function(req, res, next) {
 	db.users.find({}, function(err, users) {
 		db.questions.find({}, function(err, questions) {
 			db.userAnswers.find({}, function(err, userAnswers) {
-				// write header and make header array
-				var header = "user"
-				var lineArr = []
-				for (var i in questions) {
-					header += ",opinion_" + questions[i].name + "," + "importance_" + questions[i].name + "," + "treatment_" + questions[i].name;
-					lineArr.push(questions[i]._id);
-				}
+				db.demographics.find({}, function(err, demographics) {
+					db.petitions.find({}, function(err, petitions) {
+						// write header and make header array
+						var header = "user"
+						var lineArr = []
+						for (var i in questions) {
+							header += ",opinion_" + questions[i].title + "," + "importance_" + questions[i].title + "," + "treatment_" + questions[i].title;
+							lineArr.push(questions[i]._id);
+						}
 
-				var demographics = ['age', 'gender', 'location', 'education', 'work'];
-				for (var d in demographics) {
-					header += ",user_" + demographics[d];
-				}
+						for (var d in demographics) {
+							header += ",user_" + demographics[d].name;
+						}
 
-				var userDemographics = {}
+						var userDemographics = {}
 
-				for (var j in users) {
-					userDemographics[users[j]] = users[j];
-				}
+						for (var j in users) {
+							console.log(users[j]);
+							userDemographics[users[j]] = users[j];
+						}
 
-				var userAnswersArr = {}
+						var userAnswersArr = {}
 
-				// user_ids -> question_id -> user_question_answer
+						// user_ids -> question_id -> user_question_answer
 
-				for (var k in userAnswers) {
-					if (userAnswers[k].user_id in userAnswersArr) {
-						userAnswersArr[userAnswers[k].user_id][userAnswers[k].question_id] = userAnswers[k];
-					} else {
-						var newDict = {};
-						newDict[userAnswers[k].question_id] = userAnswers[k];
-						userAnswersArr[userAnswers[k].user_id] = newDict;
-					}
-				}
+						for (var k in userAnswers) {
+							if (userAnswers[k].user_id in userAnswersArr) {
+								userAnswersArr[userAnswers[k].user_id][userAnswers[k].question_id] = userAnswers[k];
+							} else {
+								var newDict = {};
+								newDict[userAnswers[k].question_id] = userAnswers[k];
+								userAnswersArr[userAnswers[k].user_id] = newDict;
+							}
+						}
 
-				var allLines = [header];
+						var allLines = [header];
 
-				for (var p in userAnswersArr) {
-					var user = userAnswersArr[p];
-					var newLine = "" + p;
-					for (var s in lineArr) {
-						var currQuestion = lineArr[s];
-						if (currQuestion in user)
-							newLine += "," + user[currQuestion].question + "," + user[currQuestion].importance + "," + user[currQuestion].treatment;
-						else
-							newLine += "," + "," + ",";
-					}
+						for (var p in userAnswersArr) {
+							var user = userAnswersArr[p];
+							var newLine = "" + p;
+							for (var s in lineArr) {
+								var currQuestion = lineArr[s];
+								if (currQuestion in user)
+									newLine += "," + user[currQuestion].question + "," + user[currQuestion].importance + "," + user[currQuestion].treatment;
+								else
+									newLine += "," + "," + ",";
+							}
 
-					for (var r in demographics) {
-						if (demographics[r] in userDemographics)
-							newLine += "," + userDemographics[user.user_id][demographics[r]];
-						else
-							newLine += ",";
-					}
-					allLines.push(newLine + "\n");
-				}
+							for (var r in demographics) {
+								if (demographics[r] in userDemographics)
+									newLine += "," + userDemographics[user.user_id][demographics[r]];
+								else
+									newLine += ",";
+							}
+							allLines.push(newLine + "\n");
+						}
 
-				res.send(allLines);
-
+						res.send(allLines);
+					});
+				});
 			});
 		});
 	});

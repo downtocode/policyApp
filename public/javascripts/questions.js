@@ -87,34 +87,58 @@ $(document).ready(function() {
    	// If user selects an answer for any input
 	$(document).on("change", "input", function() {
 
-		$("input[type=button]").prop("disabled", false);
+		if ($(".demographics-next").length == 0) {
+			$("input[type=button]").prop("disabled", false);
 
-		// If this is an "Answer More" question at the end or regular first 10 questions
-		if ($(".all-question").length == 0)
-			var ind = $(".question-selector-circle").index($(".selected"));
-		else
-			var ind = $(".question-selector-circle").length + $("#questionnaires-list li").index($(".all-question-selected"));
+			// If this is an "Answer More" question at the end or regular first 10 questions
+			if ($(".all-question").length == 0)
+				var ind = $(".question-selector-circle").index($(".selected"));
+			else
+				var ind = $(".question-selector-circle").length + $("#questionnaires-list li").index($(".all-question-selected"));
 
-		// ['|', '|', '|']
-		// Each of the user's answers is stored as an index in a hidden array variable with a "|"
-		// separating the answer to the question itself and how important the question is
-		var answerArr = $("#user-questions").val()[ind].split("|");
+			// ['|', '|', '|']
+			// Each of the user's answers is stored as an index in a hidden array variable with a "|"
+			// separating the answer to the question itself and how important the question is
+			var answerArr = $("#user-questions").val()[ind].split("|");
 
-		// If this is a checkbox, we need to go through each answer bc there are multiple
-		if ($(this).attr("type").toLowerCase().trim() === "checkbox") {
-			var vals = "";
-			$("#question-list-larger :checked").each(function() {
-				vals += $(this).val() + ",";
-			});
-			answerArr[$(this).attr("name")] = vals.substring(0, vals.length-1);
-		} else // Otherwise, this is a slider value or radio so we can add the one answer
-			answerArr[$(this).attr("name")] = $(this).val();
+			// If this is a checkbox, we need to go through each answer bc there are multiple
+			if ($(this).attr("type").toLowerCase().trim() === "checkbox") {
+				var vals = "";
+				$("#question-list-larger :checked").each(function() {
+					vals += $(this).val() + ",";
+				});
+				answerArr[$(this).attr("name")] = vals.substring(0, vals.length-1);
+			} else // Otherwise, this is a slider value or radio so we can add the one answer
+				answerArr[$(this).attr("name")] = $(this).val();
 
-		// Rejoin the first and second answers and set to array index
-		$("#user-questions").val()[ind] = answerArr.join("|");
-		
+			// Rejoin the first and second answers and set to array index
+			$("#user-questions").val()[ind] = answerArr.join("|");
+		} else {
+			// Get all the user data
+			var user = d3.select(".user-info").data()[0];
+
+			user[$(this).attr("name")] = $(this).val();
+
+			var empty_inputs = $('input').filter(function() { return this.value == ""; });
+
+			if (empty_inputs.length == 0 && $(".radio-header").length == $("input[type=radio]:checked").length) {
+				$("input[type=button]").prop("disabled", false);
+			}
+
+			d3.select("#user")
+				.selectAll("div")
+				.data([user])
+				.enter()
+				.append("div")
+				.attr("class", "hidden user-info");
+
+			/*$("input[type=text], textarea, input[type=range]").each(function() {
+				user[$(this).attr("name")] = $(this).val();
+			}); */
+		}
+
 	});
-
+	
 	
 	// If user selects one of the "More Questions"
 	$(document).on("click", ".all-question", function() {
@@ -165,7 +189,6 @@ $(document).ready(function() {
 					$(this).hide();
 
 					// Checks for what information we are missing
-					console.log(dataWanted);
 					for (var i in dataWanted) {
 						if (!(dataWanted[i].name in data)) {
 							
@@ -175,8 +198,9 @@ $(document).ready(function() {
 									": <br/><input class = 'font-15' type = 'text' name = '" + dataWanted[i].name + "'/></div>");
 							
 							else if (dataWanted[i].type.toLowerCase() == 'range') {
+								data[dataWanted[i].name] = 50;
 								$("#question-text").append("<div class = 'font-15 demographics-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
-									"<input type = 'range' name='" + capitalize(dataWanted[i].question) + "' min='0' max='100'>" +
+									"<input type = 'range' name='" + dataWanted[i].name + "' min='0' max='100'>" +
 									"<ul class = 'importance-list no-list font-15'></ul></div>");
 
 								var values = dataWanted[i].values.split(",");
@@ -187,7 +211,14 @@ $(document).ready(function() {
 								$(".importance-list:last li").width(100/ values.length + "%");
 								
 							} else if (dataWanted[i].type.toLowerCase() == 'radio') {
-
+								var values = dataWanted[i].values.split(",");
+								$("#question-text").append("<div class = 'font-15 demographics-header radio-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
+									"<ul class = 'no-list font-15 question-list-larger'></ul></div>");
+								for (var j in values) {
+									$(".question-list-larger:last").append("<li class = 'left inline'><input type = 'radio' name = '" + dataWanted[i].name + "' value = '"+values[j]+"'><span class = 'question-text-text'>" + capitalize(values[j]) + "</span></li>");		
+									if ( (j + 1) % 3 == 0)
+										$(".question-list-larger:last").append("<br/>");
+								}
 							}
 
 							hasAllData = false;
@@ -219,7 +250,7 @@ $(document).ready(function() {
 
 					*/
 
-					$("#question-text").append("<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable'/>");
+					$("#question-text").append("<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable' disabled/>");
 					
 					// Adds user information to a hidden div
 					d3.select("#user")
@@ -237,16 +268,14 @@ $(document).ready(function() {
 	});
 
 
+	$(document).on("click", ".demographics-next", function() {
+		submitUserInfo();
+	});
+
+
 	// If user is done answering all questions about themselves
 	// Time to submit the entire questionnaire!
 	$(document).on("click", "#submit-questionnaire", function() {
-
-		// Get all the user data
-		var user = d3.select(".user-info").data()[0];
-		$("input[type=text], textarea, input[type=range]").each(function() {
-			user[$(this).attr("name")] = $(this).val();
-		});
-
 		// Get all the user answers
 		getAllAnswers(user);
 	});
@@ -421,7 +450,7 @@ function addQuestionImportance() {
 
 }
 
-function getAllAnswers(data) {
+function getAllAnswers() {
 	var answersArr = $("#user-questions").val();
 	var tempArr, userAnswer;
 	var userAnswers = [];
@@ -467,7 +496,6 @@ function getAllAnswers(data) {
 	}
 
 	sendFriendsDialog(userID);
-	submitUserInfo(data);
 	submitQuestionnaire(userAnswers, petitions);
 
 }
@@ -492,12 +520,13 @@ function submitQuestionnaire(answers, petitions) {
 	});
 }
 
-function submitUserInfo(data) {
+function submitUserInfo() {
+	var user = d3.select(".user-info").data()[0];
 	$.ajax({
 		url: '/api/sendUser',
 		method: 'POST',
 		contentType: 'application/json',
-		data: JSON.stringify(data),
+		data: JSON.stringify(user),
 		success: function(response) {
 			console.log(response);
 		}
