@@ -609,9 +609,11 @@ function sendFriendsDialog(userID) {
 	} else
 		var loginUrl = urlArray[urlArray.length - 1];
 
+	var link = 'https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+userID+'/';
+
 	FB.ui({
 		method: 'send',
-		link: 'https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+userID+'/'
+		link: link
 	});
 }
 
