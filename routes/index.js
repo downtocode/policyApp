@@ -32,9 +32,13 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 
 			questionnaire = capitalize(questionnaire);
 			if (name.toLowerCase() === "music")
-				res.render(name + 'Home',{questions: questions, title: questionnaire, name: name});
+				res.render(name + 'Home',{questions: questions, title: questionnaire, name: name,
+					meta_title: questionnaire + " Questionnaire", meta_url: "http://stark-crag-5229.herokuapp.com/home/"+name+"/"+req.params.fid,
+					meta_desc: "dfaasdasf", meta_img: "asdfasf"});
 			else
-				res.render('questions', {questions: questions, title: questionnaire, name: name});
+				res.render('questions', {questions: questions, title: questionnaire, name: name,
+					meta_title: questionnaire + " Questionnaire", meta_url: "http://stark-crag-5229.herokuapp.com/home/"+name+"/"+req.params.fid,
+					meta_desc: "dfaasdasf", meta_img: "asdfasf"});
 		});
 	}
 });
