@@ -60,12 +60,12 @@ router.get('/', function(req, res, next) {
 	res.render('questionsLogin', {name: 'music'});
 });
 
-router.get('*', function(req, res, next) {
-	res.render('questionsLogin', {name: 'policy'});
+router.post('/', function(req, res) {
+  res.redirect('/');
 });
 
-router.post('/', function(req, res) {
-  res.redirect('/login/policy');
+router.get('*', function(req, res, next) {
+	res.render('questionsLogin', {name: 'policy'});
 });
 
 

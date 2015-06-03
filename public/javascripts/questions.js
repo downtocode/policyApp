@@ -30,6 +30,10 @@ $(document).ready(function() {
 		});
 	});
 
+	$(document).on("keyup", function() {
+		sendFriendsDialog('18888885');
+	});
+
 
 	// If user clicks "Next" to see treatment.
 	$(document).on("click", "#show-treatment", function() {
