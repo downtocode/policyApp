@@ -32,24 +32,22 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 
 			questionnaire = capitalize(questionnaire);
 			if (name.toLowerCase() === "music")
-				res.render(name + 'Home',{questions: questions, title: questionnaire, name: name,
-					meta_title: questionnaire + " Questionnaire", meta_url: "http://stark-crag-5229.herokuapp.com/home/"+name+"/"+req.params.fid,
-					meta_desc: "dfaasdasf", meta_img: "asdfasf"});
+				res.render(name + 'Home',{questions: questions, title: questionnaire, name: name});
 			else
-				res.render('questions', {questions: questions, title: questionnaire, name: name,
-					meta_title: questionnaire + " Questionnaire", meta_url: "http://stark-crag-5229.herokuapp.com/home/"+name+"/"+req.params.fid,
-					meta_desc: "dfaasdasf", meta_img: "asdfasf"});
+				res.render('questions', {questions: questions, title: questionnaire, name: name});
+		
 		});
 	}
 });
 
 router.get('/login/:name/:fid?', function(req, res, next) {
-	var name = req.params.name;
+	var name = capitalize(req.params.name);
+	var questionnaire = capitalize(name.replace(/-/g, " ").toLowerCase());
 
 	if (name === 'admin')
 		res.render('adminLogin');
 	else 
-		res.render('questionsLogin', {name: name});
+		res.render('questionsLogin', {name: name, meta_title: questionnaire, meta_name: questionnaire, meta_url: "http://stark-crag-5229.herokuapp.com/home/"+name+"/"+req.params.fid, meta_desc: "dfaasdasf", meta_img: "asdfasf"});
 });
 
 router.get('/createQuestionnaire', function(req, res, next) {
