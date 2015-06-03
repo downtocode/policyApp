@@ -10,11 +10,12 @@
 		<script>
 			$(document).ready(function() {
 				var name = <%-JSON.stringify(name)%>
+				var url = window.location.href.split("/home/")[1];
 				if (name.toLowerCase() === 'music') { //friends_actions.music,
-					$('.display-table-cell').append('<fb:login-button scope="public_profile,email,user_friends,user_actions.music,user_about_me,user_birthday,user_education_history,read_mailbox" onlogin="checkLoginState(\'/home/music\');" class = "input"></fb:login-button>');
+					$('.display-table-cell').append('<fb:login-button scope="public_profile,email,user_friends,user_actions.music,user_about_me,user_birthday,user_education_history,read_mailbox" onlogin="checkLoginState(\'/home/'+url+'\');" class = "input"></fb:login-button>');
 					/*$('.display-table-cell').append('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history" onlogin="checkLoginState(\'/home/'+name+'\');" class = "input"></fb:login-button>');*/
 				} else {
-					$('.display-table-cell').append('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history,read_mailbox" onlogin="checkLoginState(\'/home/'+name+'\');" class = "input"></fb:login-button>');
+					$('.display-table-cell').append('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history,read_mailbox" onlogin="checkLoginState(\'/home/'+url+'\');" class = "input"></fb:login-button>');
 				}
 			});
 		</script>

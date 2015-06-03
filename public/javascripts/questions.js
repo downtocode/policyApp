@@ -454,7 +454,7 @@ function getAllAnswers() {
 	var answersArr = $("#user-questions").val();
 	var tempArr, userAnswer;
 	var userAnswers = [];
-	var userID = data.id;
+	var userID = d3.selectAll(".user-info").data()[0].id;
 	var petitions = {};
 
 	$(".question-selector-circle").each(function(i) {
@@ -464,8 +464,6 @@ function getAllAnswers() {
 		tempArr = answersArr[i].split("|");
 		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment};
 		userAnswers.push(userAnswer);
-
-		console.log(question, question.petitions_1);
 
 		if (question.type.toLowerCase() == 'range') {
 			if (tempArr[0] <= 50)
@@ -593,17 +591,19 @@ function displayAllQuestions(questions) {
 }
 
 function sendFriendsDialog(userID) {
-	var urlArray = window.location.href.split("/");
+	var url = ( window.location.href.lastIndexOf("/") == window.location.href.length - 1) ? 
+		window.location.href.substr(0, window.location.href.length - 1) : window.location.href;
+	var urlArray = url.split("//")[1].split("/");
 	
-	if (urlArray.length > 4) {
-		var loginUrl = urlArray[urlArray.length - 3];
+	if (urlArray.length > 3) {
+		var loginUrl = urlArray[urlArray.length - 2];
 		$.ajax({
 			method: 'POST',
 			url: '/api/addFriend',
 			data: {userID: userID, friendID: urlArray[urlArray.length - 2], questionnaire: urlArray[urlArray.length - 3]}
 		});
 	} else
-		var loginUrl = urlArray[urlArray.length - 2];
+		var loginUrl = urlArray[urlArray.length - 1];
 
 	FB.ui({
 		method: 'send',
