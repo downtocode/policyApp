@@ -64,5 +64,9 @@ router.get('*', function(req, res, next) {
 	res.render('questionsLogin', {name: 'policy'});
 });
 
+router.post('/', function(req, res) {
+  res.redirect('/login/policy');
+});
+
 
 module.exports = router;
