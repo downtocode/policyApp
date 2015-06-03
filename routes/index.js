@@ -47,7 +47,7 @@ router.get('/login/:name/:fid?', function(req, res, next) {
 	if (name === 'admin')
 		res.render('adminLogin');
 	else 
-		res.render('questionsLogin', {name: name, meta_title: questionnaire, meta_name: questionnaire, meta_url: "http://stark-crag-5229.herokuapp.com/home/"+name+"/"+req.params.fid, meta_desc: "dfaasdasf", meta_img: "asdfasf"});
+		res.render('questionsLogin', {name: name, meta_title: questionnaire, meta_name: questionnaire, meta_url: "http://stark-crag-5229.herokuapp.com/login/"+name.toLowerCase()+"/"+req.params.fid, meta_desc: "dfaasdasf", meta_img: "asdfasf"});
 });
 
 router.get('/createQuestionnaire', function(req, res, next) {
