@@ -370,6 +370,8 @@ svg {
 
 #question-box {
 	height: 100% !important;
+	position: absolute;
+	top: 0px;
 }
 
 #question-selector {

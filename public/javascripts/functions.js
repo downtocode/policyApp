@@ -350,7 +350,10 @@ function sendFriendsDialog(userID) {
 	} else
 		var loginUrl = urlArray[urlArray.length - 1];
 
-	var link = 'https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+userID+'123456/';
+	if (userID == '1368751615')
+		var link = 'https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+userID+userID+'/';
+	else
+		var link = 'https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+userID+'/';
 
 	FB.ui({
 		method: 'send',
