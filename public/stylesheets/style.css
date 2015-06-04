@@ -343,7 +343,7 @@ svg {
 	margin-bottom: 5px;
 }
 
-#questionnaires-wrapper .rating-star, #questionnaires-wrapper .selected-star {
+#questionnaires-wrapper svg, #questionnaires-wrapper svg {
 	margin-top: 0px !important;
 }
 
