@@ -338,7 +338,7 @@ input[type=button] {
 	display: block;
 }
 
-.rating-star, .selected-star {
+svg {
 	margin-top: 25px;
 	margin-bottom: 5px;
 }
