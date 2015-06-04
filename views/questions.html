@@ -20,8 +20,7 @@
 			$(document).ready(function() {
 				var questionnaireName = <%- JSON.stringify(title) %>
 				var questions = <%- JSON.stringify(questions) %>
-				$("header li").text("Consent Form");
-				$("#container").css("display", "none");
+				$("header li").text(capitalizeSentence(questionnaireName));
 
 				if (questions === null)
 					window.location.href = '/login/'+url;
