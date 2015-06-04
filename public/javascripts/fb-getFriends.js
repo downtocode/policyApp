@@ -22,14 +22,11 @@ $(document).ready(function() {
 
 	var accessToken = hasCookie('fb_access');
 
-	//getUserInfo(accessToken);
 
-	//getUserInfo(accessToken, function(response2) {
-		//console.log(response2);
-		//getFriendsMusic(accessToken, function(response) {
-		//	console.log('here');
-		//});
-	//});
+	$(document).on("click", "#submit-consent", function() {
+		submitConsent();
+	});
+
 
 	$(document).on("click", ".question-selector-circle", function() {
 		$('.question-selector-circle.selected').removeClass('selected');
@@ -41,6 +38,7 @@ $(document).ready(function() {
 		$("#question-text").empty();
 		$("#question-text").html("<span class = 'font-black'>" + song[0].name + ": </span><span class = 'font-grey'>" + song[0].song + "</span>");*/
 	});
+
 
 	$(document).on({
 	    mouseenter: function () {
@@ -68,7 +66,9 @@ $(document).ready(function() {
 	    }
 	}, "svg");
 
+
 	$(document).on("click", "svg", function() {
+		$(".custom-button").prop("disabled", false);
 		$('.selected-star').attr('class', 'clickable');
 		$('.preview-star').css('fill', 'none');
 		$(this).children('.preview-star').css('fill', '#AD8D26');
@@ -82,39 +82,62 @@ $(document).ready(function() {
 		var currData = d3.select('.selected').data();
 	});
 
+
 	$(document).on("click", "#submit-consent", function() {
 		var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
 		$("header li").text(capitalizeSentence(questionnaireName));
 		$("#consent-form").fadeOut(500, function() {
 			$("#container").fadeIn(100);
-			$("header").append('<div class = "custom-button clickable" id = "submit-more-page">Submit!</div>');
 			showQuestion(0);
 		});
 		
 	});
 
-	$(document).on("keydown", function(e) {
-   		var key = event.which;
-   		switch(key) {
-   			case 37: // left
-   				var ind = $('.question-selector-circle').index($('.selected'));
-   				if (ind > 0) {
-   					$('.selected').removeClass('selected');
-	   				$($('.question-selector-circle')[ind]).prev().addClass('selected');
-	   				showQuestion(ind-1);		
-   				}
-   				break;
 
-   			case 39: // right
-   				var ind = $('.question-selector-circle').index($('.selected'));
-   				if (ind < $('.question-selector-circle').length - 1) {
-   					$('.selected').removeClass('selected');
-	   				$($('.question-selector-circle')[ind]).next().addClass('selected');
-	   				showQuestion(ind+1);
-	   			}
-   				break;
+	$(document).on("click", "#show-song", function() {
+		$(this).remove();
+		var ind = $('.question-selector-circle').index($('.selected'));
+		showSong(ind);
+	});
+
+
+	$(document).on("click", "#next-important", function() {
+		$("svg").remove();
+		addMusicKnowledge();
+
+		var curr_question_ind = $(".question-selector-circle").index($(".selected"));
+		var curr_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind];
+		var next_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind + 1];
+
+		if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
+			$("#next-important").attr('id','get-user-info').val('Next');
+		} else if (curr_question_ind == $(".question-selector-circle").length - 1) {
+			$("#next-important").attr('id','submit-more-page').val('Submit!');
+		} else {
+			$("#next-important").attr('id','next-question').val('Next');
+		}
+
+		$("input[type=button]").prop("disabled", true);
+	});
+
+
+	$(document).on("click", "#next-question", function() {
+   		var ind = $('.question-selector-circle').index($('.selected'));
+		var curr_question = d3.selectAll(".question-selector-circle").data()[ind];
+		var next_question = d3.selectAll(".question-selector-circle").data()[ind + 1];
+
+   		if ( curr_question.treatment_type.toLowerCase() == 'treatment_i' || next_question.treatment_type.toLowerCase() != "treatment_i" || $(".demographics-next").length > 0) {
+   			// Remove this question as the selected one
+			$('.selected').removeClass('selected');
+
+			// Make the next question the selected one
+			$($('.question-selector-circle')[ind]).next().addClass('selected');
+
+			// Show the next question
+			showQuestion(ind + 1);		
    		}
    	});
+
 
    	$(document).on("click", "svg", function() {
 		if ($(".all-question").length == 0)
@@ -127,90 +150,72 @@ $(document).ready(function() {
 		$("#user-questions").val()[ind] = blah.join("|");		
 	});
 
-	$(document).on("change", "input", function() {
-		if ($(".all-question").length == 0)
-			var ind = $(".question-selector-circle").index($(".selected"));
-		else
-			var ind = $(".question-selector-circle").length + $("#questionnaires-list li").index($(".all-question-selected"));
 
-		var blah = $("#user-questions").val()[ind].split("|");
-		blah[1] = $(this).val();
-		$("#user-questions").val()[ind] = blah.join("|");	
+	$(document).on("change", "input", function() {
+		if ($(".demographics-next").length == 0) {
+			$("input[type=button]").prop("disabled", false);
+			if ($(".all-question").length == 0)
+				var ind = $(".question-selector-circle").index($(".selected"));
+			else
+				var ind = $(".question-selector-circle").length + $("#questionnaires-list li").index($(".all-question-selected"));
+
+			var blah = $("#user-questions").val()[ind].split("|");
+			blah[1] = $(this).val();
+			$("#user-questions").val()[ind] = blah.join("|");
+		} else {
+			var user = d3.select(".user-info").data()[0];
+			user[$(this).attr("name")] = $(this).val();
+
+			var empty_inputs = $('input').filter(function() { return this.value == ""; });
+
+			if (empty_inputs.length == 0 && $(".radio-header").length == $("input[type=radio]:checked").length) {
+				$("input[type=button]").prop("disabled", false);
+			}
+
+			console.log(user);
+
+			d3.select("#user")
+				.selectAll("div")
+				.data([user])
+				.enter()
+				.append("div")
+				.attr("class", "hidden user-info");
+		}
 	});
+
+
+	$(document).on("click", "#get-user-info", function() {
+		$(this).hide();
+		askDemographics();
+	});
+
+
+	$(document).on("click", ".demographics-next", function() {
+		submitUserInfo();
+	});
+
 
 	$(document).on("click", "#submit-more-page", function() {
 		$("#question-selector").css("display", "none");
 		$(this).css("display", "none");
 		$("#importance-section").remove();
 		$("svg, iframe").remove();
-		$("#question-text").html("<div class = 'font-black question-header'>Thanks for answering these questions! Would you like to answer more?</div>");
-		$("#question-text").append("<input type = 'button' id = 'answer-more' value = 'Yes' class = 'clickable'/><input type = 'button' id = 'get-user-info' value = 'No' class = 'clickable'/>");
+		$("#question-text").html("<div class = 'font-black question-header'>Thanks for rating these songs! Would you like to hear more?</div>");
+		$("#question-text").append("<input type = 'button' id = 'answer-more' value = 'Yes' class = 'clickable'/><input type = 'button' id = 'submit-questionnaire' value = 'No' class = 'clickable'/>");
 	});
 
-	$(document).on("click", "#get-user-info", function() {
-		$(this).hide();
-		getUserInfo(accessToken, function(data) {
-			console.log(data);
-			var dataWanted = ['birthday','education','work','gender'];
-			var hasAllData = true;
-			$("#questionnaires").hide();
-			$("#question-text").empty();
-			$("#question-text").css("width", "75%");
-			$("#question-text").css("float", "none");
-			$(this).hide();
-			for (var i in dataWanted) {
-				if (!(dataWanted[i] in data)) {
-					$("#question-text").append(capitalize(dataWanted[i]) + " <input type = 'text' name = '" + dataWanted[i] + "'/>");
-					hasAllData = false;
-				}
-			}
-
-			if (!hasAllData)
-				$("#question-text").prepend("Please fill out the following information about yourself.<br/><br/>");
-
-			$("#question-text").append("<br/>How are you feeling?<br/>");
-			$("#question-text").append("<input type = 'range' name='feeling' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
-			$(".importance-list").append("<li class = 'inline-block center'>Very<br/>Happy</li>");
-			$(".importance-list").append("<li class = 'inline-block center'>Happy</li>");
-			$(".importance-list").append("<li class = 'inline-block center'>Stressed</li>");
-			$(".importance-list").append("<li class = 'inline-block center'>Anxious</li>");
-			$(".importance-list").append("<li class = 'inline-block center'>Depressed</li>");
-			$(".importance-list li").width("20%");
-
-			$("#question-text").append("<br/>Political Views<br/>");
-			$("#question-text").append("<input type = 'range' name='political-view' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
-			$(".importance-list:last").append("<li class = 'inline-block left'>Democrat</li>");
-			$(".importance-list:last").append("<li class = 'inline-block right'>Republican</li>");
-			$(".importance-list:last li").width("50%");
-
-			$("#question-text").append("<br/><br/>Please provide us with any feedback you have!<br/><textarea name = 'comments' id = 'user-comments' class = 'font-15' width = ></textarea>");
-
-			$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>");
-			d3.select("#user")
-				.selectAll("div")
-				.data([data])
-				.enter()
-				.append("div")
-				.attr("class", "hidden user-info");
-
-		});
-	});
 
 	$(document).on("click", "#answer-more", function() {
 		var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
 		getAllQuestions(questionnaireName);
-		$("#submit-more-page").show();
-		$("#submit-more-page").attr("id", "get-user-info");
 	});
+
 
 	$(document).on("click", "#submit-questionnaire", function() {
 		var user = d3.select(".user-info").data()[0];
-		$("input[type=text], textarea").each(function() {
-			user[$(this).attr("name")] = $(this).val();
-		});
-
 		getAllAnswers(user);
 	});
+
 
 	$(document).on("click", ".all-question", function() {
 		$("#question-text").empty();
@@ -399,23 +404,25 @@ function displaySongs(randArtists) {
 	$("#question-text").html("<span class = 'font-black'>" + firstArtist.name + ": </span><span class = 'font-grey'>" + firstArtist.song + "</span>");
 }
 
+
 function showQuestion(num) {
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	$("#question-box div").html("<div id = 'preview-album'><div id = 'question-text'></div></div>");
-	
-	for (var i = 0; i < 5; i++) {
-		$("#preview-album").append('<svg height="26" width="26" class = "clickable"><polygon points=".25,10 6,10 8,5.5 10,10 15.5,10 11.5,13.5 13,18.5 8.25,15.25 3.75,18.5 5,13.5" class = "preview-star"/></svg>');
-	}
+	$("#question-text").html("<div class = 'font-black bold'>" + question.artist + " - <span class ='italics'> " + question.song + "</span></div>");
 
-	$("#preview-album").append("<br/><iframe src = '' id = 'preview-iframe'></iframe>");
-	$("iframe").attr('src', question.url);
+	showTreatment(num);
+}
+
+
+function showTreatment(num) {
+	var question = d3.selectAll(".question-selector-circle").data()[num];
+
 	//$("#preview-album img").attr('src', question.info.album.images[0].url);
-	$("#question-text").html("<span class = 'font-black'>" + question.artist + ": </span><span class = 'font-grey'>" + question.song + "</span>");
 	if (question.treatment_type.toLowerCase() != "control") {
 		if (question.treatment.length > 0) {
 			switch(question.treatment_type) {
 				case "treatment_g":
-					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment_i + " Last FM Listeners</div>");
+					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + " Last FM Listeners</div>");
 					break;
 				case "treatment_s":
 					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + "</div>");
@@ -423,41 +430,65 @@ function showQuestion(num) {
 				case "treatment_l":
 					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>Your friend Juan David gave this song " + question.treatment + " stars</div>");
 					break;
+				case "treatment_i":
+					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + "</div>");
+					break;
 			}
 		}
 	}
 
-	addMusicKnowledge();
-
+	$("#question-text").append("<input type='button' class='custom-button clickable' id='show-song' value='Next'/>");
 }
 
-function showAllQuestion(question) {
-	$("#question-text").html("<div id = 'preview-album'><div id = 'question-text'></div></div>");
-	
+
+function showSong(num) {
+	var question = d3.selectAll(".question-selector-circle").data()[num];
+	$("#preview-album").append("<iframe src = '' id = 'preview-iframe' class = 'center'></iframe>");
+	$("iframe").attr('src', question.url);
+	showStars();
+}
+
+
+function showStars() {
 	for (var i = 0; i < 5; i++) {
-		$("#preview-album").append('<svg height="26" width="26" class = "clickable"><polygon points=".25,10 6,10 8,5.5 10,10 15.5,10 11.5,13.5 13,18.5 8.25,15.25 3.75,18.5 5,13.5" class = "preview-star"/></svg>');
+		$("#preview-album").append('<svg height="26" width="26" class = "clickable rating-star"><polygon points=".25,10 6,10 8,5.5 10,10 15.5,10 11.5,13.5 13,18.5 8.25,15.25 3.75,18.5 5,13.5" class = "preview-star"/></svg>');
 	}
 
-	$("#preview-album").append("<br/><iframe src = '' id = 'preview-iframe'></iframe>");
-	$("iframe").attr('src', question.url);
-	//$("#preview-album img").attr('src', question.info.album.images[0].url);
-	$("#question-text").append("<span class = 'font-black'>" + question.artist + ": </span><span class = 'font-grey'>" + question.song + "</span>");
-	if (question.treatment.length > 0) {
+	$("#preview-album").append("<br/><input type='button' class='custom-button clickable' id='next-important' value='Rate!'/>");
+	$("#next-important").prop("disabled", true);
+}
+
+
+function showAllQuestion(question) {
+	$("#question-text").html("<div id = 'preview-album'></div>");
+	for (var i = 0; i < 5; i++) {
+		$("#preview-album").append('<svg height="26" width="26" class = "clickable rating-star"><polygon points=".25,10 6,10 8,5.5 10,10 15.5,10 11.5,13.5 13,18.5 8.25,15.25 3.75,18.5 5,13.5" class = "preview-star"/></svg>');
+	}
+	$("#preview-album").append("<div class = 'font-black bold'>" + question.artist + ": <span class = 'italics'>" + question.song + "</span></div>");
+
+	if (question.treatment_type.toLowerCase() != 'control' && question.treatment.length > 0) {
 		switch(question.treatment_type) {
-			case "treatment_i":
-				$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + " Last FM Listeners</div>");
-				break;
 			case "treatment_g":
-				$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + " Last FM Scrobbles</div>");
+				$("#preview-album").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + " Last FM Listeners</div>");
 				break;
 			case "treatment_s":
-				$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + "</div>");
+				$("#preview-album").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + "</div>");
 				break;
 			case "treatment_l":
-				$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>Your friend Juan David gave this song " + question.treatment + " stars</div>");
+				$("#preview-album").append("<div class = 'font-black font-15' id = 'question-treatment'>Your friend Juan David gave this song " + question.treatment + " stars</div>");
+				break;
+			case "treatment_i":
+				$("#preview-album").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + "</div>");
 				break;
 		}
+	} else {
+		$("#preview-album").append("<br/>");
 	}
+
+	$("#preview-album").append("<iframe src = '' id = 'preview-iframe' class = 'center'></iframe>");
+	$("iframe").attr('src', question.url);
+
+	//addMusicKnowledge2();
 
 }
 
@@ -504,8 +535,7 @@ function getAllQuestions(questionnaire) {
 function displayAllQuestions(questions) {
 	$(".display-table").html('<div class = "display-table-cell font-18" id = "questionnaires-wrapper">' +
 								'<div id = "questionnaires" class = "border-box">' +
-									'<div class = "font-20 questionnaire-title">Songs</div>' +
-									'<ol id = "questionnaires-list" class = "no-list">' +
+									'<ol id = "questionnaires-list" class = "no-list font-16">' +
 									'</ol>' +
 								'</div>' +
 								'<div id = "question-text" class = "border-box">' +
@@ -529,21 +559,25 @@ function displayAllQuestions(questions) {
 		});
 
 	for (var i in questions) {
-		$("#user-questions").val().push("");
+		$("#user-questions").val().push("|");
 	}
+
+	$("header").append("<input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>")
 	
 }
 
-function getAllAnswers(data) {
+function getAllAnswers() {
 	var answersArr = $("#user-questions").val();
 	var tempArr, userAnswer;
 	var userAnswers = [];
-	var userID = data.id;
+	var userID = d3.selectAll(".user-info").data()[0].id;
+
 	$(".question-selector-circle").each(function(i) {
+		var question = d3.select(this).data()[0];
 		var questionID = d3.select(this).data()[0]._id;
 		var treatment = d3.select(this).data()[0].treatment_type;
 		tempArr = answersArr[i].split("|");
-		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], knowledge: tempArr[1], treatment: treatment};
+		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment};
 		userAnswers.push(userAnswer);
 	});
 
@@ -551,14 +585,14 @@ function getAllAnswers(data) {
 		$(".all-question").each(function(i) {
 			var questionID = d3.select(this).data()[0]._id;
 			var treatment = d3.select(this).data()[0].treatment_type;
-			var ind = i + $("#question-text li").index($(this));
+			var ind = i + $(".question-selector-circle").length;
 			tempArr = answersArr[ind].split("|");
 			userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], knowledge: tempArr[1], treatment: treatment};
 			userAnswers.push(userAnswer);
 		});
 	}
 
-	submitUserInfo(data);
+	sendFriendsDialog(userID);
 	submitQuestionnaire(userAnswers);
 }
 
@@ -569,17 +603,19 @@ function submitQuestionnaire(answers) {
 		contentType: 'application/json',
 		data: JSON.stringify({answers: answers}),
 		success: function(response) {	
-			$("#question-text").html("Thank you!");
+			console.log(response);
+			$(".display-table-cell").html("Thank You!");
 		}
 	});
 }
 
 function submitUserInfo(data) {
+	var user = d3.select(".user-info").data()[0];
 	$.ajax({
 		url: '/api/sendUser',
 		method: 'POST',
 		contentType: 'application/json',
-		data: JSON.stringify(data),
+		data: JSON.stringify(user),
 		success: function(response) {
 			console.log(response);
 		}
@@ -588,6 +624,17 @@ function submitUserInfo(data) {
 
 function addMusicKnowledge() {
 	$("iframe").after("<div id = 'importance-section'><div class = 'font-black importance-header'>Have you heard this song before?</div></div>");
+	$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
+	$("#importance-list").append("<li class = 'inline-block center'>Never <br/>Heard It</li>");
+	$("#importance-list").append("<li class = 'inline-block center'>Sounds Familiar</li>");
+	$("#importance-list").append("<li class = 'inline-block center'>Know <br/>This Song</li>");
+	$("#importance-list").append("<li class = 'inline-block center'>Know <br/>This Artist</li>");	
+	$("#importance-list li").width("25%");
+}
+
+function addMusicKnowledge2() {
+	$("#importance-section").remove();
+	$(".display-table-cell").append("<div id = 'importance-section' class = 'center font-16'><div class = 'font-black importance-header'>Have you heard this song before?</div></div>");
 	$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
 	$("#importance-list").append("<li class = 'inline-block center'>Never <br/>Heard It</li>");
 	$("#importance-list").append("<li class = 'inline-block center'>Sounds Familiar</li>");

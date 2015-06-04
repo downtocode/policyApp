@@ -22,16 +22,7 @@ $(document).ready(function() {
 	// If user submits consent form
 	// Take them to the first question
 	$(document).on("click", "#submit-consent", function() {
-		var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
-		$("header li").text(capitalizeSentence(questionnaireName));
-		$("#consent-form").fadeOut(500, function() {
-			$("#container").fadeIn(100);
-			showQuestion(0);
-		});
-	});
-
-	$(document).on("keyup", function() {
-		sendFriendsDialog('18888885');
+		submitConsent();
 	});
 
 
@@ -39,7 +30,6 @@ $(document).ready(function() {
 	$(document).on("click", "#show-treatment", function() {
 		// Get the index of the current question
    		var ind = $('.question-selector-circle').index($('.selected'));
-
    		showTreatment(ind);
 	});
 
@@ -178,96 +168,7 @@ $(document).ready(function() {
 		$(this).hide();
 		$("#error-msg").remove();
 
-		getUserInfo(accessToken, function(data) {
-			// Gets all of the user's information that we can get from FB
-			$.ajax({
-				url: '/api/getDemographics',
-				dataType: 'JSON',
-				success: function(dataWanted) {
-					var hasAllData = true;
-
-					$("#questionnaires").hide();
-					$("#question-text").empty();
-					$("#question-text").css("width", "75%");
-					$("#question-text").css("float", "none");
-					$(this).hide();
-
-					// Checks for what information we are missing
-					for (var i in dataWanted) {
-						if (!(dataWanted[i].name in data)) {
-							
-							if (dataWanted[i].type.toLowerCase() == 'text')
-								$("#question-text").append("<div class = 'font-15 demographics-header'>" +
-									capitalize(dataWanted[i].question) + 
-									": <br/><input class = 'font-15' type = 'text' name = '" + dataWanted[i].name + "'/></div>");
-							
-							else if (dataWanted[i].type.toLowerCase() == 'range') {
-								data[dataWanted[i].name] = 50;
-								$("#question-text").append("<div class = 'font-15 demographics-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
-									"<input type = 'range' name='" + dataWanted[i].name + "' min='0' max='100'>" +
-									"<ul class = 'importance-list no-list font-15'></ul></div>");
-
-								var values = dataWanted[i].values.split(",");
-								for (var k in values) {
-									$(".importance-list:last").append("<li class = 'inline-block center'>" + values[k] + "</li>");
-								}
-
-								$(".importance-list:last li").width(100/ values.length + "%");
-								
-							} else if (dataWanted[i].type.toLowerCase() == 'radio') {
-								var values = dataWanted[i].values.split(",");
-								$("#question-text").append("<div class = 'font-15 demographics-header radio-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
-									"<ul class = 'no-list font-15 question-list-larger'></ul></div>");
-								for (var j in values) {
-									$(".question-list-larger:last").append("<li class = 'left inline'><input type = 'radio' name = '" + dataWanted[i].name + "' value = '"+values[j]+"'><span class = 'question-text-text'>" + capitalize(values[j]) + "</span></li>");		
-									if ( (j + 1) % 3 == 0)
-										$(".question-list-larger:last").append("<br/>");
-								}
-							}
-
-							hasAllData = false;
-						}
-					}
-
-					if (!hasAllData)
-						$("#question-text").prepend("Now we'd like to know what people like you believe. Please answer a few questions about yourself.");
-
-					// Asks extra questions
-					/*$("#question-text").append("<br/>How are you feeling?<br/>"+
-						"<input type = 'range' name='feeling' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
-
-					$(".importance-list").append("<li class = 'inline-block center'>Very<br/>Happy</li>" +
-						"<li class = 'inline-block center'>Happy</li>" +
-						"<li class = 'inline-block center'>Stressed</li>" +
-						"<li class = 'inline-block center'>Anxious</li>" +
-						"<li class = 'inline-block center'>Depressed</li>");
-
-					$(".importance-list li").width("20%");
-
-					$("#question-text").append("<br/>Political Views<br/>" +
-						"<input type = 'range' name='political-view' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
-					
-					$(".importance-list:last").append("<li class = 'inline-block left'>Democrat</li>" +
-						"<li class = 'inline-block right'>Republican</li>");
-
-					$(".importance-list:last li").width("50%");
-
-					*/
-
-					$("#question-text").append("<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable' disabled/>");
-					
-					// Adds user information to a hidden div
-					d3.select("#user")
-						.selectAll("div")
-						.data([data])
-						.enter()
-						.append("div")
-						.attr("class", "hidden user-info");
-				}
-			});
-			
-
-		});
+		askDemographics();
 
 	});
 
@@ -280,6 +181,7 @@ $(document).ready(function() {
 	// If user is done answering all questions about themselves
 	// Time to submit the entire questionnaire!
 	$(document).on("click", "#submit-questionnaire", function() {
+		var user = d3.select(".user-info").data()[0];
 		// Get all the user answers
 		getAllAnswers(user);
 	});
@@ -590,31 +492,6 @@ function displayAllQuestions(questions) {
 			'<div id = "question-text" class = "border-box">' +
 			'</div>');
 	}
-	
-	
-}
-
-function sendFriendsDialog(userID) {
-	var url = ( window.location.href.lastIndexOf("/") == window.location.href.length - 1) ? 
-		window.location.href.substr(0, window.location.href.length - 1) : window.location.href;
-	var urlArray = url.split("//")[1].split("/");
-	
-	if (urlArray.length > 3) {
-		var loginUrl = urlArray[urlArray.length - 2];
-		$.ajax({
-			method: 'POST',
-			url: '/api/addFriend',
-			data: {userID: userID, friendID: urlArray[urlArray.length - 2], questionnaire: urlArray[urlArray.length - 3]}
-		});
-	} else
-		var loginUrl = urlArray[urlArray.length - 1];
-
-	var link = 'https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+userID+'/';
-
-	FB.ui({
-		method: 'send',
-		link: link
-	});
 }
 
 

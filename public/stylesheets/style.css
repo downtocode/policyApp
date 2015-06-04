@@ -335,6 +335,16 @@ input[type=button] {
 	height: 250px;
 	width: auto;
 	border: 1px;
+	display: block;
+}
+
+.rating-star, .selected-star {
+	margin-top: 25px;
+	margin-bottom: 5px;
+}
+
+#questionnaires-wrapper .rating-star, #questionnaires-wrapper .selected-star {
+	margin-top: 0px !important;
 }
 
 #preview-album img {
@@ -359,7 +369,8 @@ input[type=button] {
 }
 
 #question-box {
-	height: 90% !important;
+	height: 100% !important;
+	overflow: auto;
 }
 
 #question-selector {
@@ -457,7 +468,7 @@ input[type=button] {
 	display: inline-block;
 }
 
-#questionnaires-wrapper > div {
+#questionnaires-wrapper #questionnaires, #questionnaires-wrapper #question-text {
 	overflow: auto;
 	height: 75%;
 	padding: 10px 20px;
@@ -474,6 +485,11 @@ input[type=button] {
 	color: #FFF;
 	background-color: rgba(250, 250, 250, .25);
 	border-radius: 7px;
+}
+
+#music header input {
+	position: absolute;
+	right: 0px;
 }
 
 input[type=button]:hover:enabled {

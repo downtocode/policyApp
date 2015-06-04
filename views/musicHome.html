@@ -10,8 +10,9 @@
 		<script src = "../javascripts/fb-getFriends.js"></script>
 		<script>
 			var accessToken = hasCookie('fb_access');
+			var url = window.location.href.split("/home/")[1];
 			if (accessToken === null) {
-				window.location.href = '/login/'+<%- JSON.stringify(name) %>
+				window.location.href = '/login/'+url;
 			}
 			
 			$(document).ready(function() {
@@ -21,7 +22,9 @@
 				$("#container").css("display", "none");
 
 				getSongs(questions, function(response) {
-					d3.select("#question-selector").selectAll("div")
+					createTreatments(accessToken, questions);
+
+					/*d3.select("#question-selector").selectAll("div")
 						.data(questions)
 						.enter()
 						.append("div")
@@ -35,7 +38,7 @@
 					for (var i in questions) {
 						emptyArr.push("");
 					}
-					$("#user-questions").val(emptyArr);
+					$("#user-questions").val(emptyArr);*/
 				});
 
 			});
