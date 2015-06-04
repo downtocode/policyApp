@@ -19,9 +19,6 @@ $(document).ready(function() {
     	fjs.parentNode.insertBefore(js, fjs);
    	}(document, 'script', 'facebook-jssdk'));
 
-  $(document).on("click", function() {
-    console.log($("iframe").contents());
-  });
 
 });
 

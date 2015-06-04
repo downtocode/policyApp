@@ -21,9 +21,7 @@ $(document).ready(function() {
 
 	// If user submits consent form
 	// Take them to the first question
-	$(document).on("click", "#submit-consent", function() {
-		submitConsent();
-	});
+	
 
 
 	// If user clicks "Next" to see treatment.

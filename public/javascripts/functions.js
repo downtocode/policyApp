@@ -232,19 +232,11 @@ function createTreatments(accessToken, questions) {
 			}
 			$("#user-questions").val(emptyArr);
 
+			showQuestion(0);
 		}
 
 	});
 
-}
-
-function submitConsent() {
-	var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
-	$("header li").text(capitalizeSentence(questionnaireName));
-	$("#consent-form").fadeOut(500, function() {
-		$("#container").fadeIn(100);
-		showQuestion(0);
-	});
 }
 
 
