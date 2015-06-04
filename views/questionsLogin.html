@@ -2,11 +2,11 @@
 <html prefix="og: http://ogp.me/ns#">
 	<head>
 		<title>Login</title>
-		<meta property="og:title" content= "Policy Questionnaire"  />
-		<meta property="og:site_name" content= "Policy" />
-		<meta property="og:description" content="If your sick daughter needed a medicine to survive and you did not have the money, would it be moral to steal the medicine? Would you like to participate on an study about moral stands?" />
+		<meta property="og:title" content= <%= meta_title %> />
+		<meta property="og:site_name" content= <%= meta_name %> />
+		<meta property="og:description" content= <%= meta_desc %> />
 		<meta property="og:image" content="http://colleges.usnews.rankingsandreviews.com/img/college-photo_73._445x280-zmm.jpg" />
-		<meta property="og:app_id" content="486648534724015" />
+		<meta property="og:app_id" content= <%= meta_title %> />
 		<link href='//fonts.googleapis.com/css?family=Lato:100,300,400,100italic,300italic,400italic' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="../../../stylesheets/style.css">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
@@ -23,7 +23,7 @@
 				} else {
 					$('.display-table-cell').append('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history,read_mailbox" onlogin="checkLoginState(\'/home/'+url+'\');" class = "input"></fb:login-button>');
 				}
-				
+
 				$(document).on("click", "#submit-consent", function() {
 				    $("header li").text(capitalizeSentence(name));
 				    $("#consent-form").fadeOut(500, function() {

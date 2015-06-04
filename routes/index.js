@@ -44,10 +44,17 @@ router.get('/login/:name/:fid?', function(req, res, next) {
 	var name = capitalize(req.params.name);
 	var questionnaire = capitalize(name.replace(/-/g, " ").toLowerCase());
 
-	if (name === 'admin')
+	if (name.toLowerCase() === 'admin')
 		res.render('adminLogin');
-	else 
-		res.render('questionsLogin', {name: name, meta_title: questionnaire, meta_name: questionnaire, meta_url: "http://stark-crag-5229.herokuapp.com/login/"+name.toLowerCase()+"/"+req.params.fid, meta_desc: "dfaasdasf", meta_img: "asdfasf"});
+	else {
+		if (name.toLowerCase() === 'music') {
+			var desc =  "Discover, rate and follow great music.Would you like to volunteer in a behavioural study about music taste?";
+		} else if (name.toLowerCase() === 'policy') {
+			var desc = "If your sick daughter needed a medicine to survive and you did not have the money, would it be moral to steal the medicine? Would you like to participate on an study about moral stands?";
+		}
+
+		res.render('questionsLogin', {name: name, meta_title: questionnaire, meta_name: questionnaire, meta_url: "http://stark-crag-5229.herokuapp.com/login/"+name.toLowerCase()+"/"+req.params.fid, meta_desc: desc});
+	}
 });
 
 router.get('/createQuestionnaire', function(req, res, next) {

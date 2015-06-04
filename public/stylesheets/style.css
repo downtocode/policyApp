@@ -370,7 +370,6 @@ input[type=button] {
 
 #question-box {
 	height: 100% !important;
-	overflow: auto;
 }
 
 #question-selector {
