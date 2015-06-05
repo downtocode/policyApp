@@ -47,17 +47,25 @@ $(document).ready(function() {
 		$("#question-text").append(button);
 		$("#next-important").prop("disabled", true);
 		$("#next-important").val("Next");
+
+		if (ind == $(".question-selector-circle").length - 1)
+			$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'submit-questionnaire' value = 'Prefer Not to Answer' />")
+		else 	
+			$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'skip-question' value = 'Prefer Not to Answer' />")
 	});
 
 
    	// If user clicks "Next" button to get importance value
    	$(document).on("click", "#next-important", function() {
+   		$("#skip-question").remove();
+   		$("#submit-questionnaire").remove();
    		addQuestionImportance();
    	});
 
 
 	// If user clicks on "Next" button for next question
-   	$(document).on("click", "#next-question", function() {
+   	$(document).on("click", "#next-question, #skip-question", function() {
+   		$("#skip-question").remove();
    		// Get the index of the current question
    		var ind = $('.question-selector-circle').index($('.selected'));
 		var curr_question = d3.selectAll(".question-selector-circle").data()[ind];
@@ -72,12 +80,16 @@ $(document).ready(function() {
 
 			// Show the next question
 			showQuestion(ind + 1);		
+   		} else {
+   			$(this).hide();
+			askDemographics();
    		}
+
    	});
 
 
    	// If user selects an answer for any input
-	$(document).on("change", "input", function() {
+	$(document).on("change", "input, select", function() {
 
 		if ($(".demographics-next").length == 0) {
 			$("input[type=button]").prop("disabled", false);
@@ -164,10 +176,7 @@ $(document).ready(function() {
 	// Goes to page to get the user's information
 	$(document).on("click", "#get-user-info", function() {
 		$(this).hide();
-		$("#error-msg").remove();
-
 		askDemographics();
-
 	});
 
 
@@ -189,7 +198,6 @@ $(document).ready(function() {
 		var petition = $(this).parent().text();
 		var link = $(this).text();
 		var userID = d3.select(".user-info").data()[0].id;
-		console.log(petition, link, userID);
 		
 		$.ajax({
 			url: '/api/petitionClick',
@@ -199,6 +207,11 @@ $(document).ready(function() {
 				console.log(response);
 			}
 		})
+	});
+
+
+	$(document).on("click", "#invite-friends", function() {
+		sendFriendsDialog();
 	});
 
 });
@@ -314,6 +327,7 @@ function showValues(type, values) {
 }
 
 function addQuestionImportance() {
+	$("#question-treatment").remove();
 	$("#question-answers").children().remove();
 	$("#question-answers").empty();
 	$(".question-header").remove();
@@ -397,7 +411,6 @@ function getAllAnswers() {
 		});
 	}
 
-	sendFriendsDialog(userID);
 	submitQuestionnaire(userAnswers, petitions);
 
 }
@@ -418,6 +431,9 @@ function submitQuestionnaire(answers, petitions) {
 						": <a href = '" + petitions[p] + "' id = 'petition-" + p + "' target = _blank>" + petitions[p] + "</a></div>");
 				}
 			}
+
+			$("#petitions").after("<br/>We also encourage you to invite your friends to participate in this study as well!" + 
+				"<br/><input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>")
 		}
 	});
 }

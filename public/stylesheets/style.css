@@ -697,3 +697,8 @@ input[type=button]:disabled {
 .demographics-next {
 	margin-top: 30px;
 }
+
+select[name=location] {
+	width: 50px;
+	font-size: 15px;
+}

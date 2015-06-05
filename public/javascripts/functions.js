@@ -255,11 +255,13 @@ function askDemographics() {
 				$("#question-text").css("width", "75%");
 				$("#question-text").css("float", "none");
 				$(this).hide();
+				var questionnaire = $("header li").text().toLowerCase();
+				var musicNoDemo = ['vote', 'vote_next', 'political_upbringing'];
 
 				// Checks for what information we are missing
 				for (var i in dataWanted) {
-					if (!(dataWanted[i].name in data)) {
-						
+					if ( !(dataWanted[i].name in data) && ( (questionnaire === 'policy') || ( questionnaire === 'music' && musicNoDemo.indexOf(dataWanted[i].name) == -1 ) ) ) {
+
 						if (dataWanted[i].type.toLowerCase() == 'text')
 							$("#question-text").append("<div class = 'font-15 demographics-header'>" +
 								capitalize(dataWanted[i].question) + 
@@ -287,6 +289,13 @@ function askDemographics() {
 								if ( (j + 1) % 3 == 0)
 									$(".question-list-larger:last").append("<br/>");
 							}
+						} else if (dataWanted[i].type.toLowerCase() == 'select') {
+							var values = dataWanted[i].values.split(",");
+							$(".demographics-header:first").after("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) + 
+								": <select name = '" + dataWanted[i].name + "'></div>");
+							for (var j in values) {
+								$("select:last").append("<option value = '"+values[j]+"'>" + capitalize(values[j]) + "</option>");		
+							}
 						}
 
 						hasAllData = false;
@@ -294,7 +303,7 @@ function askDemographics() {
 				}
 
 				if (!hasAllData)
-					$("#question-text").prepend("Now we'd like to know what people like you believe. Please answer a few questions about yourself.");
+					$("#question-text").prepend("<br/>Now we would like to know what people like you believe. Please answer a few questions about yourself.");
 
 				// Asks extra questions
 				/*$("#question-text").append("<br/>How are you feeling?<br/>"+
@@ -335,7 +344,8 @@ function askDemographics() {
 }
 
 
-function sendFriendsDialog(userID) {
+function sendFriendsDialog() {
+	var userID = d3.selectAll(".user-info").data()[0].id;
 	var url = ( window.location.href.lastIndexOf("/") == window.location.href.length - 1) ? 
 		window.location.href.substr(0, window.location.href.length - 1) : window.location.href;
 	var urlArray = url.split("//")[1].split("/");

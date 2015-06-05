@@ -225,6 +225,11 @@ $(document).ready(function() {
 		showAllQuestion(data);
 	});
 
+
+	$(document).on("click", "#invite-friends", function() {
+		sendFriendsDialog();
+	});
+
 });
 
 function getFriendsMusic(accessToken, callback) {
@@ -592,7 +597,6 @@ function getAllAnswers() {
 		});
 	}
 
-	sendFriendsDialog(userID);
 	submitQuestionnaire(userAnswers);
 }
 
@@ -604,7 +608,9 @@ function submitQuestionnaire(answers) {
 		data: JSON.stringify({answers: answers}),
 		success: function(response) {	
 			console.log(response);
-			$(".display-table-cell").html("Thank You!");
+			$(".display-table-cell").html("Thank You! We also encourage you to invite your friends to participate in this study as well by clicking the button below!" + 
+				"<input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>")
+
 		}
 	});
 }

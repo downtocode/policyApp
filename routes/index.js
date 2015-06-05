@@ -48,7 +48,7 @@ router.get('/login/:name/:fid?', function(req, res, next) {
 		res.render('adminLogin');
 	else {
 		if (name.toLowerCase() === 'music') {
-			var desc =  "Discover, rate and follow great music.Would you like to volunteer in a behavioural study about music taste?";
+			var desc =  "Discover, rate and follow great music. Would you like to volunteer in a behavioural study about music taste?";
 		} else if (name.toLowerCase() === 'policy') {
 			var desc = "If your sick daughter needed a medicine to survive and you did not have the money, would it be moral to steal the medicine? Would you like to participate on an study about moral stands?";
 		}
