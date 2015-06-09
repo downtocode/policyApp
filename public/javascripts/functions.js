@@ -152,6 +152,7 @@ function createTreatments(accessToken, questions) {
 			}
 
 			console.log(all_treatments);
+			var identity_treatments = [];
 
 			for (var q in questions) {
 				var question = questions[q];
@@ -175,14 +176,17 @@ function createTreatments(accessToken, questions) {
 
 					if (treatment == 'treatment_i') {
 						question.treatment = "Identity Treatment";
+						identity_treatments.push(question.title);
 					}
 					else
 						question.treatment = question[question.treatment_type];
 				}
 
-				for (var i in every_treatment) {
-					if (every_treatment[i] in question) {
-						delete question[every_treatment[i]];
+				if (question.treatment_type != 'treatment_i') {
+					for (var i in every_treatment) {
+						if (every_treatment[i] in question) {
+							delete question[every_treatment[i]];
+						}
 					}
 				}
 				
@@ -233,6 +237,8 @@ function createTreatments(accessToken, questions) {
 			$("#user-questions").val(emptyArr);
 
 			showQuestion(0);
+
+			getIdentityTreatments(identity_treatments);
 		}
 
 	});
@@ -285,7 +291,7 @@ function askDemographics() {
 							$("#question-text").append("<div class = 'font-15 demographics-header radio-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
 								"<ul class = 'no-list font-15 question-list-larger'></ul></div>");
 							for (var j in values) {
-								$(".question-list-larger:last").append("<li class = 'left inline'><input type = 'radio' name = '" + dataWanted[i].name + "' value = '"+values[j]+"'><span class = 'question-text-text'>" + capitalize(values[j]) + "</span></li>");		
+								$(".question-list-larger:last").append("<li class = 'left inline'><input type = 'radio' name = '" + dataWanted[i].name + "' value = '"+values[j].trim()+"'><span class = 'question-text-text'>" + capitalize(values[j]) + "</span></li>");		
 								if ( (j + 1) % 3 == 0)
 									$(".question-list-larger:last").append("<br/>");
 							}
@@ -294,7 +300,7 @@ function askDemographics() {
 							$(".demographics-header:first").after("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) + 
 								": <select name = '" + dataWanted[i].name + "'></div>");
 							for (var j in values) {
-								$("select:last").append("<option value = '"+values[j]+"'>" + capitalize(values[j]) + "</option>");		
+								$("select:last").append("<option value = '"+values[j].trim()+"'>" + capitalize(values[j]) + "</option>");		
 							}
 						}
 
@@ -327,7 +333,8 @@ function askDemographics() {
 
 				*/
 
-				$("#question-text").append("<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable' disabled/>");
+				$("#question-text").append("<input type = 'button' id = 'skip-demographics' value = 'Skip' class = 'demographics-next clickable'/>" +
+					"<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable' disabled/>");
 				
 				// Adds user information to a hidden div
 				d3.select("#user")
@@ -336,6 +343,8 @@ function askDemographics() {
 					.enter()
 					.append("div")
 					.attr("class", "hidden user-info");
+
+				console.log(data);
 			}
 		});
 		
@@ -370,4 +379,189 @@ function sendFriendsDialog() {
 		link: link
 	});
 }
+
+
+function makeBarGraph(data) {
+	var margin = {top: 20, right: 20, bottom: 20, left: 50},
+		width = 400 - margin.left - margin.right,
+		height = 250 - margin.top - margin.bottom;
+
+	var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
+	var y = d3.scale.linear().range([height, 0]);
+
+	var xAxis = d3.svg.axis()
+		.scale(x)
+		.orient("bottom");
+
+	var yAxis = d3.svg.axis()
+		.scale(y)
+		.orient("left");
+
+	var svg = d3.select("#question-treatment")
+		.append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+		.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	$(svg).css("margin-left", -1 * margin.left + "px");
+ 
+ 	x.domain(data.map(function(d) { return d.year; }));
+	y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+	svg.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate(0," + height + ")")
+		.call(xAxis);
+		/*.append("text")
+		.attr("y", 40)
+		.attr("x", "35%")
+		.style("text-anchor", "start")
+		.text("Year");*/
+
+	svg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis)
+		.append("text")
+		.attr("transform", "rotate(-90)")
+		.attr("y", -50)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.text("Survey Participants (%)");
+
+	svg.selectAll(".bar")
+			.data(data)
+		.enter()
+		.append("rect")
+		.attr("class", "bar")
+		.attr("width", x.rangeBand() / 2)
+		.attr("x", function(d) { return x(d.year); })
+		.attr("y", height)
+		.attr("transform", "translate("+x.rangeBand()/4+",0)")
+		.attr("height", 0)
+		.transition()
+			.duration(750)
+		.attr("y", function(d) { return y(d.value); })
+		.attr("height", function(d) { console.log(y(d.value)); return height - y(d.value); });
+
+
+}
+
+
+function type(d) {
+  d.value = +d.value;
+  return d;
+}
+
+
+function getNewIdentityTreatments(curr_ind) {
+	var treatments = ['treatment_g', 'treatment_s', 'control'];
+	var all_data = d3.selectAll(".question-selector-circle").data();
+
+	for (var i = curr_ind; i < all_data.length; i++) {
+		console.log(i);
+		var rand = Math.floor(Math.random() * treatments.length);
+		var new_treatment = treatments[rand];
+		treatments.splice(rand, 1);
+		all_data[i].treatment_type = new_treatment;
+		all_data[i].treatment = all_data[i][new_treatment];
+
+		if (treatments.length == 0) {
+			var treatments = ['treatment_g', 'treatment_s', 'control'];
+		}
+	}
+
+	console.log(all_data);
+
+	d3.selectAll(".question-selector-circle").data(all_data);
+}
+
+
+function submitUserInfo() {
+	var user = d3.select(".user-info").data()[0];
+
+	getIdentityTreatments(getIdentityNames(), user);
+
+	$.ajax({
+		url: '/api/sendUser',
+		method: 'POST',
+		contentType: 'application/json',
+		data: JSON.stringify(user),
+		success: function(response) {
+			console.log(response);
+		}
+	});
+
+}
+
+
+function getIdentityTreatments(questionIds, demographics) {
+	questionIds = ['abortion', 'guns', 'government_surveillance', 'same_sex_marriage'];
+	demographics = {age: "23",
+		birthday: "05/24/1992",
+		children: "0",
+		email: "kaitlyn5k@gmail.com",
+		first_name: "Kaitlyn",
+		gender: "female",
+		happiness: "72",
+		id: "1368751615",
+		income: "115,000",
+		last_name: "Kwan",
+		link: "http://www.facebook.com/1368751615",
+		locale: "en_US",
+		state: "NY",
+		marital_status: "Single/Never married",
+		name: "Kaitlyn Kwan",
+		political: "Republican",
+		political_upbringing: "Balanced Mix",
+		race: "Asian / Pacific Islander",
+		relationship_status: "Single",
+		religion: "Christian",
+		sexual_orientation: "Heterosexual",
+		timezone: -4,
+		updated_time: "2015-06-05T06:23:00+0000",
+		verified: true,
+		vote: "Yes",
+		vote_next: "Yes",
+		work: "Wage-employed"
+	};
+
+	$.ajax({
+		url: "/api/getIdentityTreatment",
+		method: "POST",
+		dataType: "JSON",
+		contentType: "application/json",
+		data: JSON.stringify({questions: questionIds, demographics: demographics}),
+		success: function(treatments) {
+			console.log(treatments);
+		}
+	});
+}
+
+
+function getIdentityNames() {
+	var ind = $('.question-selector-circle').index($('.selected'));
+	var all_data = d3.selectAll(".question-selector-circle").data();
+	var identity_treatments = [];
+
+	for (var i = ind; i < all_data.length; i++) {
+		identity_treatments.push(all_data[i].title);
+	}
+
+	return identity_treatments;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

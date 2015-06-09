@@ -64,14 +64,21 @@ $(document).ready(function() {
 
 
 	// If user clicks on "Next" button for next question
-   	$(document).on("click", "#next-question, #skip-question", function() {
+   	$(document).on("click", "#next-question, #skip-question, #skip-demographics", function() {
    		$("#skip-question").remove();
+
    		// Get the index of the current question
    		var ind = $('.question-selector-circle').index($('.selected'));
 		var curr_question = d3.selectAll(".question-selector-circle").data()[ind];
 		var next_question = d3.selectAll(".question-selector-circle").data()[ind + 1];
 
    		if ( curr_question.treatment_type.toLowerCase() == 'treatment_i' || next_question.treatment_type.toLowerCase() != "treatment_i" || $(".demographics-next").length > 0) {
+   			if ($(this).attr('id') === 'skip-demographics') {
+	   			$(this).remove();
+	   			getNewIdentityTreatments(ind + 1);
+	   			submitUserInfo();
+	   		}
+
    			// Remove this question as the selected one
 			$('.selected').removeClass('selected');
 
@@ -263,6 +270,55 @@ function showTreatment(num) {
 		} else
 			$("#question-text").append("<div class = 'font-black font-15 italics bold' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
 		
+
+		if (question.treatment.indexOf("%") >= 0 && question.treatment_type.toLowerCase() != "treatment_s" && question.title != "moral_dilemma") {
+			var question_str_arr = question.treatment.split("%");
+			var question_num_arr = [];
+			var question_year_arr = [];
+			var years = {}
+			var data = [];
+
+			for (var i = 0; i < question_str_arr.length - 1; i++) {
+				question_num_arr.push(question_str_arr[i].substr(question_str_arr[i].length - 3, question_str_arr[i].length - 1).replace(/,/g, " ").trim());
+				
+				if (question_str_arr[i].indexOf("19") >= 0) {
+					question_year_arr.push(question_str_arr[i].substr(question_str_arr[i].indexOf("19"), question_str_arr[i].indexOf("19") + 2).replace(/,/g, " ").trim());				
+				}
+			
+				if (question_str_arr[i].indexOf("20") >= 0) {
+					question_year_arr.push(question_str_arr[i].substr(question_str_arr[i].indexOf("20"), question_str_arr[i].indexOf("20") + 2).split(",")[0].trim());
+				}
+			
+			}
+
+			for (var j in question_year_arr) {
+				//var curr_year = question_year_arr[j];
+				data.push({"year": question_year_arr[j], "value": question_num_arr[j]});
+				/*console.log(curr_year);
+				if (curr_year in years) {
+					years[curr_year].push(question_num_arr[j]);
+				} else {
+					years[curr_year] = [question_num_arr[j]];
+				}*/
+			}
+
+			/*console.log(years);
+
+			for (var k in years) {
+				var temp_dict = {};
+				temp_dict["year"] = k
+				temp_dict["value"] = 
+				
+				/*for (var l in years[k])
+					temp_dict["value_" + l] = years[k][l];
+
+				data.push(temp_dict);
+			}*/
+
+			if (data.length > 1)
+				makeBarGraph(data);
+		}
+
 		if (question.treatment_type.toLowerCase() == 'treatment_s') {
 			$("#question-treatment").append("<div class = 'font-black bold' id = 'question-footnote'>" + capitalize(question.treatment_s_footnote) + "</div>")
 		}
@@ -438,18 +494,6 @@ function submitQuestionnaire(answers, petitions) {
 	});
 }
 
-function submitUserInfo() {
-	var user = d3.select(".user-info").data()[0];
-	$.ajax({
-		url: '/api/sendUser',
-		method: 'POST',
-		contentType: 'application/json',
-		data: JSON.stringify(user),
-		success: function(response) {
-			console.log(response);
-		}
-	});
-}
 
 function getAllQuestions(questionnaire) {
 	var questionIds = [];

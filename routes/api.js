@@ -261,6 +261,95 @@ router.post('/api/petitionClick', function(req, res, next) {
 
 });
 
+
+router.post('/api/getIdentityTreatment', function(req, res, next) {
+	var db = req.db;
+	var data = req.body;
+
+	// Get questions using identity treatment
+	var questions = data.questions;
+
+	// Get user's demographics to calculate identity
+	var demographics = data.demographics;
+
+	// Find coefficients for corresponding questions
+	db.coefficients.find({ name: "coefficients", type: {$in: questions} }, function(err, coef_questions) {
+
+		// Get all code values to translate demographics information
+		db.coefficients.find({ name: "demographics_code" }, function(err, codes_init) {
+			var user_identities = {};
+			var codes = {};
+
+			for (var i in coef_questions) {
+
+				var curr_question = coef_questions[i];
+				var curr_user_identity = 0;
+
+				// For each demographic code that we have identity values for
+				for (var k in codes_init)
+					codes[codes_init[k].type] = codes_init[k];
+
+				for (var curr_demo in demographics) {
+
+					var curr_demo_str = "_I" + curr_demo.replace(/_/g, "");
+
+					// Get the user's demographic info
+					var user_demo = demographics[curr_demo];
+
+					// If we have a code for that demographic
+					if (curr_demo in codes) {
+						// First get code data
+						var curr_code = codes[curr_demo];
+
+						// Get corresponding code number and append it to end of string
+						curr_demo_str += "_" + curr_code[user_demo];
+
+						if (curr_question[curr_demo_str] != undefined) {
+							// Using string, we can now get the coef value
+							var curr_coef_val = curr_question[curr_demo_str];
+
+							// Multiply their coefficient value by their information value
+							// and add to user's identity value
+							curr_user_identity += curr_coef_val;
+						}
+					}
+
+					// Now handle everything that doesn't have a code
+					// If the coefficient is just the value * coef
+					else if (curr_demo_str in curr_question) {
+						
+						if (curr_question[curr_demo_str] != undefined) {
+							curr_user_identity += user_demo * curr_question[curr_demo_str];
+						
+							if (curr_demo == "age")
+								curr_user_identity += user_demo * curr_question["_Iage2"];	
+						
+						}
+
+					}
+
+					// If the coefficient value is just appended to the coefficient name
+					// ie. _Igender_male
+					else if (Object.keys(curr_question).indexOf(curr_demo_str) >= 0) {
+						curr_demo_str += "_" + user_demo.toLowerCase();
+						curr_user_identity += curr_question[curr_demo_str];
+					}
+
+					user_identities[curr_question.type] = curr_user_identity + curr_question["_cons"];
+				}
+			}
+
+			res.send(user_identities);
+
+		});
+
+	});
+
+
+});
+
+
+
 module.exports = router;
 
 

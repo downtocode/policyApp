@@ -615,18 +615,6 @@ function submitQuestionnaire(answers) {
 	});
 }
 
-function submitUserInfo(data) {
-	var user = d3.select(".user-info").data()[0];
-	$.ajax({
-		url: '/api/sendUser',
-		method: 'POST',
-		contentType: 'application/json',
-		data: JSON.stringify(user),
-		success: function(response) {
-			console.log(response);
-		}
-	});
-}
 
 function addMusicKnowledge() {
 	$("iframe").after("<div id = 'importance-section'><div class = 'font-black importance-header'>Have you heard this song before?</div></div>");
