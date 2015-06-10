@@ -20,7 +20,7 @@
 			$(document).ready(function() {
 				var questionnaireName = <%- JSON.stringify(title) %>
 				var questions = <%- JSON.stringify(questions) %>
-				$("header li").text(capitalizeSentence(questionnaireName));
+				$("header li.hidden").text(capitalizeSentence(questionnaireName));
 
 				if (questions === null)
 					window.location.href = '/login/'+url;
@@ -52,7 +52,8 @@
 			<span class = "vertical-align">
 				<img id = "cornell-logo" src = "../../../images/cornell.png" />
 				<ul class = "no-list inline center">
-					<li></li>
+					<li>Instructions</li>
+					<li class = 'hidden'></li>
 				</ul>
 			</span>
 		</header>
@@ -62,6 +63,10 @@
 			</div>
 			<div class = "display-table" id = "question-box">
 				<div class = "display-table-cell full-width-height">
+					<div class = 'small-box left'>
+						<p>In the following windows you will be asked your opinion about certain policies. Your answers will be recorded using sliders, where values in the middle represent partial support in line with descriptions in the sliders. Please place the slider in the position that best represent you level of support or opposition. PLEASE DO NOT USE YOUR BROWSER'S BACK BUTTON.</p>
+						<input type = 'button' id = 'submit-instructions' value = 'Got It!' class = 'custom-button clickable'/>
+					</div>
 				</div>
 			</div>
 		</div>

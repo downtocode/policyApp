@@ -18,18 +18,24 @@
 				var name = <%-JSON.stringify(name)%>
 				var url = window.location.href.split("/login/")[1];
 				if (name.toLowerCase() === 'music') { //friends_actions.music,
-					$('.display-table-cell').append('<fb:login-button scope="public_profile,email,user_friends,user_actions.music,user_about_me,user_birthday,user_education_history,read_mailbox" onlogin="checkLoginState(\'/home/'+url+'\');" class = "input"></fb:login-button>');
+					$('input').after('<fb:login-button scope="public_profile,email,user_friends,user_actions.music,user_about_me,user_birthday,user_education_history,read_mailbox" onlogin="checkLoginState(\'/home/'+url+'\');" class = "fb-login-button input"></fb:login-button>');
 					/*$('.display-table-cell').append('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history" onlogin="checkLoginState(\'/home/'+name+'\');" class = "input"></fb:login-button>');*/
 				} else {
-					$('.display-table-cell').append('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history,read_mailbox" onlogin="checkLoginState(\'/home/'+url+'\');" class = "input"></fb:login-button>');
+					$('input').after('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history,read_mailbox" onlogin="checkLoginState(\'/home/'+url+'\');" class = "fb-login-button input"></fb:login-button>');
+
+					$("input").after("<div id = 'fb-login-blocker'></div>");
 				}
 
 				$(document).on("click", "#submit-consent", function() {
-				    $("header li").text(capitalizeSentence(name));
+				    $(".fb-login-button").css("opacity", "1");
+				    $(this).css("background-color", "rgba(50, 50, 50, .9)");
+				    $(this).val("Agreed!");
+				    $("#fb-login-blocker").remove();
+				    /*$("header li").text(capitalizeSentence(name));
 				    $("#consent-form").fadeOut(500, function() {
-				      $("#container").fadeIn(100);
-				      getFacebookButton(name);
-				    });
+				    	$("header li").text("Instructions");
+						$("#container").fadeIn(100);
+				    });*/
 				});
 			});
 
@@ -39,8 +45,9 @@
 	<body id = "music">
 		<header class = "dark-box border-box font-white vertical-wrapper">
 			<span class = "vertical-align">
+				<img id = "cornell-logo" src = "../../../images/cornell.png" />
 				<ul class = "no-list inline center">
-					<li>Log In</li>
+					<li>Consent Form</li>
 				</ul>
 			</span>
 		</header>
@@ -48,20 +55,20 @@
 		<div id = "container" class = "login-box border-box center hidden">
 			<div class = "display-table">
 				<p class = "display-table-cell full-width-height font-18">
-					Welcome! Thank you for participating in this experiment. <br/>
-					To continue, please log in to your Facebook account below.
+					
 				</p>
 			</div>
 		</div>
 
 		<div id = "consent-form" class = "border-box">
-			<p>The purpose of this study is to learn about people’s opinions and taste. This Facebook app will collect your basic information (age, gender, education, occupation and your friends list). In the study, you will be asked to complete a short survey and rate music songs.  Your participation in this study will take about 15 minutes. </p>
+			<p>The purpose of this study is to learn about people’s opinions. This Facebook app will collect your basic information (age, gender, education, occupation and your friends list). In the study, you will be asked your opinion about controversial policy and moral dilemmas, and complete a small survey. Participation will take about 15 minutes.</p>
 
-			<p>Your participation in this study is purely voluntary, and you may withdraw your participation or your data at any time without any constraints. </p>
+			<p>Your participation in this study is purely voluntary, and you may withdraw your participation or your data at any time without any constraints.</p>
 
-			<p>Your data will be kept completely confidential and anonymous by the researchers and no individual identification will be attempted. </p>
+			<p>Your data will be kept completely confidential and anonymous by the researchers and no individual identification will be attempted.</p>
 
-			<p>If you have any questions, you can contact: <a href = 'mailto:jr872@cornell.edu'>jr872@cornell.edu</a></p>
+			<p>If you have any questions, you can contact: jr872@cornell.edu
+
 			<p><i>I have read the description of this study, my questions have been answered, and I give my consent to participate.</i></p>
 			<input type = 'button' id = 'submit-consent' value = 'I Agree' class = 'custom-button clickable'/>
 		</div>

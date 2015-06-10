@@ -1,3 +1,14 @@
+$(document).ready(function() {
+	$(document).on("click", "#submit-instructions", function() {
+		$(".display-table-cell").children().fadeOut(500, function() {
+			$(this).remove();
+			$("li:first").remove();
+			$("li.hidden").show();
+			showQuestion(0);
+		});
+	});
+});
+
 function capitalize(string) {
 	return string.charAt(0).toUpperCase() + string.substring(1,string.length);
 }
@@ -235,8 +246,6 @@ function createTreatments(accessToken, questions) {
 				emptyArr.push("|");
 			}
 			$("#user-questions").val(emptyArr);
-
-			showQuestion(0);
 
 			getIdentityTreatments(identity_treatments);
 		}

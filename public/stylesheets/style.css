@@ -602,6 +602,17 @@ input[type=button]:disabled {
 	margin-right: auto;
 }
 
+.small-box {
+	width: 65%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#submit-instructions {
+	float: right;
+	margin-top: -10px;
+}
+
 
 /***************** CONSENT FORM ******************/
 #consent-form, #references {
@@ -622,12 +633,29 @@ input[type=button]:disabled {
 
 #submit-consent {
 	position: absolute;
-	right: 25px; 
+	right: 125px; 
+	font-size: 15px !important;
+	margin-top: 12px;
 }
 
 
 #all-questions {
 	width: 40%;
+}
+
+.fb-login-button {
+	right: 40px;
+	position: absolute !important;
+	opacity: .2;
+}
+
+#fb-login-blocker {
+	background-color: transparent;
+	height: 50px;
+	width: 75px;
+	z-index: 1000000000000;
+	right: 50px;
+	position: absolute !important;
 }
 
 /***************** INVITE FRIENDS MODAL ******************/

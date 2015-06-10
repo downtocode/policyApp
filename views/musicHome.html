@@ -18,7 +18,7 @@
 			$(document).ready(function() {
 				var questionnaireName = <%- JSON.stringify(title) %>
 				var questions = <%- JSON.stringify(questions) %>
-				$("header li").text(capitalizeSentence(questionnaireName));
+				$("header li:hidden").text(capitalizeSentence(questionnaireName));
 
 				getSongs(questions, function(response) {
 					createTreatments(accessToken, questions);
@@ -48,7 +48,8 @@
 		<header class = "dark-box border-box font-white vertical-wrapper">
 			<span class = "vertical-align">
 				<ul class = "no-list inline center">
-					<li>Rate These Songs</li>
+					<li>Instructions</li>
+					<li class = 'hidden'></li>
 				</ul>
 			</span>
 		</header>
@@ -58,6 +59,10 @@
 			</div>
 			<div class = "display-table" id = "question-box">
 				<div class = "display-table-cell full-width-height">
+					<div class = 'small-box left'>
+						<p>In the following windows you will be show some songs. Please listen to the songs (or parts of the songs if you prefer) and rate how much you like them. After the rating, you will be asked if you knew that song. Answers will be recorded using sliders, where values in the middle represent how well you know the song (e.g., “sounds familiar”). Please place the slider in the position that best represent your familiarity with the song.</p>
+						<input type = 'button' id = 'submit-instructions' value = 'Got It!' class = 'custom-button clickable'/>
+					</div>
 				</div>
 			</div>
 		</div>
