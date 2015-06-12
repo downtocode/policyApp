@@ -256,71 +256,38 @@ function showQuestion(num) {
 }
 
 function showTreatment(num) {
-	//$("#show-treatment").remove();
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 
 	$("#question-text").prepend("<div id = 'question-title'>" + capitalizeSentence(question.title) +"</div>");
 	
 	if (question.treatment_type.toLowerCase() != 'control') {
-		if (question.treatment != undefined && question.treatment.indexOf("[") >= 0) {
-			var question_arr = question.treatment.split("[");
-			var reference = question_arr[1].split("]")[0];
-			$("#question-text").append("<div class = 'font-black font-15 italics bold' id = 'question-treatment'>" + 
-				capitalize(question_arr[0]) + "<div id = 'question-treatment-reference'>[Click <a href='/references#"+reference+"' target='_blank'>here</a> to see reference]</div></div>");
-		} else
-			$("#question-text").append("<div class = 'font-black font-15 italics bold' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
-		
-
-		if (question.treatment.indexOf("%") >= 0 && question.treatment_type.toLowerCase() != "treatment_s" && question.title != "moral_dilemma") {
-			var question_str_arr = question.treatment.split("%");
-			var question_num_arr = [];
-			var question_year_arr = [];
-			var years = {}
+		if (question.treatment.indexOf("|") >= 0 && question.treatment_type.toLowerCase() != "treatment_s" && question.title != "moral_dilemma") {
 			var data = [];
+			var arr = question.treatment.split('|');
 
-			for (var i = 0; i < question_str_arr.length - 1; i++) {
-				question_num_arr.push(question_str_arr[i].substr(question_str_arr[i].length - 3, question_str_arr[i].length - 1).replace(/,/g, " ").trim());
-				
-				if (question_str_arr[i].indexOf("19") >= 0) {
-					question_year_arr.push(question_str_arr[i].substr(question_str_arr[i].indexOf("19"), question_str_arr[i].indexOf("19") + 2).replace(/,/g, " ").trim());				
-				}
-			
-				if (question_str_arr[i].indexOf("20") >= 0) {
-					question_year_arr.push(question_str_arr[i].substr(question_str_arr[i].indexOf("20"), question_str_arr[i].indexOf("20") + 2).split(",")[0].trim());
-				}
-			
-			}
+			data.push({"year": arr[1].split(":")[0].trim(), "value": arr[1].split(":")[1].trim()});
+			data.push({"year": arr[2].split(":")[0].trim(), "value": arr[2].split(":")[1].trim()});
 
-			for (var j in question_year_arr) {
-				//var curr_year = question_year_arr[j];
-				data.push({"year": question_year_arr[j], "value": question_num_arr[j]});
-				/*console.log(curr_year);
-				if (curr_year in years) {
-					years[curr_year].push(question_num_arr[j]);
-				} else {
-					years[curr_year] = [question_num_arr[j]];
-				}*/
-			}
+			makeBarGraph(data);
 
-			/*console.log(years);
+			$("#question-text").append("<div class = 'font-black font-15 italics bold' id = 'question-treatment'>" + 
+				capitalize(arr[0]) + "</div>");
 
-			for (var k in years) {
-				var temp_dict = {};
-				temp_dict["year"] = k
-				temp_dict["value"] = 
-				
-				/*for (var l in years[k])
-					temp_dict["value_" + l] = years[k][l];
-
-				data.push(temp_dict);
-			}*/
-
-			if (data.length > 1)
-				makeBarGraph(data);
+		} else {
+			$("#question-text").append("<div class = 'font-black font-15 italics bold' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
 		}
 
+		if ( (question.treatment_type === 'treatment_s' && question.reference_status != undefined) ||
+			(question.treatment_type === 'treatment_g' && question.reference_global != undefined) ) {
+
+			var reference = question["ref_num_" + question.treatment_type.split("_")[1]];
+
+			$("#question-treatment").append("<div id = 'question-treatment-reference'>[Click <a href='/references#"+reference+"' target='_blank'>here</a> to see reference]</div></div>");
+		} 
+		
+
 		if (question.treatment_type.toLowerCase() == 'treatment_s') {
-			$("#question-treatment").append("<div class = 'font-black bold' id = 'question-footnote'>" + capitalize(question.treatment_s_footnote) + "</div>")
+			$("#question-treatment").append("<div class = 'font-black bold' id = 'question-footnote'>" + capitalize(question.treatment_s_footnote) + "</div>");
 		}
 
 	}
@@ -437,7 +404,7 @@ function getAllAnswers() {
 		var treatment = question.treatment_type;
 		var localType = question.local_type;
 		tempArr = answersArr[i].split("|");
-		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment, local_type: local_type};
+		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment, treatment_l_type: local_type};
 		userAnswers.push(userAnswer);
 
 		if (question.type.toLowerCase() == 'range') {
@@ -564,5 +531,47 @@ function getQuestion(num) {
 	return d3.selectAll(".question-selector-circle").data()[num];
 }
 
+/* var question_str_arr = question.treatment.split("%");
+			var question_num_arr = [];
+			var question_year_arr = [];
+			var years = {}
+			var data = [];
+
+			for (var i = 0; i < question_str_arr.length - 1; i++) {
+				question_num_arr.push(question_str_arr[i].substr(question_str_arr[i].length - 3, question_str_arr[i].length - 1).replace(/,/g, " ").trim());
+				
+				if (question_str_arr[i].indexOf("19") >= 0) {
+					question_year_arr.push(question_str_arr[i].substr(question_str_arr[i].indexOf("19"), question_str_arr[i].indexOf("19") + 2).replace(/,/g, " ").trim());				
+				}
+			
+				if (question_str_arr[i].indexOf("20") >= 0) {
+					question_year_arr.push(question_str_arr[i].substr(question_str_arr[i].indexOf("20"), question_str_arr[i].indexOf("20") + 2).split(",")[0].trim());
+				}
+			
+			}
+
+			for (var j in question_year_arr) {
+				//var curr_year = question_year_arr[j];
+				data.push({"year": question_year_arr[j], "value": question_num_arr[j]});
+				/*console.log(curr_year);
+				if (curr_year in years) {
+					years[curr_year].push(question_num_arr[j]);
+				} else {
+					years[curr_year] = [question_num_arr[j]];
+				}
+			}
+
+			/*console.log(years);
+
+			for (var k in years) {
+				var temp_dict = {};
+				temp_dict["year"] = k
+				temp_dict["value"] = 
+				
+				/*for (var l in years[k])
+					temp_dict["value_" + l] = years[k][l];
+
+				data.push(temp_dict);
+			}*/
 
 

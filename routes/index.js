@@ -20,7 +20,7 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 	}
 	else {
 		var questionnaire = name.replace(/-/g, " ").toLowerCase();
-		var lim = 10;
+		var lim = 15;
 		var query = {questionnaire: questionnaire};
 
 		if (name.toLowerCase() === "music") {
@@ -62,7 +62,11 @@ router.get('/createQuestionnaire', function(req, res, next) {
 });
 
 router.get('/references', function(req, res, next) {
-	res.render('references');
+	var db = req.db;
+
+	db.questions.find({questionnaire: 'policy'}, {reference_global: 1, reference_status: 1}, function(err, references) {
+		res.render('references', {references: references});
+	});
 });
 
 router.get('/', function(req, res, next) {

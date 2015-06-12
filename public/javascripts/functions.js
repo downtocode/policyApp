@@ -104,6 +104,19 @@ function shuffle(array) {
 
 
 function createTreatments(accessToken, questions) {
+	var count = 1;
+	for (var i = 0; i < questions.length; i++) {
+		if (questions[i].reference_global != undefined) {
+			questions[i].ref_num_g = count;
+			count++;
+		}
+
+		if (questions[i].reference_status != undefined) {
+			questions[i].ref_num_s = count;
+			count++;
+		}
+	}
+
 	shuffle(questions);
 
 	// gets friends using app

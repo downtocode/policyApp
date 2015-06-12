@@ -8,10 +8,13 @@
 
 		<script>
 			$(document).ready(function() {
+				//var references = <%- JSON.stringify(references) %> 
+				//console.log( references );
 				var url = window.location.href;
 				var id = url.split("#")[1];
-				$("#"+id).addClass('bold');
-				$("#"+id).addClass('italics');
+				console.log("li:nth-child("+id+")");
+				$("li:nth-child("+id+")").addClass('bold');
+				$("li:nth-child("+id+")").addClass('italics');
 			});
 		</script>
 	</head>
@@ -29,22 +32,10 @@
 
 		<div id = "references" class = "border-box">
 			<ol>
-				<li id = '1'>Hauser, Marc, Fiery Cushman, Liane Young, R. Kang-Xing Jin, and John Mikhail. (2007). A Dissociation Between Moral Judgments and Justifications. Mind & Language, 1-21. Print.</li>
-				<li id = '2'>Bourget, David, and David J. Chalmers. (2013). What Do Philosophers Believe? Philosophical Studies, 465-500. Print.</li>
-				<li id = '3'>http://www.gallup.com/poll/181502/fewest-americans-satisfied-abortion-policies-2001.aspx?utm_source=ABORTION&utm_medium=topic&utm_campaign=tiles</li>
-				<li id = '4'>Donohue, J. J., III, & Levitt, S. D. (2001). The Impact of Legalized Abortion on Crime. The Quarterly Journal of Economics, 116(2), 379–420. http://doi.org/10.2307/2696468?ref=no-x-route:0a57a57a2e1f9a946aec09c7824f4bf0</li>
-				<li id = '5'>http://www.gallup.com/poll/170801/americans-say-sex-couples-entitled-adopt.aspx?utm_source=same%20sex%20marriage&utm_medium=search&utm_campaign=tiles</li>
-				<li id = '6'>Mohr, R. D. (1995). Case for Gay Marriage, The. Notre Dame JL Ethics & Pub Pol'y.</li>
-				<li id = '7'>Link: http://www.gallup.com/poll/170789/new-record-highs-moral-acceptability.aspx?utm_source=stem%20cell&utm_medium=search&utm_campaign=tiles</li>
-				<li id = '8'>Sandel, M. J. (2004). Embryo ethics - The moral logic of stem-cell research. New England Journal of Medicine, 351(3), 207–209. http://doi.org/10.1056/NEJMp048145</li>
-				<li id = '9'>http://www.gallup.com/poll/179045/less-half-americans-support-stricter-gun-laws.aspx?utm_source=gun%20control&utm_medium=search&utm_campaign=tiles</li>
-				<li id = '10'>Lott, J. R., Jr, & Mustard, D. B. (1997). Crime, Deterrence, and Right-to-Carry Concealed Handguns. The Journal of Legal Studies, 26(1), 1–69. http://doi.org/10.1086/467988</li>
-				<li id = '11'>http://www.gallup.com/poll/163043/americans-disapprove-government-surveillance-programs.aspx?utm_source=internet%20privacy&utm_medium=search&utm_campaign=tiles</li>
-				<li id = '12'>Barnett, R. (2015). Why the NSA Data Seizures Are Unconstitutional. Harvard Journal of Law and Public Policy.</li>
-				<li id = '13'>http://www.gallup.com/poll/1591/Computers-Internet.aspx?utm_source=online%20privacy&utm_medium=search&utm_campaign=tiles</li>
-				<li id = '14'>Gross, R., Acquisti, A., & Heinz, H. J. (2005). Information revelation and privacy in online social networks (p. 71). Presented at the Proceedings of the 2005 ACM workshop on Privacy in the electronic society - WPES '05, New York, New York, USA: ACM Press. http://doi.org/10.1145/1102199.1102214</li>
-				<li id = '15'>Link: http://www.gallup.com/poll/181844/percentage-saying-vaccines-vital-dips-slightly.aspx?utm_source=vaccination&utm_medium=search&utm_campaign=tiles</li>
-				<li id = '16'>Jain A, Marshall J, Buikema A, Bancroft T, Kelly JP, Newschaffer CJ. (2015). Autism Occurrence by MMR Vaccine Status Among US Children With Older Siblings With and Without Autism. JAMA, 313(15):1534-1540. doi:10.1001/jama.2015.3077.</li>
+				<% references.forEach(function(reference, i) { %>
+					<li id = '<%= i * 2 +1 %>'><%= reference.reference_global %></li>
+					<li id = '<%= i * 2 + 2 %>'><%= reference.reference_status %></li>
+				<% }); %>
 			</ol>
 		</div>
 

@@ -325,8 +325,10 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 							} else
 								curr_user_identity += user_demo * curr_question[curr_demo_str];
 						
-							if (curr_demo == "age")
+							if (curr_demo == "age") {
+								// square age, divide by 1000, multiply by age
 								curr_user_identity += user_demo * curr_question["_Iage2"];	
+							}
 						
 						}
 
