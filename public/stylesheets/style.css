@@ -726,8 +726,8 @@ input[type=button]:disabled {
 	margin-top: 30px;
 }
 
-select[name=location] {
-	width: 50px;
+select[name=state] {
+	width: 50px !important;
 	font-size: 15px;
 }
 

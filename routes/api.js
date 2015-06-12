@@ -319,7 +319,11 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 					else if (curr_demo_str in curr_question) {
 						
 						if (curr_question[curr_demo_str] != undefined) {
-							curr_user_identity += user_demo * curr_question[curr_demo_str];
+							if (curr_demo == "children") {
+								var temp = (curr_question[curr_demo_str] == 0) ? 0 : 1;
+								curr_user_identity += user_demo * temp;
+							} else
+								curr_user_identity += user_demo * curr_question[curr_demo_str];
 						
 							if (curr_demo == "age")
 								curr_user_identity += user_demo * curr_question["_Iage2"];	

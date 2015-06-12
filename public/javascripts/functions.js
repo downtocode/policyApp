@@ -114,25 +114,28 @@ function createTreatments(accessToken, questions) {
 		dataType: 'jsonp',
 		success: function(friends) {
 			var local_treatments = [];
+			var hasLocal = 0;
 			// see how many friends are also using the app
 			// which means they have answers
 			// if more than 5, we want to use local treatments
-			if (friends.data.length > 5) {
-				var app_friends = [];
-				for (var i in friends.data)
-					app_friends.push(friends.data[i].id);
+			if (friends.data.length > 5)
+				hasLocal = Math.floor(Math.random() * 2) + 1;
 
-				/*app_friends.push('1368751615');
-				app_friends.push('10205628652891829');
-				app_friends.push('10153306689188552');
-				app_friends.push('10152909706628845');*/
+			if (hasLocal || hasLocal == 1) {
+					var app_friends = [];
+					for (var i in friends.data)
+						app_friends.push(friends.data[i].id);
 
-				// set up question treatments
-				var treatments = ['treatment_g', 'treatment_s', 'control', 'treatment_l'];
-				shuffle(treatments);
-				treatments.push('treatment_i');
-				var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control', 'treatment_l', 'treatment_i'];
+					/*app_friends.push('1368751615');
+					app_friends.push('10205628652891829');
+					app_friends.push('10153306689188552');
+					app_friends.push('10152909706628845');*/
 
+					// set up question treatments
+					var treatments = ['treatment_g', 'treatment_s', 'control', 'treatment_l'];
+					shuffle(treatments);
+					treatments.push('treatment_i');
+					var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control', 'treatment_l', 'treatment_i'];
 			} else { // otherwise just use regular treatments
 				var treatments = ['treatment_g', 'treatment_s', 'control'];
 				shuffle(treatments);
@@ -169,6 +172,7 @@ function createTreatments(accessToken, questions) {
 				var question = questions[q];
 				var treatment = all_treatments[q];
 				question.treatment_type = treatment;
+				question.local_type = hasLocal;
 				
 				if (treatment == 'treatment_l') {
 					local_treatments.push(q);
@@ -203,7 +207,7 @@ function createTreatments(accessToken, questions) {
 				
 			}
 
-			if (friends.data.length > 5) {
+			if (hasLocal || hasLocal == 1) {
 				$.ajax({
 					url: '/api/getFriendData',
 					contentType: 'application/json',
@@ -272,10 +276,12 @@ function askDemographics() {
 				$(this).hide();
 				var questionnaire = $("header li").text().toLowerCase();
 				var musicNoDemo = ['vote', 'vote_next', 'political_upbringing'];
+				var policyNoDemo = ['music_play', 'music_play_years', 'music_taste', 'music_childhood'];
 
 				// Checks for what information we are missing
 				for (var i in dataWanted) {
-					if ( !(dataWanted[i].name in data) && ( (questionnaire === 'policy') || ( questionnaire === 'music' && musicNoDemo.indexOf(dataWanted[i].name) == -1 ) ) ) {
+					if ( !(dataWanted[i].name in data) && ( (questionnaire === 'policy' && policyNoDemo.indexOf(dataWanted[i].name) == -1 ) || 
+						( questionnaire === 'music' && musicNoDemo.indexOf(dataWanted[i].name) == -1 ) ) ) {
 
 						if (dataWanted[i].type.toLowerCase() == 'text')
 							$("#question-text").append("<div class = 'font-15 demographics-header'>" +
@@ -306,7 +312,9 @@ function askDemographics() {
 							}
 						} else if (dataWanted[i].type.toLowerCase() == 'select') {
 							var values = dataWanted[i].values.split(",");
-							$(".demographics-header:first").after("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) + 
+							var location_prev = ( questionnaire === 'music' ) ? $("input[type=text]:last") : $("input[type=range]:last");
+
+							$(location_prev).after("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) + 
 								": <select name = '" + dataWanted[i].name + "'></div>");
 							for (var j in values) {
 								$("select:last").append("<option value = '"+values[j].trim()+"'>" + capitalize(values[j]) + "</option>");		
@@ -319,28 +327,6 @@ function askDemographics() {
 
 				if (!hasAllData)
 					$("#question-text").prepend("<br/>Now we would like to know what people like you believe. Please answer a few questions about yourself.");
-
-				// Asks extra questions
-				/*$("#question-text").append("<br/>How are you feeling?<br/>"+
-					"<input type = 'range' name='feeling' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
-
-				$(".importance-list").append("<li class = 'inline-block center'>Very<br/>Happy</li>" +
-					"<li class = 'inline-block center'>Happy</li>" +
-					"<li class = 'inline-block center'>Stressed</li>" +
-					"<li class = 'inline-block center'>Anxious</li>" +
-					"<li class = 'inline-block center'>Depressed</li>");
-
-				$(".importance-list li").width("20%");
-
-				$("#question-text").append("<br/>Political Views<br/>" +
-					"<input type = 'range' name='political-view' min='0' max='100'><ul class = 'importance-list no-list font-15'></ul>");
-				
-				$(".importance-list:last").append("<li class = 'inline-block left'>Democrat</li>" +
-					"<li class = 'inline-block right'>Republican</li>");
-
-				$(".importance-list:last li").width("50%");
-
-				*/
 
 				$("#question-text").append("<input type = 'button' id = 'skip-demographics' value = 'Skip' class = 'demographics-next clickable'/>" +
 					"<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable' disabled/>");

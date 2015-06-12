@@ -435,8 +435,9 @@ function getAllAnswers() {
 		var question = d3.select(this).data()[0];
 		var questionID = question._id;
 		var treatment = question.treatment_type;
+		var localType = question.local_type;
 		tempArr = answersArr[i].split("|");
-		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment};
+		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment, local_type: local_type};
 		userAnswers.push(userAnswer);
 
 		if (question.type.toLowerCase() == 'range') {
