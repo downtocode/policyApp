@@ -415,7 +415,9 @@ function makeBarGraph(data) {
 	$(svg).css("margin-left", -1 * margin.left + "px");
  
  	x.domain(data.map(function(d) { return d.year; }));
-	y.domain([0, d3.max(data, function(d) { return d.value; })]);
+	y.domain([0, d3.max(data, function(d) { return +d.value; })]);
+
+	console.log(d3.max(data, function(d) { return +d.value; }));
 
 	svg.append("g")
 		.attr("class", "x axis")

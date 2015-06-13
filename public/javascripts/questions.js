@@ -262,16 +262,19 @@ function showTreatment(num) {
 	
 	if (question.treatment_type.toLowerCase() != 'control') {
 		if (question.treatment.indexOf("|") >= 0 && question.treatment_type.toLowerCase() != "treatment_s" && question.title != "moral_dilemma") {
-			var data = [];
 			var arr = question.treatment.split('|');
+			$("#question-text").append("<div class = 'font-black font-18 bold' id = 'question-treatment'>" + 
+				capitalize(arr[0]) + "<br/></div>");
+
+			var data = [];
+			
 
 			data.push({"year": arr[1].split(":")[0].trim(), "value": arr[1].split(":")[1].trim()});
 			data.push({"year": arr[2].split(":")[0].trim(), "value": arr[2].split(":")[1].trim()});
 
-			makeBarGraph(data);
+			console.log(data);
 
-			$("#question-text").append("<div class = 'font-black font-15 italics bold' id = 'question-treatment'>" + 
-				capitalize(arr[0]) + "</div>");
+			makeBarGraph(data);
 
 		} else {
 			$("#question-text").append("<div class = 'font-black font-15 italics bold' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
@@ -282,7 +285,7 @@ function showTreatment(num) {
 
 			var reference = question["ref_num_" + question.treatment_type.split("_")[1]];
 
-			$("#question-treatment").append("<div id = 'question-treatment-reference'>[Click <a href='/references#"+reference+"' target='_blank'>here</a> to see reference]</div></div>");
+			$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#"+reference+"' target='_blank'>here</a> to see reference]</div></div>");
 		} 
 		
 
