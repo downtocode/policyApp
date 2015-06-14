@@ -632,12 +632,20 @@ input[type=button]:disabled {
 }
 
 #submit-consent {
-	position: absolute;
-	right: 125px; 
+	/*position: absolute;
+	right: 125px; */
 	font-size: 15px !important;
 	margin-top: 12px;
 }
 
+#consent-wrapper {
+	text-align: right;
+	margin-right: 36px;
+}
+
+#consent-addition {
+	margin-top: 10px;
+}
 
 #all-questions {
 	width: 40%;
@@ -750,3 +758,12 @@ svg text {
 rect {
 	fill: steelblue;
 }
+
+.bar-text {
+	fill: #FFF;
+	font-size: 13px;
+}
+
+
+
+

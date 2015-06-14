@@ -439,22 +439,36 @@ function makeBarGraph(data) {
 		.style("text-anchor", "end")
 		.text("Survey Participants (%)");
 
-	svg.selectAll(".bar")
+	var bar = svg.selectAll(".bar")
 			.data(data)
 		.enter()
-		.append("rect")
+		.append("g")
+		.attr("transform", "translate("+x.rangeBand()/4+",0)");
+
+
+	bar.append("rect")
 		.attr("class", "bar")
 		.attr("width", x.rangeBand() / 2)
 		.attr("x", function(d) { return x(d.year); })
 		.attr("y", height)
-		.attr("transform", "translate("+x.rangeBand()/4+",0)")
 		.attr("height", 0)
 		.transition()
 			.duration(750)
 		.attr("y", function(d) { return y(d.value); })
-		.attr("height", function(d) { console.log(y(d.value)); return height - y(d.value); });
+		.attr("height", function(d) { return height - y(d.value); });
 
 
+	bar.append("text")
+		.attr("y", height)
+		.transition()
+			.duration(750)
+		.attr("x", function(d) { return x(d.year); })
+		.attr("y", function(d) { return y(d.value); })
+		.attr("dy", "1.1em")
+		.attr("dx", x.rangeBand() / 6)
+		.style("text-anchor", "start")
+		.attr("class", "bar-text")
+		.text(function(d) { return d.value + "%"; });
 }
 
 

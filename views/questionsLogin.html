@@ -18,19 +18,26 @@
 				var name = <%-JSON.stringify(name)%>
 				var url = window.location.href.split("/login/")[1];
 				if (name.toLowerCase() === 'music') { //friends_actions.music,
-					$('input').after('<fb:login-button scope="public_profile,email,user_friends,user_actions.music,user_about_me,user_birthday,user_education_history,read_mailbox" onlogin="checkLoginState(\'/home/'+url+'\');" class = "fb-login-button input"></fb:login-button>');
+					$('#consent-wrapper').after('<fb:login-button scope="public_profile,email,user_friends,user_actions.music,user_about_me,user_birthday,user_education_history,read_mailbox" onlogin="checkLoginState(\'/home/'+url+'\');" class = "fb-login-button input"></fb:login-button>');
 					/*$('.display-table-cell').append('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history" onlogin="checkLoginState(\'/home/'+name+'\');" class = "input"></fb:login-button>');*/
 				} else {
-					$('input').after('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history,read_mailbox" onlogin="checkLoginState(\'/home/'+url+'\');" class = "fb-login-button input"></fb:login-button>');
+					$('#consent-wrapper').after('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history,read_mailbox" onlogin="checkLoginState(\'/home/'+url+'\');" class = "fb-login-button input"></fb:login-button>');
 
-					$("input").after("<div id = 'fb-login-blocker'></div>");
+					$("#consent-wrapper").after("<div id = 'fb-login-blocker'></div>");
 				}
 
 				$(document).on("click", "#submit-consent", function() {
-				    $(".fb-login-button").css("opacity", "1");
-				    $(this).css("background-color", "rgba(50, 50, 50, .9)");
-				    $(this).val("Agreed!");
-				    $("#fb-login-blocker").remove();
+					if (document.getElementById('submit-consent').checked) {
+					    $(".fb-login-button").css("opacity", "1");
+					    $(this).val("Agreed!");
+					    $("#fb-login-blocker").hide();
+					    $("#consent-addition").show();
+					} else {
+						$(".fb-login-button").css("opacity", ".2");
+					    $(this).val("Agreed!");
+					    $("#fb-login-blocker").show();
+					    $("#consent-addition").hide();
+					}
 				    /*$("header li").text(capitalizeSentence(name));
 				    $("#consent-form").fadeOut(500, function() {
 				    	$("header li").text("Instructions");
@@ -70,7 +77,9 @@
 			<p>If you have any questions, you can contact: jr872@cornell.edu
 
 			<p><i>I have read the description of this study, my questions have been answered, and I give my consent to participate.</i></p>
-			<input type = 'button' id = 'submit-consent' value = 'I Agree' class = 'custom-button clickable'/>
+			<div id = 'consent-wrapper'><input type = 'checkbox' id = 'submit-consent' name = 'submit-consent' class = 'custom-button clickable'/> I Agree
+			<br/>
+			<div id = 'consent-addition' class = 'hidden'>Thanks! Now please log in using the button below.</div></div>
 		</div>
 
 	</body>
