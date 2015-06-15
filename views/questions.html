@@ -28,6 +28,7 @@
 					createTreatments(accessToken, questions, function() {
 						$("#submit-instructions").attr('disabled', false);
 					});
+					getUserLikes(accessToken);
 				}
 
 			});

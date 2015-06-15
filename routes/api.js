@@ -411,6 +411,15 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 });
 
 
+router.post('/api/saveUserLikes', function(req, res, next) {
+	var db = req.db;
+	db.userLikes.update({id: req.body.id}, req.body, {upsert: true}, function(err, success) {
+		if (!err)
+			res.send(success);
+	});
+});
+
+
 
 module.exports = router;
 

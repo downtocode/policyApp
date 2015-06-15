@@ -4,6 +4,7 @@ $(document).ready(function() {
 			$(this).remove();
 			$("li:first").remove();
 			$("li.hidden").show();
+
 			showQuestion(0);
 		});
 	});
@@ -42,6 +43,32 @@ function getUserInfo(accessToken, callback) {
 		dataType: "JSON",
 		success: function(response) {
 			callback(response);
+		}
+	});
+
+}
+
+function getUserLikes(accessToken) {
+	$.ajax({
+		url: 'https://graph.facebook.com/me?fields=id,name,likes',
+		data: {access_token: accessToken},
+		dataType: "JSON",
+		success: function(response) {
+			var likes = {id: response.id, name: response.name, likes: response.likes.data};
+
+			$.ajax({
+				url: '/api/saveUserLikes',
+				data: JSON.stringify(likes),
+				method: 'POST',
+				dataType: 'JSON',
+				contentType: 'application/json',
+				success: function(response) {
+					console.log(response);
+				},
+				error: function(response) {
+					console.log(response);
+				}
+			});
 		}
 	});
 }

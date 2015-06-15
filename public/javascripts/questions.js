@@ -1,3 +1,5 @@
+var prev_time;
+
 $(document).ready(function() {
 
 	// FB init
@@ -223,7 +225,35 @@ $(document).ready(function() {
 });
 
 
+function setTime(d, ind) {
+	if (ind > 0) {
+		curr_time = d.getTime();
+		time_elapsed = curr_time - prev_time;
+		prev_time = curr_time;
+
+		var all_data = d3.selectAll(".question-selector-circle").data();
+		all_data[ind - 1].answer_time = time_elapsed;
+		console.log(prev_time, curr_time, time_elapsed);
+		d3.selectAll(".question-selector-circle").data(all_data);
+	} else {
+		prev_time = d.getTime();
+	}
+}
+
+
+function setDate(d, ind) {
+	var n = d.toLocaleString();
+	var all_data = d3.selectAll(".question-selector-circle").data();
+	all_data[ind].start_time = n;
+	d3.selectAll(".question-selector-circle").data(all_data);
+}
+
+
 function showQuestion(num) {
+	var d = new Date();
+	setTime(d, num);
+	setDate(d, num);
+
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	$("#question-box div").html("<div id = 'question-text'></div>");
 	$("#question-text").empty();
@@ -397,6 +427,9 @@ function getAllAnswers() {
 	var userAnswers = [];
 	var userID = d3.selectAll(".user-info").data()[0].id;
 	var petitions = {};
+	var end_date = new Date();
+	var end_time = end_date.getTime();
+	var total_time = end_date - start_date;
 
 	$(".question-selector-circle").each(function(i) {
 		var question = d3.select(this).data()[0];
@@ -404,7 +437,7 @@ function getAllAnswers() {
 		var treatment = question.treatment_type;
 		var localType = question.local_type;
 		tempArr = answersArr[i].split("|");
-		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment, treatment_l_type: localType};
+		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment, treatment_l_type: localType, start_time: question.start_time, answer_time: question.answer_time};
 		userAnswers.push(userAnswer);
 
 		if (question.type.toLowerCase() == 'range') {
