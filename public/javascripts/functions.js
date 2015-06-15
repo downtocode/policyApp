@@ -103,7 +103,16 @@ function shuffle(array) {
 }
 
 
-function createTreatments(accessToken, questions) {
+function hasIdentityTreatment(questions, treatment_i_start) {
+	for (var i = treatment_i_start; i < questions.length; i++) {
+		if (!questions[i].treatment_i)
+			return false;
+	}
+	return true;
+}
+
+
+function createTreatments(accessToken, questions, callback) {
 	var count = 1;
 	for (var i = 0; i < questions.length; i++) {
 		if (questions[i].reference_global != undefined) {
@@ -116,8 +125,6 @@ function createTreatments(accessToken, questions) {
 			count++;
 		}
 	}
-
-	shuffle(questions);
 
 	// gets friends using app
 	// /me/invitable_friends gets all friends
@@ -172,6 +179,8 @@ function createTreatments(accessToken, questions) {
 			}
 
 			for (var t in treatments) {
+				if (treatments[t] == "treatment_i")
+					var treatment_i_start = all_treatments.length;
 				for (var i = 0; i < numEach; i++)
 					all_treatments.push(treatments[t]);
 				if (extraTreatments.indexOf(treatments[t]) > -1) 
@@ -180,6 +189,13 @@ function createTreatments(accessToken, questions) {
 
 			console.log(all_treatments);
 			var identity_treatments = [];
+
+			if (questions[0].treatment_i != undefined) {
+				do { shuffle(questions); } 
+				while (!hasIdentityTreatment(questions, treatment_i_start));
+			} else {
+				shuffle(questions);
+			}
 
 			for (var q in questions) {
 				var question = questions[q];
@@ -264,7 +280,7 @@ function createTreatments(accessToken, questions) {
 			}
 			$("#user-questions").val(emptyArr);
 
-			getIdentityTreatments(identity_treatments);
+			callback();
 		}
 
 	});
@@ -293,7 +309,7 @@ function askDemographics() {
 
 				// Checks for what information we are missing
 				for (var i in dataWanted) {
-					if ( !(dataWanted[i].name in data) && ( (questionnaire === 'policy' && policyNoDemo.indexOf(dataWanted[i].name) == -1 ) || 
+					if (!(dataWanted[i].name in data) && ( (questionnaire === 'policy' && policyNoDemo.indexOf(dataWanted[i].name) == -1 ) || 
 						( questionnaire === 'music' && musicNoDemo.indexOf(dataWanted[i].name) == -1 ) ) ) {
 
 						if (dataWanted[i].type.toLowerCase() == 'text')
@@ -325,7 +341,8 @@ function askDemographics() {
 							}
 						} else if (dataWanted[i].type.toLowerCase() == 'select') {
 							var values = dataWanted[i].values.split(",");
-							var location_prev = ( questionnaire === 'music' ) ? $("input[type=text]:last") : $("input[type=range]:last");
+							var location_prev = $("input[type=text]:last");
+							//( questionnaire === 'music' ) ? $("input[type=text]:last") : $("input[type=range]:last").after();
 
 							$(location_prev).after("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) + 
 								": <select name = '" + dataWanted[i].name + "'></div>");
@@ -341,7 +358,7 @@ function askDemographics() {
 				if (!hasAllData)
 					$("#question-text").prepend("<br/>Now we would like to know what people like you believe. Please answer a few questions about yourself.");
 
-				$("#question-text").append("<input type = 'button' id = 'skip-demographics' value = 'Skip' class = 'demographics-next clickable'/>" +
+				$("#question-text").append("<br/><input type = 'button' id = 'skip-demographics' value = 'Skip' class = 'demographics-next clickable'/>" +
 					"<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable' disabled/>");
 				
 				// Adds user information to a hidden div
@@ -416,8 +433,6 @@ function makeBarGraph(data) {
  
  	x.domain(data.map(function(d) { return d.year; }));
 	y.domain([0, d3.max(data, function(d) { return +d.value; })]);
-
-	console.log(d3.max(data, function(d) { return +d.value; }));
 
 	svg.append("g")
 		.attr("class", "x axis")
@@ -520,36 +535,7 @@ function submitUserInfo() {
 
 
 function getIdentityTreatments(questionIds, demographics) {
-	questionIds = ['abortion', 'guns', 'government_surveillance', 'same_sex_marriage'];
-	demographics = {age: "23",
-		birthday: "05/24/1992",
-		children: "0",
-		email: "kaitlyn5k@gmail.com",
-		first_name: "Kaitlyn",
-		gender: "female",
-		happiness: "72",
-		id: "1368751615",
-		income: "115,000",
-		last_name: "Kwan",
-		link: "http://www.facebook.com/1368751615",
-		locale: "en_US",
-		state: "NY",
-		marital_status: "Single/Never married",
-		name: "Kaitlyn Kwan",
-		political: "Republican",
-		political_upbringing: "Balanced Mix",
-		race: "Asian / Pacific Islander",
-		relationship_status: "Single",
-		religion: "Christian",
-		sexual_orientation: "Heterosexual",
-		timezone: -4,
-		updated_time: "2015-06-05T06:23:00+0000",
-		verified: true,
-		vote: "Yes",
-		vote_next: "Yes",
-		work: "Wage-employed"
-	};
-
+	console.log(questionIds, demographics);
 	$.ajax({
 		url: "/api/getIdentityTreatment",
 		method: "POST",
@@ -558,6 +544,19 @@ function getIdentityTreatments(questionIds, demographics) {
 		data: JSON.stringify({questions: questionIds, demographics: demographics}),
 		success: function(treatments) {
 			console.log(treatments);
+			var ind = $('.question-selector-circle').index($('.selected'));
+			var all_data = d3.selectAll(".question-selector-circle").data();
+
+			for (var i = ind; i < all_data.length; i++) {
+				all_data[i].treatment = treatments.identities[all_data[i].title];
+			}
+
+			console.log(all_data);
+
+			d3.selectAll(".question-selector-circle").data(all_data);
+
+			showQuestion(ind);
+
 		}
 	});
 }

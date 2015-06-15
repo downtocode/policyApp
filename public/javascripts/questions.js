@@ -73,20 +73,24 @@ $(document).ready(function() {
 		var next_question = d3.selectAll(".question-selector-circle").data()[ind + 1];
 
    		if ( curr_question.treatment_type.toLowerCase() == 'treatment_i' || next_question.treatment_type.toLowerCase() != "treatment_i" || $(".demographics-next").length > 0) {
-   			if ($(this).attr('id') === 'skip-demographics') {
-	   			$(this).remove();
-	   			getNewIdentityTreatments(ind + 1);
-	   			submitUserInfo();
-	   		}
-
    			// Remove this question as the selected one
 			$('.selected').removeClass('selected');
 
 			// Make the next question the selected one
 			$($('.question-selector-circle')[ind]).next().addClass('selected');
 
-			// Show the next question
-			showQuestion(ind + 1);		
+   			if ($(this).hasClass('demographics-next')) {
+   				submitUserInfo();
+   			} else {
+   				if ($(this).attr('id') === 'skip-demographics') {
+		   			$(this).remove();
+		   			getNewIdentityTreatments(ind + 1);
+		   			submitUserInfo();
+		   		} 
+
+				// Show the next question
+				showQuestion(ind + 1);		
+			}
    		} else {
    			$(this).hide();
 			askDemographics();
@@ -187,11 +191,6 @@ $(document).ready(function() {
 	});
 
 
-	$(document).on("click", ".demographics-next", function() {
-		submitUserInfo();
-	});
-
-
 	// If user is done answering all questions about themselves
 	// Time to submit the entire questionnaire!
 	$(document).on("click", "#submit-questionnaire", function() {
@@ -260,7 +259,7 @@ function showTreatment(num) {
 
 	$("#question-text").prepend("<div id = 'question-title'>" + capitalizeSentence(question.title) +"</div>");
 	
-	if (question.treatment_type.toLowerCase() != 'control') {
+	if (question.treatment_type.toLowerCase() != 'control' && question.treatment != undefined) {
 		if (question.treatment.indexOf("|") >= 0 && question.treatment_type.toLowerCase() != "treatment_s" && question.title != "moral_dilemma") {
 			var arr = question.treatment.split('|');
 			$("#question-text").append("<div class = 'font-black font-18 bold' id = 'question-treatment'>" + 
@@ -272,24 +271,22 @@ function showTreatment(num) {
 			data.push({"year": arr[1].split(":")[0].trim(), "value": arr[1].split(":")[1].trim()});
 			data.push({"year": arr[2].split(":")[0].trim(), "value": arr[2].split(":")[1].trim()});
 
-			console.log(data);
-
 			makeBarGraph(data);
+			$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#"+question["ref_num_g"]+"' target='_blank'>here</a> to see reference]</div></div>");
 
 		} else {
+			if (question.treatment_type.toLowerCase() == "treatment_g")
+				$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#"+question["ref_num_g"]+"' target='_blank'>here</a> to see reference]</div></div>");
+
 			$("#question-text").append("<div class = 'font-black font-15 italics bold' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
 		}
 
-		if ( (question.treatment_type === 'treatment_s' && question.reference_status != undefined) ||
-			(question.treatment_type === 'treatment_g' && question.reference_global != undefined) ) {
-
-			var reference = question["ref_num_" + question.treatment_type.split("_")[1]];
-
-			$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#"+reference+"' target='_blank'>here</a> to see reference]</div></div>");
-		} 
-		
-
 		if (question.treatment_type.toLowerCase() == 'treatment_s') {
+			if ( question.reference_status != undefined ) {
+				var reference = question["ref_num_" + question.treatment_type.split("_")[1]];
+				$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#"+reference+"' target='_blank'>here</a> to see reference]</div></div>");
+			}
+
 			$("#question-treatment").append("<div class = 'font-black bold' id = 'question-footnote'>" + capitalize(question.treatment_s_footnote) + "</div>");
 		}
 
@@ -407,7 +404,7 @@ function getAllAnswers() {
 		var treatment = question.treatment_type;
 		var localType = question.local_type;
 		tempArr = answersArr[i].split("|");
-		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment, treatment_l_type: local_type};
+		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment, treatment_l_type: localType};
 		userAnswers.push(userAnswer);
 
 		if (question.type.toLowerCase() == 'range') {
