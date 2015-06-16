@@ -426,6 +426,7 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 					// ie _Igender_male
 					else if (typeof(user_demo) === 'string') {
 						curr_demo_str += "_" + user_demo.toLowerCase();
+						console.log(curr_demo_str);
 						if (Object.keys(curr_question).indexOf(curr_demo_str) >= 0) {
 							if (curr_question[curr_demo_str] != undefined && curr_question[curr_demo_str] != "")
 								curr_user_identity += parseFloat(curr_question[curr_demo_str]);
@@ -449,7 +450,7 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 
 				// Write string for treatment using the greater_50 and less_50 text
 				// From coefficients csv file
-				var curr_str = "Approximately " + Math.round(curr_probability * 10000, 2)/100 + "% of people who share similar demographics to you ";
+				var curr_str = "Approximately " + Math.round(curr_probability * 10000)/100 + "% of people who share similar demographics to you ";
 				user_identities[curr_question.type] = (curr_probability >= .50) ? 
 					curr_str + curr_question.greater_50 + ".":
 					curr_str + curr_question.less_50 + ".";
