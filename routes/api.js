@@ -283,116 +283,172 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 			var user_probabilities = {};
 			var codes = {};
 
+			// For each of the identity questions
 			for (var i in coef_questions) {
 				console.log("starting here ");
 
+				// Get the current question's coefficients
 				var curr_question = coef_questions[i];
+
+				// Set the init identity value to 0
 				var curr_user_identity = 0;
 
-				// For each demographic code that we have identity values for
+				// Reformat the codes so that we have the type/name as the key
+				// ie. codes[location] or codes[income]
+				// makes it easier for look up
 				for (var k in codes_init)
 					codes[codes_init[k].type] = codes_init[k];
 
-				for (var curr_demo in demographics) {
+				console.log(codes);
 
-					var curr_demo_str = "_I" + curr_demo.replace(/_|-/g, "");
+				// For each demographic code that we have a user value for
+				for (var curr_demo in demographics) {
+					console.log(curr_demo);
+
+					// Start making the lookup string 
+					// ALWAYS STARTS WITH _I
+					var curr_demo_str = "_I" + curr_demo.replace(/_/g, "").replace(/-/g,"");
 
 					// Get the user's demographic info
 					var user_demo = demographics[curr_demo];
+					curr_demo = curr_demo.replace(/_/g, "").replace(/-/g,"");
 
-
+					// Income is a special case bc it is in intervals
 					if (curr_demo == "income") {
-						user_demo = user_demo.replace(/\D+/g, "");
+						// Replace any character that is not a number
+						// ie. $ or ,
+						user_demo = parseFloat(user_demo.replace(/\D+/g, ""));
+
+						// Get all of the income keys
 						var income_keys = Object.keys(codes["income"]);
+
+						// If the user provided an answer
 						if (user_demo != "") {
+							// First key uses code 1
 							var prev_key = 1;
+
+							// For each income interval
 							for (var curr_ind in income_keys) {
-								var curr_income = parseInt(income_keys[curr_ind].replace(/\D+/g, ""));
-								if ( isNaN(curr_income) || parseInt(user_demo) < curr_income) {
+								// Again remove any character that is not a number
+								var curr_income = parseFloat(income_keys[curr_ind].replace(/\D+/g, ""));
+
+								// If the income is NotaNumber for some reason,
+								// or it is less than the current interval max
+								// (meaning that it is within that interval),
+								// break out of the loop
+								// else increment prev_key and move onto the next interval
+								// ie. if the keys are [1000, 1500, 2000], the user is 1200, 
+								// and prev_key starts at 1
+								// then 1200 > 1000 so prev_key = 2, and we move to 1500
+								// but 1200 < 1500 so we know 1200 > 1000 and 1200 < 1500
+								// so the corresponding code value is 2
+								if ( isNaN(curr_income) || user_demo < curr_income) {
 									break;
 								} else 
 									prev_key++;
 							}
 
 							
-						} else {
+						} else { // Else they left it blank and will be counted as "Prefer not to answer"
 							prev_key = 10;
 						}
 
+						// Create the rest of the string
+						// ie. _Iincome_2
 						curr_demo_str += "_" + prev_key;
 
-						if (curr_question[curr_demo_str] != undefined)
-							curr_user_identity += parseInt(curr_question[curr_demo_str]);
+						// Make sure we have a value for that code
+						// If so, add it onto the identity value
+						if (curr_question[curr_demo_str] != undefined && curr_question[curr_demo_str] != "")
+							curr_user_identity += parseFloat(curr_question[curr_demo_str]);
 
 						console.log("6 | " + curr_demo_str + ": " + curr_question[curr_demo_str]);
 					}
 
-					// If we have a code for that demographic
+					// Else if we have a code for that demographic
 					else if (curr_demo in codes) {
-						// First get code data
+
+						// Get the codes for that demographic
 						var curr_code = codes[curr_demo];
 
+						// If the user has a code within that demographic 
 						if (user_demo in curr_code) {
 							// Get corresponding code number and append it to end of string
 							curr_demo_str += "_" + curr_code[user_demo];
-						} else if ("Other" in curr_code) {
+						} else if ("Other" in curr_code) { // Otherwise check if there is an "Other" option
+							// If so, append the code for "Other"
 							curr_demo_str += "_" + curr_code["Other"];
 						}
-
-						if (curr_question[curr_demo_str] != undefined && curr_question[curr_demo_str].length > 0) {
+						
+						// Again, make sure we have a value for that code
+						if (curr_question[curr_demo_str] != undefined && curr_question[curr_demo_str] != "") {
 							// Using string, we can now get the coef value
 							var curr_coef_val = curr_question[curr_demo_str];
 
-							// Multiply their coefficient value by their information value
-							// and add to user's identity value
-							curr_user_identity += parseInt(curr_coef_val);
+							// Add that coefficient to the identity value
+							curr_user_identity += parseFloat(curr_coef_val);
 							console.log("1 | " + curr_demo_str + ": " + curr_coef_val);
 						}
 
 					}
 
 					// Now handle everything that doesn't have a code
-					// If the coefficient is just the value * coef (ie age)
+					// ie. if the coefficient is just a value * coef
+					// age, children
 					else if (curr_demo_str in curr_question) {
 						
-						if (curr_question[curr_demo_str] != undefined && curr_question[curr_demo_str].length > 0) {
+						// If there is a coefficient value for that demo and not 0
+						if (curr_question[curr_demo_str] != undefined) {
+							// Children is binary, so 0 for 0 children
+							// 1 for all other values
 							if (curr_demo == "children") {
-								var temp = (curr_question[curr_demo_str] == 0) ? 0 : 1;
-								curr_user_identity += user_demo * temp;
+								var temp = (user_demo == 0) ? 0 : 1;
+								curr_user_identity += curr_question[curr_demo_str] * temp;
 								console.log("2 | " + curr_demo_str + ": " + user_demo * temp);
-							} else {
+							} else { 
+								// Else we just get the user's demo value and multiply it by the coefficient
 								curr_user_identity += user_demo * curr_question[curr_demo_str];
 								console.log("3 | " + curr_demo_str + ": " + user_demo * curr_question[curr_demo_str]);
 							}
 						
+							// If we are doing age, we also need to do age^2
 							if (curr_demo == "age") {
-								// square age, divide by 1000, multiply by age2 coeff
+								// square age, divide by 1000, multiply by age^2 coeff
 								curr_user_identity += ((user_demo * user_demo) / 1000) * curr_question["_Iage2"];	
 								console.log("4 | " + curr_demo_str + ": " + ((user_demo * user_demo) / 1000) * curr_question["_Iage2"]);
 							}
 						
 						}
 
-
-
 					}
 
 					// If the coefficient value is just appended to the coefficient name
 					// ie _Igender_male
-					else if (Object.keys(curr_question).indexOf(curr_demo_str) >= 0) {
+					else if (typeof(user_demo) === 'string') {
 						curr_demo_str += "_" + user_demo.toLowerCase();
-						if (curr_question[curr_demo_str] != undefined && curr_question[curr_demo_str].length > 0)
-							curr_user_identity += parseInt(curr_question[curr_demo_str]);
-						console.log("5 | " + curr_demo_str + ": " + curr_question[curr_demo_str]);
+						if (Object.keys(curr_question).indexOf(curr_demo_str) >= 0) {
+							if (curr_question[curr_demo_str] != undefined && curr_question[curr_demo_str] != "")
+								curr_user_identity += parseFloat(curr_question[curr_demo_str]);
+							console.log("5 | " + curr_demo_str + ": " + curr_question[curr_demo_str]);
+						}
 					}
+
+					console.log(curr_user_identity);
 
 				}
 
-				var init_identity = curr_user_identity + curr_question["_cons"];
-				console.log(init_identity);
-				var curr_probability = Math.exp(init_identity) / ( 1 + Math.exp(init_identity) );
+				// Finished with all demographics that we have
+				// Add on the constant value
+				curr_user_identity += curr_question["_cons"];
+				console.log(curr_user_identity);
+
+				// Change into a probability by doing e^x / (1 + e^x)
+				// Save that probability into dictionary where key is curr question name
+				var curr_probability = Math.exp(curr_user_identity) / ( 1 + Math.exp(curr_user_identity) );
 				user_probabilities[curr_question.type] = curr_probability;
 
+				// Write string for treatment using the greater_50 and less_50 text
+				// From coefficients csv file
 				var curr_str = "People who share similar demographics to you generally ";
 				user_identities[curr_question.type] = (curr_probability >= .50) ? 
 					curr_str + curr_question.greater_50 + ".":
@@ -401,6 +457,7 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 				console.log("DONE!");
 			}
 
+			// Once finish for all questions, send the values back for use in questionnaire
 			res.send({probabilities: user_probabilities, identities: user_identities});
 
 		});
@@ -422,6 +479,13 @@ router.post('/api/saveUserLikes', function(req, res, next) {
 
 router.post('/api/saveNewSongs', function(req, res, next) {
 	var db = req.db;
+	var songs = req.body;
+	for (var i in songs) {
+		db.questions.update({url: songs[i].url}, songs[i], {upsert: true}, function(err, success) {
+			if (err)
+				console.log(err);
+		});
+	}
 	
 });
 
