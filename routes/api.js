@@ -420,6 +420,12 @@ router.post('/api/saveUserLikes', function(req, res, next) {
 });
 
 
+router.post('/api/saveNewSongs', function(req, res, next) {
+	var db = req.db;
+	
+});
+
+
 
 module.exports = router;
 

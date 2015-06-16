@@ -1,3 +1,5 @@
+var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI';
+
 $(document).ready(function() {
 	$(document).on("click", "#submit-instructions", function() {
 		$(".display-table-cell").children().fadeOut(500, function() {
@@ -602,11 +604,60 @@ function getIdentityNames() {
 }
 
 
+function getYoutubePlaylist(songs, nextPageToken) {
+	if (nextPageToken == null || nextPageToken == undefined)
+		nextPageToken = "";
+	else nextPageToken = "&pageToken="+nextPageToken;
+
+	if (songs == null || songs == undefined) 
+		songs = [];
+
+	$.ajax({
+		url: 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=PL-F_xeGwyiSKwU0g-4ygo2OjhKQxdF6LF&key='+apiKey+nextPageToken,
+		dataType: 'JSON',
+		success: function(response) {
+			console.log(response);
+			for (var i in response.items) {
+				var curr_song = response.items[i].snippet;
+				songs.push(curr_song.resourceId.videoId);
+			}
+
+			if (response.nextPageToken != undefined) {
+				getYoutubePlaylist(songs, response.nextPageToken);
+			} else {
+				getYoutubeSongs(songs);
+			}
+		}
+	});
+}
 
 
+function getYoutubeSongs(songs) {
+	var all_songs = [];
+	var count = 0;
+	for (var i in songs) {
+		var url = 'https://www.googleapis.com/youtube/v3/videos?id='+songs[i]+'&key='+apiKey+'&fields=items(id,snippet(title),statistics)&part=snippet,statistics';
+		$.ajax({
+			url: url,
+			dataType: 'JSON',
+			success: function(response) {
+				var curr_song = response.items[0];
+				var title = curr_song.snippet.title;
+				var treatment_g = curr_song.statistics.likeCount;
+				var url = "https://www.youtube.com/embed/"+curr_song.id;
 
+				all_songs.push({id: songs[i], questionnaire: "music", title: title, treatment_g: treatment_g, url: url, main: 0});
+				count++;
 
-
+				if (count == Object.keys(songs).length) {
+					console.log("DONE!");
+					console.log(all_songs);
+					console.log(all_songs.length)
+				}
+			}
+		});
+	}
+}
 
 
 
