@@ -429,7 +429,6 @@ function getAllAnswers() {
 	var petitions = {};
 	var end_date = new Date();
 	var end_time = end_date.getTime();
-	var total_time = end_date - start_date;
 
 	$(".question-selector-circle").each(function(i) {
 		var question = d3.select(this).data()[0];

@@ -565,7 +565,6 @@ function submitUserInfo() {
 
 function getIdentityTreatments(questionIds, demographics) {
 	console.log(questionIds, demographics);
-	demographics.gender = "male";
 	$.ajax({
 		url: "/api/getIdentityTreatment",
 		method: "POST",
