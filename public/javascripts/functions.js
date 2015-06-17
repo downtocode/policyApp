@@ -436,7 +436,7 @@ function sendFriendsDialog() {
 
 
 function makeBarGraph(data) {
-	var margin = {top: 20, right: 20, bottom: 20, left: 50},
+	var margin = {top: 20, right: 20, bottom: 50, left: 50},
 		width = 400 - margin.left - margin.right,
 		height = 250 - margin.top - margin.bottom;
 
@@ -461,17 +461,17 @@ function makeBarGraph(data) {
 	$(svg).css("margin-left", -1 * margin.left + "px");
  
  	x.domain(data.map(function(d) { return d.year; }));
-	y.domain([0, d3.max(data, function(d) { return +d.value; })]);
+	y.domain([d3.min(data, function(d) { return +d.value; }) - 10, d3.max(data, function(d) { return +d.value; }) + 10]);
 
 	svg.append("g")
 		.attr("class", "x axis")
 		.attr("transform", "translate(0," + height + ")")
-		.call(xAxis);
-		/*.append("text")
+		.call(xAxis)
+		.append("text")
 		.attr("y", 40)
 		.attr("x", "35%")
 		.style("text-anchor", "start")
-		.text("Year");*/
+		.text("Year");
 
 	svg.append("g")
 		.attr("class", "y axis")
@@ -481,7 +481,7 @@ function makeBarGraph(data) {
 		.attr("y", -50)
 		.attr("dy", ".71em")
 		.style("text-anchor", "end")
-		.text("Survey Participants (%)");
+		.text("Percentage of Americans (%)");
 
 	var bar = svg.selectAll(".bar")
 			.data(data)

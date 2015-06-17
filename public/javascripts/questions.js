@@ -368,8 +368,14 @@ function showValues(type, values) {
 	} else {
 		$("#question-answers").append("<div class = 'hidden'><input type = 'range' name='0' min='0' max='100' class><ul id = 'question-list' class = 'no-list font-15'></ul></div>");
 
-		for (value in values) {
-			$("#question-list").append("<li class = 'inline-block center text-top border-box'>" + values[value] + "</li>");
+		if (values.length == 2) {
+			$("#question-list").append("<li class = 'inline-block left text-top border-box'>" + values[0] + "</li>");
+			$("#question-list").append("<li class = 'inline-block right text-top border-box'>" + values[1] + "</li>");	
+		} else {
+			for (value in values) {
+				$("#question-list").append("<li class = 'inline-block center text-top border-box'>" + values[value] + "</li>");
+			}
+
 		}
 
 		$("#question-list li").width( (100 - 5 * values.length * 2) / values.length + "%");
