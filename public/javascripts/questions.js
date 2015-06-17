@@ -136,7 +136,7 @@ $(document).ready(function() {
 
 			user[$(this).attr("name")] = $(this).val();
 
-			var empty_inputs = $('input').filter(function() { return this.value == ""; });
+			var empty_inputs = $('input[type=radio]').filter(function() { return this.value == ""; });
 
 			if (empty_inputs.length == 0 && $(".radio-header").length == $("input[type=radio]:checked").length) {
 				$("input[type=button]").prop("disabled", false);

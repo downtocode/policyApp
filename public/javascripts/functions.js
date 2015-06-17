@@ -341,10 +341,16 @@ function askDemographics() {
 					if (!(dataWanted[i].name in data) && ( (questionnaire === 'policy' && policyNoDemo.indexOf(dataWanted[i].name) == -1 ) || 
 						( questionnaire === 'music' && musicNoDemo.indexOf(dataWanted[i].name) == -1 ) ) ) {
 
-						if (dataWanted[i].type.toLowerCase() == 'text')
-							$("#question-text").append("<div class = 'font-15 demographics-header'>" +
-								capitalize(dataWanted[i].question) + 
-								": <br/><input class = 'font-15' type = 'text' name = '" + dataWanted[i].name + "'/></div>");
+						if (dataWanted[i].type.toLowerCase() == 'text') {
+							 $("#question-text").append("<div class = 'font-15 demographics-header'>" +
+									capitalize(dataWanted[i].question) + 
+									": <br/><input class = 'font-15' type = 'text' name = '" + dataWanted[i].name + "'/></div>");
+
+							if (dataWanted[i].name === 'income') {
+								$("input[name=income]").before("$");
+								$("input[name=income]").after(".00");
+							}
+						}
 						
 						else if (dataWanted[i].type.toLowerCase() == 'range') {
 							data[dataWanted[i].name] = 50;
@@ -370,7 +376,7 @@ function askDemographics() {
 							}
 						} else if (dataWanted[i].type.toLowerCase() == 'select') {
 							var values = dataWanted[i].values.split(",");
-							var location_prev = $("input[type=text]:last");
+							var location_prev = $("input[type=text]:last").parent();
 							//( questionnaire === 'music' ) ? $("input[type=text]:last") : $("input[type=range]:last").after();
 
 							$(location_prev).after("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) + 
