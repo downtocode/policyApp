@@ -15,6 +15,16 @@
 				console.log("li:nth-child("+id+")");
 				$("li:nth-child("+id+")").addClass('bold');
 				$("li:nth-child("+id+")").addClass('italics');
+
+				$("li").each(function() {
+					if ($(this).html().indexOf("http") >= 0) {
+						var old_text = $(this).text(); 
+						var new_text = old_text.replace(/http[\S]+/gi, function(str) {
+							return "<a href = 'str'>"+str+"</a>";
+						});
+						$(this).html(new_text);
+					}
+				});
 			});
 		</script>
 	</head>
