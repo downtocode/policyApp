@@ -642,7 +642,7 @@ function submitQuestionnaire(answers) {
 		data: JSON.stringify({answers: answers}),
 		success: function(response) {	
 			console.log(response);
-			$(".display-table-cell").html("Thank You! We also encourage you to invite your friends to participate in this study as well by clicking the button below!" + 
+			$(".display-table-cell").html("Thank You! We also encourage you to invite your friends to participate in this study as well by clicking the button below!<br/>" + 
 				"<input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>")
 
 		}
