@@ -611,6 +611,34 @@ function getIdentityNames() {
 }
 
 
+function getMainYoutubePlaylist(songs, nexPageToken, callback) {
+	if (nextPageToken == null || nextPageToken == undefined)
+		var nextPageToken = "";
+	else nextPageToken = "&pageToken="+nextPageToken;
+
+	if (songs == null || songs == undefined) 
+		songs = [];
+
+	$.ajax({
+		url: 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=PL-F_xeGwyiSKMWDdGI1ExLjcqJWW6u4lB&key='+apiKey+nextPageToken,
+		dataType: 'JSON',
+		success: function(response) {
+			console.log(response);
+			for (var i in response.items) {
+				var curr_song = response.items[i].snippet;
+				songs.push(curr_song.resourceId.videoId);
+			}
+
+			if (response.nextPageToken != undefined) {
+				getYoutubePlaylist(songs, response.nextPageToken, callback);
+			} else {
+				getYoutubeSongs(songs, callback);
+			}
+		}
+	});
+}
+
+
 function getYoutubePlaylist(songs, nextPageToken, callback) {
 	if (nextPageToken == null || nextPageToken == undefined)
 		nextPageToken = "";
@@ -654,6 +682,7 @@ function getYoutubeSongs(songs, callback) {
 				var url = "https://www.youtube.com/embed/"+curr_song.id;
 
 				all_songs.push({id: songs[i], questionnaire: "music", title: title, treatment_g: treatment_g, url: url, main: 0});
+				console.log(title + ": " + url);
 				count++;
 
 				if (count == Object.keys(songs).length) {

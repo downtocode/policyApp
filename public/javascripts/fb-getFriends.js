@@ -494,7 +494,7 @@ function showAllQuestion(question) {
 
 	$("#preview-album").append("<div class = 'font-black bold'>" + question.title + "</div>");
 
-	if (question.treatment_type.toLowerCase() != 'control' && question.treatment.length > 0) {
+	if (question.treatment_type.toLowerCase() != 'control' && question.treatment != null && question.treatment.length > 0) {
 		switch(question.treatment_type) {
 			case "treatment_l":
 				$("#preview-album").append("<div class = 'font-black font-15' id = 'question-treatment'>Your friend Juan David gave this song " + question.treatment + " stars</div>");
@@ -504,6 +504,9 @@ function showAllQuestion(question) {
 				break;
 			case "treatment_g":
 				$("#preview-album").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + " Last FM Listeners</div>");
+				break;
+			default:
+				$("#preview-album").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment_g + " Last FM Listeners</div>");
 				break;
 		}
 	} else {
@@ -654,7 +657,7 @@ function addMusicKnowledge() {
 	$("iframe").after("<div id = 'importance-section'><div class = 'font-black importance-header'>Have you heard this song before?</div></div>");
 	$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
 	$("#importance-list").append("<li class = 'inline-block center'>Never <br/>Heard It</li>");
-	$("#importance-list").append("<li class = 'inline-block center'>Sounds Familiar</li>");
+	$("#importance-list").append("<li class = 'inline-block center'>Sounds <br/>Familiar</li>");
 	$("#importance-list").append("<li class = 'inline-block center'>Know <br/>This Song</li>");
 	$("#importance-list").append("<li class = 'inline-block center'>Know <br/>This Artist</li>");	
 	$("#importance-list li").width("25%");
@@ -665,7 +668,7 @@ function addMusicKnowledge2() {
 	$(".display-table-cell").append("<div id = 'importance-section' class = 'center font-16'><div class = 'font-black importance-header'>Have you heard this song before?</div></div>");
 	$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
 	$("#importance-list").append("<li class = 'inline-block center'>Never <br/>Heard It</li>");
-	$("#importance-list").append("<li class = 'inline-block center'>Sounds Familiar</li>");
+	$("#importance-list").append("<li class = 'inline-block center'>Sounds <br/>Familiar</li>");
 	$("#importance-list").append("<li class = 'inline-block center'>Know <br/>This Song</li>");
 	$("#importance-list").append("<li class = 'inline-block center'>Know <br/>This Artist</li>");	
 	$("#importance-list li").width("25%");

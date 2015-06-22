@@ -492,6 +492,22 @@ router.post('/api/saveNewSongs', function(req, res, next) {
 });
 
 
+router.post('/api/saveMainSongs', function(req, res, next) {
+	var db = req.db;
+	var songs = req.body;
+	var count = 0;
+	for (var i in songs) {
+		db.questions.update({url: songs[i].url, main: 1}, songs[i], {upsert: true}, function(err, success) {
+			count++;
+			if (count == songs.length - 1) {
+				res.send(success);
+			}
+		});
+	}
+	
+});
+
+
 
 module.exports = router;
 
