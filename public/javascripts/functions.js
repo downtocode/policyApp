@@ -393,7 +393,7 @@ function askDemographics() {
 				if (!hasAllData)
 					$("#question-text").prepend("<br/>Now we would like to know what people like you believe. Please answer a few questions about yourself.");
 
-				$("#question-text").append("<br/><input type = 'button' id = 'skip-demographics' value = 'Skip' class = 'demographics-next clickable'/>" +
+				$("#question-text").append("<br/><input type = 'button' id = 'skip-demographics' value = 'Skip' class = 'clickable'/>" +
 					"<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable' disabled/>");
 				
 				// Adds user information to a hidden div
@@ -551,10 +551,11 @@ function getNewIdentityTreatments(curr_ind) {
 }
 
 
-function submitUserInfo() {
+function submitUserInfo(i) {
 	var user = d3.select(".user-info").data()[0];
 
-	getIdentityTreatments(getIdentityNames(), user);
+	if (i == null)
+		getIdentityTreatments(getIdentityNames(), user);
 
 	$.ajax({
 		url: '/api/sendUser',
@@ -610,7 +611,7 @@ function getIdentityNames() {
 }
 
 
-function getYoutubePlaylist(songs, nextPageToken) {
+function getYoutubePlaylist(songs, nextPageToken, callback) {
 	if (nextPageToken == null || nextPageToken == undefined)
 		nextPageToken = "";
 	else nextPageToken = "&pageToken="+nextPageToken;
@@ -629,16 +630,16 @@ function getYoutubePlaylist(songs, nextPageToken) {
 			}
 
 			if (response.nextPageToken != undefined) {
-				getYoutubePlaylist(songs, response.nextPageToken);
+				getYoutubePlaylist(songs, response.nextPageToken, callback);
 			} else {
-				getYoutubeSongs(songs);
+				getYoutubeSongs(songs, callback);
 			}
 		}
 	});
 }
 
 
-function getYoutubeSongs(songs) {
+function getYoutubeSongs(songs, callback) {
 	var all_songs = [];
 	var count = 0;
 	for (var i in songs) {
@@ -659,6 +660,7 @@ function getYoutubeSongs(songs) {
 					console.log("DONE!");
 					console.log(all_songs);
 					console.log(all_songs.length)
+					callback(all_songs);
 				}
 			}
 		});

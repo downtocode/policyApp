@@ -61,7 +61,7 @@ router.post('/api/getRestQuestions', function(req, res, next) {
 	
 
 	db.questions.find({"_id": {$nin: questionIds}, questionnaire: data.questionnaire }, function(err, questions) {
-		var treatments = ['treatment_g', 'treatment_l', 'treatment_s', 'control'];
+		var treatments = ['treatment_g', 'treatment_l', 'control'];
 		var rand = Math.floor(Math.random() * treatments.length);
 
 		for (var q in questions) {
@@ -479,10 +479,13 @@ router.post('/api/saveUserLikes', function(req, res, next) {
 router.post('/api/saveNewSongs', function(req, res, next) {
 	var db = req.db;
 	var songs = req.body;
+	var count = 0;
 	for (var i in songs) {
-		db.questions.update({url: songs[i].url}, songs[i], {upsert: true}, function(err, success) {
-			if (err)
-				console.log(err);
+		db.questions.update({url: songs[i].url, main: 0}, songs[i], {upsert: true}, function(err, success) {
+			count++;
+			if (count == songs.length - 1) {
+				res.send(success);
+			}
 		});
 	}
 	

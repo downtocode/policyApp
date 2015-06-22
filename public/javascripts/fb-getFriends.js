@@ -109,10 +109,10 @@ $(document).ready(function() {
 		var curr_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind];
 		var next_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind + 1];
 
-		if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
-			$("#next-important").attr('id','get-user-info').val('Next');
-		} else if (curr_question_ind == $(".question-selector-circle").length - 1) {
+		if (curr_question_ind == $(".question-selector-circle").length - 1) {
 			$("#next-important").attr('id','submit-more-page').val('Submit!');
+		} else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
+			$("#next-important").attr('id','get-user-info').val('Next');
 		} else {
 			$("#next-important").attr('id','next-question').val('Next');
 		}
@@ -121,7 +121,9 @@ $(document).ready(function() {
 	});
 
 
-	$(document).on("click", "#next-question", function() {
+	$(document).on("click", "#next-question, #skip-question, #skip-demographics", function() {
+   		$("#skip-question").remove();
+
    		var ind = $('.question-selector-circle').index($('.selected'));
 		var curr_question = d3.selectAll(".question-selector-circle").data()[ind];
 		var next_question = d3.selectAll(".question-selector-circle").data()[ind + 1];
@@ -133,8 +135,22 @@ $(document).ready(function() {
 			// Make the next question the selected one
 			$($('.question-selector-circle')[ind]).next().addClass('selected');
 
-			// Show the next question
-			showQuestion(ind + 1);		
+			if ($(this).hasClass('demographics-next')) {
+   				submitUserInfo();
+   			} else {
+   				if ($(this).attr('id') === 'skip-demographics') {
+   					console.log('skipping');
+		   			$(this).remove();
+		   			submitUserInfo(1);
+		   			getNewIdentityTreatments(ind + 1);
+		   		} 
+
+				// Show the next question
+				showQuestion(ind + 1);		
+			}	
+   		} else {
+   			$(this).hide();
+   			askDemographics();
    		}
    	});
 
@@ -190,11 +206,6 @@ $(document).ready(function() {
 	});
 
 
-	$(document).on("click", ".demographics-next", function() {
-		submitUserInfo();
-	});
-
-
 	$(document).on("click", "#submit-more-page", function() {
 		$("#question-selector").css("display", "none");
 		$(this).css("display", "none");
@@ -218,6 +229,8 @@ $(document).ready(function() {
 
 
 	$(document).on("click", ".all-question", function() {
+		$(this).addClass("italics");
+		$(this).css("opacity", ".5");
 		$("#question-text").empty();
 		$(".all-question-selected").removeClass("all-question-selected");
 		$(this).addClass("all-question-selected");
@@ -465,25 +478,32 @@ function showStars() {
 
 
 function showAllQuestion(question) {
+	var ind = $(".all-question").index($(".all-question-selected")) + $(".question-selector-circle").length;
+	var user_answer = parseInt($("#user-questions").val()[ind].split("|")[0]);
 	$("#question-text").html("<div id = 'preview-album'></div>");
+
 	for (var i = 0; i < 5; i++) {
-		$("#preview-album").append('<svg height="26" width="26" class = "clickable rating-star"><polygon points=".25,10 6,10 8,5.5 10,10 15.5,10 11.5,13.5 13,18.5 8.25,15.25 3.75,18.5 5,13.5" class = "preview-star"/></svg>');
+		if (user_answer.length != NaN && i < user_answer) {
+			$("#preview-album").append('<svg height="26" width="26" class = "clickable selected-star"><polygon points=".25,10 6,10 8,5.5 10,10 15.5,10 11.5,13.5 13,18.5 8.25,15.25 3.75,18.5 5,13.5" class = "preview-star" style="fill: #ad8d26;"/></svg>');
+			
+		} else {
+			$("#preview-album").append('<svg height="26" width="26" class = "clickable rating-star"><polygon points=".25,10 6,10 8,5.5 10,10 15.5,10 11.5,13.5 13,18.5 8.25,15.25 3.75,18.5 5,13.5" class = "preview-star"/></svg>');
+		}
 	}
-	$("#preview-album").append("<div class = 'font-black bold'>" + question.artist + ": <span class = 'italics'>" + question.song + "</span></div>");
+	
+
+	$("#preview-album").append("<div class = 'font-black bold'>" + question.title + "</div>");
 
 	if (question.treatment_type.toLowerCase() != 'control' && question.treatment.length > 0) {
 		switch(question.treatment_type) {
-			case "treatment_g":
-				$("#preview-album").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + " Last FM Listeners</div>");
-				break;
-			case "treatment_s":
-				$("#preview-album").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + "</div>");
-				break;
 			case "treatment_l":
 				$("#preview-album").append("<div class = 'font-black font-15' id = 'question-treatment'>Your friend Juan David gave this song " + question.treatment + " stars</div>");
 				break;
 			case "treatment_i":
 				$("#preview-album").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + "</div>");
+				break;
+			case "treatment_g":
+				$("#preview-album").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + " Last FM Listeners</div>");
 				break;
 		}
 	} else {
@@ -525,16 +545,30 @@ function getAllQuestions(questionnaire) {
 		questionIds.push(d3.select(this).data()[0]._id);
 	});
 
-	$.ajax({
-		url: "/api/getRestQuestions",
-		method: "POST",
-		data: JSON.stringify({questionIds: questionIds, questionnaire: questionnaire}),
-		dataType: "JSON",
-		contentType: "application/json",
-		success: function(response) {
-			displayAllQuestions(response);
-		}		
+	getYoutubePlaylist(null, null, function(songs) {
+		$.ajax({ 
+			url: '/api/saveNewSongs',
+			method: 'POST',
+			data: JSON.stringify(songs),
+			dataType: "JSON",
+			contentType: "application/json",
+			success: function(response) {
+				console.log(response);
+				console.log(questionIds, questionnaire);
+				$.ajax({
+					url: "/api/getRestQuestions",
+					method: "POST",
+					data: JSON.stringify({questionIds: questionIds, questionnaire: questionnaire}),
+					dataType: "JSON",
+					contentType: "application/json",
+					success: function(response) {
+						displayAllQuestions(response);
+					}		
+				});
+			}
+		});
 	});
+	
 }
 
 function displayAllQuestions(questions) {
@@ -560,7 +594,7 @@ function displayAllQuestions(questions) {
 			return 'question-'+ currNum;
 		})
 		.text(function(d, i) {
-			return d.artist +": " + d.song;
+			return d.title;
 		});
 
 	for (var i in questions) {

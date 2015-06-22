@@ -86,8 +86,8 @@ $(document).ready(function() {
    			} else {
    				if ($(this).attr('id') === 'skip-demographics') {
 		   			$(this).remove();
+		   			submitUserInfo(1);
 		   			getNewIdentityTreatments(ind + 1);
-		   			submitUserInfo();
 		   		} 
 
 				// Show the next question
