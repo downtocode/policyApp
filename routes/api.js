@@ -179,7 +179,7 @@ router.post('/api/getFriendData', function(req, res, next) {
 });
 
 router.post('/api/sendCSV', function(req, res, next) {
-	var db = req.db;
+	var db = req.db; 
 
 	db.users.find({}, function(err, users) {
 		db.questions.find({}, function(err, questions) {
