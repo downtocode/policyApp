@@ -111,8 +111,6 @@ $(document).ready(function() {
 
 		if (curr_question_ind == $(".question-selector-circle").length - 1) {
 			$("#next-important").attr('id','submit-more-page').val('Submit!');
-		} else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
-			$("#next-important").attr('id','get-user-info').val('Next');
 		} else {
 			$("#next-important").attr('id','next-question').val('Next');
 		}
@@ -128,29 +126,13 @@ $(document).ready(function() {
 		var curr_question = d3.selectAll(".question-selector-circle").data()[ind];
 		var next_question = d3.selectAll(".question-selector-circle").data()[ind + 1];
 
-   		if ( curr_question.treatment_type.toLowerCase() == 'treatment_i' || next_question.treatment_type.toLowerCase() != "treatment_i" || $(".demographics-next").length > 0) {
-   			// Remove this question as the selected one
-			$('.selected').removeClass('selected');
-
-			// Make the next question the selected one
-			$($('.question-selector-circle')[ind]).next().addClass('selected');
-
-			if ($(this).hasClass('demographics-next')) {
-   				submitUserInfo();
-   			} else {
-   				if ($(this).attr('id') === 'skip-demographics') {
-   					console.log('skipping');
-		   			$(this).remove();
-		   			submitUserInfo(1);
-		   			getNewIdentityTreatments(ind + 1);
-		   		} 
-
-				// Show the next question
-				showQuestion(ind + 1);		
-			}	
+   		if ( $(".demographics-next").length > 0) {
+   			submitUserInfo(0);
+   			showQuestion(ind);
    		} else {
-   			$(this).hide();
-   			askDemographics();
+   			$('.selected').removeClass('selected');
+   			$($('.question-selector-circle')[ind]).next().addClass('selected');
+   			showQuestion(ind + 1);
    		}
    	});
 
@@ -167,7 +149,7 @@ $(document).ready(function() {
 	});
 
 
-	$(document).on("change", "input", function() {
+	$(document).on("change", "input, select", function() {
 		if ($(".demographics-next").length == 0) {
 			$("input[type=button]").prop("disabled", false);
 			if ($(".all-question").length == 0)
@@ -182,7 +164,7 @@ $(document).ready(function() {
 			var user = d3.select(".user-info").data()[0];
 			user[$(this).attr("name")] = $(this).val();
 
-			var empty_inputs = $('input').filter(function() { return this.value == ""; });
+			var empty_inputs = $('input[type=radio]').filter(function() { return this.value == ""; });
 
 			if (empty_inputs.length == 0 && $(".radio-header").length == $("input[type=radio]:checked").length) {
 				$("input[type=button]").prop("disabled", false);
@@ -658,8 +640,8 @@ function addMusicKnowledge() {
 	$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
 	$("#importance-list").append("<li class = 'inline-block center'>Never <br/>Heard It</li>");
 	$("#importance-list").append("<li class = 'inline-block center'>Sounds <br/>Familiar</li>");
-	$("#importance-list").append("<li class = 'inline-block center'>Know <br/>This Song</li>");
-	$("#importance-list").append("<li class = 'inline-block center'>Know <br/>This Artist</li>");	
+	$("#importance-list").append("<li class = 'inline-block center'>Know of This<br/>Song or Artist</li>");
+	$("#importance-list").append("<li class = 'inline-block center'>Know of This Song<br/>or Artist Very Well</li>");	
 	$("#importance-list li").width("25%");
 }
 
@@ -669,7 +651,7 @@ function addMusicKnowledge2() {
 	$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
 	$("#importance-list").append("<li class = 'inline-block center'>Never <br/>Heard It</li>");
 	$("#importance-list").append("<li class = 'inline-block center'>Sounds <br/>Familiar</li>");
-	$("#importance-list").append("<li class = 'inline-block center'>Know <br/>This Song</li>");
-	$("#importance-list").append("<li class = 'inline-block center'>Know <br/>This Artist</li>");	
+	$("#importance-list").append("<li class = 'inline-block center'>Know of This<br/>Song or Artist</li>");
+	$("#importance-list").append("<li class = 'inline-block center'>Know of This Song<br/>or Artist Very Well</li>");	
 	$("#importance-list li").width("25%");
 }

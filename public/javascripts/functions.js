@@ -88,6 +88,7 @@ function getAllTreatments() {
 }
 
 function getFriendsAnswers(questions, question, callback) {
+	console.log(questions);
 	$.ajax({
 		url: '/api/getFriendData',
 		contentType: 'application/json',
@@ -142,6 +143,7 @@ function hasIdentityTreatment(questions, treatment_i_start) {
 
 
 function createTreatments(accessToken, questions, callback) {
+	var questionnaire = questions[0].questionnaire;
 	var count = 1;
 	for (var i = 0; i < questions.length; i++) {
 		if (questions[i].reference_global != undefined) {
@@ -163,6 +165,7 @@ function createTreatments(accessToken, questions, callback) {
 		dataType: 'jsonp',
 		success: function(friends) {
 			var local_treatments = [];
+			var local_treatments_ids = [];
 			var hasLocal = 0;
 			// see how many friends are also using the app
 			// which means they have answers
@@ -170,7 +173,7 @@ function createTreatments(accessToken, questions, callback) {
 			if (friends.data.length > 5)
 				hasLocal = Math.floor(Math.random() * 2) + 1;
 
-			if (hasLocal || hasLocal == 1) {
+			if (true) {//(hasLocal || hasLocal == 1) {
 					var app_friends = [];
 					for (var i in friends.data)
 						app_friends.push(friends.data[i].id);
@@ -183,13 +186,18 @@ function createTreatments(accessToken, questions, callback) {
 					// set up question treatments
 					var treatments = ['treatment_g', 'treatment_s', 'control', 'treatment_l'];
 					shuffle(treatments);
-					treatments.push('treatment_i');
-					var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control', 'treatment_l', 'treatment_i'];
+					var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control', 'treatment_l'];
 			} else { // otherwise just use regular treatments
 				var treatments = ['treatment_g', 'treatment_s', 'control'];
 				shuffle(treatments);
+
+				var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control'];
+
+			}
+
+			if (questionnaire != 'music') {
 				treatments.push('treatment_i');
-				var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control', 'treatment_i'];
+				every_treatment.push('treatment_i');					
 			}
 
 			var numEach = Math.floor(questions.length / treatments.length);
@@ -234,6 +242,7 @@ function createTreatments(accessToken, questions, callback) {
 				
 				if (treatment == 'treatment_l') {
 					local_treatments.push(q);
+					local_treatments_ids.push(question._id);
 				} else {
 					if (treatment == 'treatment_g') {
 						if (question.treatment_g2 == undefined) {
@@ -265,14 +274,16 @@ function createTreatments(accessToken, questions, callback) {
 				
 			}
 
-			if (hasLocal || hasLocal == 1) {
+			if (true) {//(hasLocal || hasLocal == 1) {
+				console.log(local_treatments_ids);
 				$.ajax({
 					url: '/api/getFriendData',
 					contentType: 'application/json',
-					data: JSON.stringify({friendIDs: app_friends, question_id: ['5535b299675db983c13fbed6', '5535b299675db983c13fbeda']}),//question._id}),
+					data: JSON.stringify({friendIDs: app_friends, question_id: local_treatments_ids}),//question._id}),
 					dataType: 'JSON',
 					method: 'POST',
 					success: function(data) {
+						console.log(data);
 						var count = 0;
 						for (var k in data) {
 							var str = "According to your Facebook friends who also took the survey";
@@ -288,32 +299,38 @@ function createTreatments(accessToken, questions, callback) {
 						}
 					}
 				});
-			}
+			} 
 
-			console.log(questions);
-
-			d3.select("#question-selector").selectAll("div")
-				.data(questions)
-				.enter()
-				.append("div")
-				.attr("class", "question-selector-circle clickable hidden")
-				.attr("id", function(d, i) { return "question-" + i; });
-
-			$(".question-selector-circle").first().addClass("selected");
-
-			// create array for user answers
-			// ['70|40', '|', '|']
-			var emptyArr = []
-			for (var i in questions) {
-				emptyArr.push("|");
-			}
-			$("#user-questions").val(emptyArr);
-
-			callback();
+			finishTreatments(questions, callback);
+			
 		}
 
 	});
 
+}
+
+
+function finishTreatments(questions, callback) {
+	d3.select("#question-selector").selectAll("div")
+		.data(questions)
+		.enter()
+		.append("div")
+		.attr("class", "question-selector-circle clickable hidden")
+		.attr("id", function(d, i) { return "question-" + i; });
+
+	$(".question-selector-circle").first().addClass("selected");
+
+	// create array for user answers
+	// ['70|40', '|', '|']
+	var emptyArr = []
+	for (var i in questions) {
+		emptyArr.push("|");
+	}
+	$("#user-questions").val(emptyArr);
+
+	callback();
+
+	console.log(questions);
 }
 
 
@@ -327,12 +344,16 @@ function askDemographics() {
 				var hasAllData = true;
 
 				$("#questionnaires").hide();
+				if ($("#question-text").length === 0) {
+					$(".display-table-cell").html("<div id = 'question-text'></div>");
+				}
+
 				var question_text_parent = $("#question-text").parent();
 				$(question_text_parent).html("<div id = 'question-text'></div>");
 				$("#question-text").css("width", "75%");
 				$("#question-text").css("float", "none");
 				$(this).hide();
-				var questionnaire = $("header li").text().toLowerCase();
+				var questionnaire = d3.select(".question-selector-circle").data()[0].questionnaire;
 				var musicNoDemo = ['vote', 'vote_next', 'political_upbringing'];
 				var policyNoDemo = ['music_play', 'music_play_years', 'music_taste', 'music_childhood'];
 
@@ -345,11 +366,6 @@ function askDemographics() {
 							 $("#question-text").append("<div class = 'font-15 demographics-header'>" +
 									capitalize(dataWanted[i].question) + 
 									": <br/><input class = 'font-15' type = 'text' name = '" + dataWanted[i].name + "'/></div>");
-
-							if (dataWanted[i].name === 'income') {
-								$("input[name=income]").before("$");
-								$("input[name=income]").after(".00");
-							}
 						}
 						
 						else if (dataWanted[i].type.toLowerCase() == 'range') {
@@ -376,22 +392,43 @@ function askDemographics() {
 							}
 						} else if (dataWanted[i].type.toLowerCase() == 'select') {
 							var values = dataWanted[i].values.split(",");
-							var location_prev = $("input[type=text]:last").parent();
+							//var location_prev = $("input[type=text]:last").parent();
 							//( questionnaire === 'music' ) ? $("input[type=text]:last") : $("input[type=range]:last").after();
 
-							$(location_prev).after("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) + 
+							$("#question-text").append("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) + 
 								": <select name = '" + dataWanted[i].name + "'></div>");
+
+							if (dataWanted[i].question.length >= 50) {
+								$("select:last").before("</br>");
+								$("select:last").css("margin-top", "10px");
+							}
+
+							/*if (dataWanted[i].name === 'income') {
+								for (var j in values) {
+									var curr_value = (values[j].indexOf("$") >= 0) ? values[j].split("$")[1].replace(/[\D]/g, "") : "Other";
+									$("select:last").append("<option value = '"+curr_value+"'>" + capitalize(values[j]) + "</option>");		
+								}
+
+								var second_last = $("select:last option:nth-last-child(2)");
+								$(second_last).val(">" + $(second_last).val())
+							} else {*/
 							for (var j in values) {
 								$("select:last").append("<option value = '"+values[j].trim()+"'>" + capitalize(values[j]) + "</option>");		
 							}
+							//}
+							
 						}
 
 						hasAllData = false;
 					}
 				}
 
-				if (!hasAllData)
-					$("#question-text").prepend("<br/>Now we would like to know what people like you believe. Please answer a few questions about yourself.");
+				if (!hasAllData) {
+					if (questionnaire === 'music')
+						$("#question-text").prepend("<br/>We would like to know a little bit more about you. Please answer a few questions about yourself.");
+					else 						
+						$("#question-text").prepend("<br/>Now we would like to know what people like you believe. Please answer a few questions about yourself.");
+				}
 
 				$("#question-text").append("<br/><input type = 'button' id = 'skip-demographics' value = 'Skip' class = 'clickable'/>" +
 					"<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable' disabled/>");

@@ -608,9 +608,9 @@ input[type=button]:disabled {
 	margin-right: auto;
 }
 
-#submit-instructions {
-	float: right;
-	margin-top: -10px;
+#submit-instructions, .small-box input[type=button] {
+	float: right !important;
+	margin-top: -10px !important;
 }
 
 
@@ -736,6 +736,11 @@ input[type=button]:disabled {
 
 select[name=state] {
 	width: 50px !important;
+	font-size: 15px;
+}
+
+select[name=income] {
+	margin-top: 10px;
 	font-size: 15px;
 }
 

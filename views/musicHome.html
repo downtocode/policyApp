@@ -22,7 +22,7 @@
 
 				getSongs(questions, function(response) {
 					createTreatments(accessToken, questions, function() {
-						$("#submit-instructions").attr("disabled", false);
+						$("#get-user-info").attr("disabled", false);
 					});
 
 					/*d3.select("#question-selector").selectAll("div")
@@ -42,6 +42,16 @@
 					$("#user-questions").val(emptyArr);*/
 				});
 
+				$(document).on("click", "#submit-instructions", function() {
+					$(".display-table-cell").children().fadeOut(500, function() {
+						$(this).remove();
+						$("li:first").remove();
+						$("li.hidden").show();
+
+						showQuestion(0);
+					});
+				});
+
 			});
 		</script>
 	</head>
@@ -49,6 +59,7 @@
 	<body id = "music">
 		<header class = "dark-box border-box font-white vertical-wrapper">
 			<span class = "vertical-align">
+				<img id = "cornell-logo" src = "../../../images/cornell.png" />
 				<ul class = "no-list inline center">
 					<li>Instructions</li>
 					<li class = 'hidden'></li>
@@ -63,7 +74,7 @@
 				<div class = "display-table-cell full-width-height">
 					<div class = 'small-box left'>
 						<p>In the following windows you will be show some songs. Please listen to the songs (or parts of the songs if you prefer) and rate how much you like them. After the rating, you will be asked if you knew that song. Answers will be recorded using sliders, where values in the middle represent how well you know the song (e.g., “sounds familiar”). Please place the slider in the position that best represent your familiarity with the song.</p>
-						<input type = 'button' id = 'submit-instructions' value = 'Got It!' class = 'custom-button clickable' disabled/>
+						<input type = 'button' id = 'get-user-info' value = 'Got It!' class = 'custom-button clickable' disabled/>
 					</div>
 				</div>
 			</div>

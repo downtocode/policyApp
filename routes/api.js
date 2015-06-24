@@ -145,9 +145,11 @@ router.get('/api/getDemographics', function(req, res, next) {
 router.post('/api/getFriendData', function(req, res, next) {
 	var db = req.db;
 	var data = req.body;
+	console.log(data.friendIDs, data.question_id);
 
 	db.userAnswers.find( { user_id: { $in: data.friendIDs }, question_id: {$in: data.question_id} }, function (err, friendData) {
 		if (!err) {
+			console.log(friendData);
 			var friend_answers = {};
 			var friend_counts = {};
 			for (var i in friendData) {
@@ -314,7 +316,7 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 					curr_demo = curr_demo.replace(/_/g, "").replace(/-/g,"");
 
 					// Income is a special case bc it is in intervals
-					if (curr_demo == "income") {
+					/*if (curr_demo == "income") {
 						// Replace any character that is not a number
 						// ie. $ or ,
 						user_demo = parseFloat(user_demo.replace(/\D+/g, ""));
@@ -350,7 +352,7 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 
 							
 						} else { // Else they left it blank and will be counted as "Prefer not to answer"
-							prev_key = 10;
+							prev_key = 11;
 						}
 
 						// Create the rest of the string
@@ -363,10 +365,10 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 							curr_user_identity += parseFloat(curr_question[curr_demo_str]);
 
 						console.log("6 | " + curr_demo_str + ": " + curr_question[curr_demo_str]);
-					}
+					}*/
 
 					// Else if we have a code for that demographic
-					else if (curr_demo in codes) {
+					if (curr_demo in codes) {
 
 						// Get the codes for that demographic
 						var curr_code = codes[curr_demo];
