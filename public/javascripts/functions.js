@@ -173,7 +173,7 @@ function createTreatments(accessToken, questions, callback) {
 			if (friends.data.length > 5)
 				hasLocal = Math.floor(Math.random() * 2) + 1;
 
-			if (true) {//(hasLocal || hasLocal == 1) {
+			if (hasLocal || hasLocal == 1) {
 					var app_friends = [];
 					for (var i in friends.data)
 						app_friends.push(friends.data[i].id);
@@ -274,8 +274,18 @@ function createTreatments(accessToken, questions, callback) {
 				
 			}
 
-			if (true) {//(hasLocal || hasLocal == 1) {
-				console.log(local_treatments_ids);
+			if (hasLocal || hasLocal == 1) {
+				//console.log(local_treatments_ids);
+				/*local_treatments_ids = ["558aed26675db983c140888d", "558aed26675db983c1408890",
+					"558aed26675db983c1408891", "558aed26675db983c1408895",
+					"558aed26675db983c140888e", "558aed26675db983c1408893",
+					"558aed26675db983c1408892", "558aed26675db983c1408894",
+					"558aed26675db983c140888f", "558aed26675db983c140888c",
+					"558aed26675db983c1408896"];
+
+				app_friends = [10205628652891800, 10153306689188552, 10152911970233212,
+				10152909706628845];*/
+
 				$.ajax({
 					url: '/api/getFriendData',
 					contentType: 'application/json',
@@ -289,7 +299,9 @@ function createTreatments(accessToken, questions, callback) {
 							var str = "According to your Facebook friends who also took the survey";
 
 							for (var p in data[k]) {
-								str += ', ' + data[k][p] + '% answered "' + p + '"';
+								var ans = isNaN(parseInt(p)) ? '"' + p + '"' : 
+									( (parseInt(p) == 0) ? "against the policy" : "in favor of the policy");
+								str += ', ' + data[k][p] + '% answered ' + ans + '';
 							}
 
 							str += ".";
@@ -514,7 +526,9 @@ function makeBarGraph(data) {
 		.attr("y", 40)
 		.attr("x", "35%")
 		.style("text-anchor", "start")
-		.text("Year");
+		.text(function(d) {
+			console.log(d); return "Year";
+		});
 
 	svg.append("g")
 		.attr("class", "y axis")

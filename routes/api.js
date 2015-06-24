@@ -145,24 +145,26 @@ router.get('/api/getDemographics', function(req, res, next) {
 router.post('/api/getFriendData', function(req, res, next) {
 	var db = req.db;
 	var data = req.body;
-	console.log(data.friendIDs, data.question_id);
 
-	db.userAnswers.find( { user_id: { $in: data.friendIDs }, question_id: {$in: data.question_id} }, function (err, friendData) {
+	db.userAnswers.find( { user_id: { $in: data.friendIDs } }, function (err, friendData) {
 		if (!err) {
-			console.log(friendData);
 			var friend_answers = {};
 			var friend_counts = {};
 			for (var i in friendData) {
+				var curr_answer = (isNaN(parseInt(friendData[i].question))) ? 
+					friendData[i].question :
+					Math.floor( parseInt(friendData[i].question) / 50 );
+
 				if (friendData[i].question_id in friend_answers) {
 					friend_counts[friendData[i].question_id] += 1;
-					if (friendData[i].question in friend_answers[friendData[i].question_id]) {
-						friend_answers[friendData[i].question_id][friendData[i].question] += 1;
+					if (curr_answer in friend_answers[friendData[i].question_id]) {
+						friend_answers[friendData[i].question_id][curr_answer] += 1;
 					} else {
-						friend_answers[friendData[i].question_id][friendData[i].question] = 1;
+						friend_answers[friendData[i].question_id][curr_answer] = 1;
 					}
 				} else {
 					var temp = {};
-					temp[friendData[i].question] = 1;
+					temp[curr_answer] = 1;
 					friend_answers[friendData[i].question_id] = temp;
 					friend_counts[friendData[i].question_id] = 1;
 				}
@@ -174,7 +176,6 @@ router.post('/api/getFriendData', function(req, res, next) {
 				}
 			}
 
-			console.log(friend_answers);
 			res.send(friend_answers);
 		}
 	});
