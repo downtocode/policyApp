@@ -267,7 +267,7 @@ router.post('/api/sendCSV', function(req, res, next) {
 								var currQuestion = lineArr[s];
 
 								if (currQuestion in user)
-									newLine += "," + user[currQuestion].question + "," + user[currQuestion].importance + "," + user[currQuestion].treatment + "," + user[currQuestion].treatment_l_type + "," + user[currQuestion].start_time + "," + user[currQuestion].answer_time;
+									newLine += "," + user[currQuestion].question + "," + user[currQuestion].importance + "," + user[currQuestion].treatment + "," + user[currQuestion].treatment_l_type + "," + user[currQuestion].start_time.replace(/,/g,"") + "," + user[currQuestion].answer_time;
 								else
 									newLine += "," + "," + ",";
 							}
