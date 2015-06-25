@@ -18,7 +18,6 @@
 			$(document).ready(function() {
 				var questionnaireName = <%- JSON.stringify(title) %>
 				var questions = <%- JSON.stringify(questions) %>
-				$("header li:hidden").text(capitalizeSentence(questionnaireName));
 
 				getSongs(questions, function(response) {
 					createTreatments(accessToken, questions, function() {
@@ -42,15 +41,14 @@
 					$("#user-questions").val(emptyArr);*/
 				});
 
-				$(document).on("click", "#submit-instructions", function() {
+				/*$(document).on("click", "#submit-instructions", function() {
 					$(".display-table-cell").children().fadeOut(500, function() {
 						$(this).remove();
-						$("li:first").remove();
-						$("li.hidden").show();
+						$("li:nth-child(2)").text();
 
 						showQuestion(0);
 					});
-				});
+				});*/
 
 			});
 		</script>
@@ -62,7 +60,8 @@
 				<img id = "cornell-logo" src = "../../../images/cornell.png" />
 				<ul class = "no-list inline center">
 					<li>Instructions</li>
-					<li class = 'hidden'></li>
+					<li class = 'hidden'>Demographics</li>
+					<li class = 'hidden'>Music</li>
 				</ul>
 			</span>
 		</header>

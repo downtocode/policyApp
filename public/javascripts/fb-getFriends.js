@@ -128,6 +128,8 @@ $(document).ready(function() {
 
    		if ( $(".demographics-next").length > 0) {
    			submitUserInfo(0);
+   			$("li:first").remove();
+   			$("li.hidden").show();
    			showQuestion(ind);
    		} else {
    			$('.selected').removeClass('selected');
@@ -184,6 +186,8 @@ $(document).ready(function() {
 
 	$(document).on("click", "#get-user-info", function() {
 		$(this).hide();
+		$("li:first").remove();
+		$("li.hidden:first").show();
 		askDemographics();
 	});
 
@@ -212,7 +216,7 @@ $(document).ready(function() {
 
 	$(document).on("click", ".all-question", function() {
 		$(this).addClass("italics");
-		$(this).css("opacity", ".5");
+		$(this).children().css("opacity", ".5");
 		$("#question-text").empty();
 		$(".all-question-selected").removeClass("all-question-selected");
 		$(this).addClass("all-question-selected");
@@ -556,15 +560,21 @@ function getAllQuestions(questionnaire) {
 	
 }
 
+
 function displayAllQuestions(questions) {
+	console.log(questions);
 	$(".display-table").html('<div class = "display-table-cell font-18" id = "questionnaires-wrapper">' +
 								'<div id = "questionnaires" class = "border-box">' +
-									'<ol id = "questionnaires-list" class = "no-list font-16">' +
+									'<div class = "global-title display-table-cell border-box font-15 center">Title</div>' + 
+									'<div class = "global-num display-table-cell border-box font-15 center">YouTube Likes</div>' +
+									'<ol id = "questionnaires-list" class = "no-list font-15">' +
 									'</ol>' +
 								'</div>' +
 								'<div id = "question-text" class = "border-box">' +
 								'</div>' +
 							'</div>'); 
+
+	$("#questionnaires").css("width", "40%");
 	var numPrev = $(".question-selector-circle").length;
 	$("#question-text").width("20%");
 	$("#question-box").height("100% !important");
@@ -573,13 +583,21 @@ function displayAllQuestions(questions) {
 		.data(questions)
 		.enter()
 		.append("li")
-		.attr("class", "clickable all-question")
+		.attr("class", function(d, i) {
+			if (d.treatment != undefined)
+				return "clickable all-question display-table center";
+			else
+				return "clickable all-question display-table";
+		})
 		.attr("id", function(d, i) {
 			var currNum = numPrev + i;
 			return 'question-'+ currNum;
 		})
-		.text(function(d, i) {
-			return d.title;
+		.html(function(d, i) {
+			if (d.treatment != undefined)
+				return "<div class = 'global-title display-table-cell border-box'>" + d.title + "</div><div class = 'global-num display-table-cell border-box'>" + d.treatment + "</div>";
+			else 
+				return d.title;
 		});
 
 	for (var i in questions) {

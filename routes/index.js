@@ -24,7 +24,7 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 		var query = {questionnaire: questionnaire};
 
 		if (name.toLowerCase() === "music") {
-			var lim = 20;
+			var lim = 1;
 			query.main = 1;
 		}  
 

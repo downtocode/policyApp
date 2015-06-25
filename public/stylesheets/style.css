@@ -454,8 +454,11 @@ svg {
 #questionnaires {
 	/*background: rgba(256,256,256,.3);*/
 	text-align: right;
-	width: 40%;
 	border-right: 1px dotted rgb(100, 100, 100);
+}
+
+#questionnaires > div {
+	font-weight: 500;
 }
 
 #questions {
@@ -469,15 +472,34 @@ svg {
 	display: inline-block;
 }
 
-#questionnaires-wrapper #questionnaires, #questionnaires-wrapper #question-text {
-	overflow: auto;
+#questionnaires-wrapper > div {
 	height: 75%;
 	padding: 10px 20px;
 	float: left;
+	overflow: auto;
 }
 
 #questionnaires-wrapper ol, #questionnaires-wrapper ul {
 	margin-top: 10px;
+}
+
+#questionnaires-wrapper li {
+	border-bottom: 1px solid #b2b2b2;
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+}
+
+.all-question div {
+	display: inline-block;
+}
+
+.global-title {
+	width: 80%;
+	padding-right: 15px;
+}
+
+.global-num {
+	width: 20%;
 }
 
 .custom-button {

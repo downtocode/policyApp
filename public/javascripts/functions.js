@@ -313,36 +313,31 @@ function createTreatments(accessToken, questions, callback) {
 				});
 			} 
 
-			finishTreatments(questions, callback);
+			d3.select("#question-selector").selectAll("div")
+				.data(questions)
+				.enter()
+				.append("div")
+				.attr("class", "question-selector-circle clickable hidden")
+				.attr("id", function(d, i) { return "question-" + i; });
+
+			$(".question-selector-circle").first().addClass("selected");
+
+			// create array for user answers
+			// ['70|40', '|', '|']
+			var emptyArr = []
+			for (var i in questions) {
+				emptyArr.push("|");
+			}
+			$("#user-questions").val(emptyArr);
+
+			callback();
+
+			console.log(questions);
 			
 		}
 
 	});
 
-}
-
-
-function finishTreatments(questions, callback) {
-	d3.select("#question-selector").selectAll("div")
-		.data(questions)
-		.enter()
-		.append("div")
-		.attr("class", "question-selector-circle clickable hidden")
-		.attr("id", function(d, i) { return "question-" + i; });
-
-	$(".question-selector-circle").first().addClass("selected");
-
-	// create array for user answers
-	// ['70|40', '|', '|']
-	var emptyArr = []
-	for (var i in questions) {
-		emptyArr.push("|");
-	}
-	$("#user-questions").val(emptyArr);
-
-	callback();
-
-	console.log(questions);
 }
 
 
@@ -732,7 +727,7 @@ function getYoutubeSongs(songs, callback) {
 				var treatment_g = curr_song.statistics.likeCount;
 				var url = "https://www.youtube.com/embed/"+curr_song.id;
 
-				all_songs.push({id: songs[i], questionnaire: "music", title: title, treatment_g: treatment_g, url: url, main: 0});
+				all_songs.push({id: songs[i], questionnaire: "music", title: title, treatment_g: parseInt(treatment_g), url: url, main: 0});
 				console.log(title + ": " + url);
 				count++;
 

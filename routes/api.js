@@ -54,20 +54,27 @@ router.post('/api/getRestQuestions', function(req, res, next) {
 	var data = req.body;
 	var questionIdStrs = data.questionIds;
 	var questionIds = [];
+	var sortOrder = {};
 
 	for (var i in questionIdStrs) {
 		questionIds.push(new ObjectId(questionIdStrs[i]));
 	}
-	
 
-	db.questions.find({"_id": {$nin: questionIds}, questionnaire: data.questionnaire }, function(err, questions) {
-		var treatments = ['treatment_g', 'treatment_l', 'control'];
-		var rand = Math.floor(Math.random() * treatments.length);
+	var treatments = ['treatment_g', 'control'];
+	var rand = Math.floor(Math.random() * treatments.length);
+	rand = 0;
+	var treatment_type = treatments[rand];
+
+	if (treatment_type === 'treatment_g') {
+		sortOrder.treatment_g = -1;
+	}
+
+	db.questions.find({"_id": {$nin: questionIds}, questionnaire: data.questionnaire, main: 0 }).sort(sortOrder, function(err, questions) {
 
 		for (var q in questions) {
 			var question = questions[q];
-			question.treatment_type = treatments[rand];
-			question.treatment = question[treatments[rand]];
+			question.treatment_type = treatment_type;
+			question.treatment = question[treatment_type];
 
 			//treatments.splice(rand,1);
 			for (var i in treatments) {
