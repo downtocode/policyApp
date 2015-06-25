@@ -14,21 +14,21 @@ function capitalize(str) {
 router.get('/home/:name/:fid?', function(req, res, next) {
 	var db = req.db;
 	var name = req.params.name;
+	var limit = {};
 
 	if (name.toLowerCase() === "admin") {
 		res.render(name + 'Home');
 	}
 	else {
 		var questionnaire = name.replace(/-/g, " ").toLowerCase();
-		var lim = 15;
+		limit.limit = 15;
 		var query = {questionnaire: questionnaire};
 
 		if (name.toLowerCase() === "music") {
-			var lim = 1;
 			query.main = 1;
 		}  
 
-		db.questions.find(query, {}, {limit:lim}, function(err, questions) {
+		db.questions.find(query, {}, limit, function(err, questions) {
 
 			questionnaire = capitalize(questionnaire);
 			if (name.toLowerCase() === "music")

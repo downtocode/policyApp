@@ -1,4 +1,5 @@
 var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI';
+var prev_time;
 
 $(document).ready(function() {
 	$(document).on("click", "#submit-instructions", function() {
@@ -727,7 +728,7 @@ function getYoutubeSongs(songs, callback) {
 				var treatment_g = curr_song.statistics.likeCount;
 				var url = "https://www.youtube.com/embed/"+curr_song.id;
 
-				all_songs.push({id: songs[i], questionnaire: "music", title: title, treatment_g: parseInt(treatment_g), url: url, main: 0});
+				all_songs.push({id: curr_song.id, questionnaire: "music", title: title, treatment_g: parseInt(treatment_g), url: url, main: 0});
 				console.log(title + ": " + url);
 				count++;
 
@@ -743,8 +744,29 @@ function getYoutubeSongs(songs, callback) {
 }
 
 
+function setTime(d, ind) {
+	if (ind > 0) {
+		curr_time = d.getTime();
+		time_elapsed = curr_time - prev_time;
+		prev_time = curr_time;
+
+		var all_data = d3.selectAll(".question-selector-circle").data();
+		all_data[ind - 1].answer_time = time_elapsed;
+		console.log(prev_time, curr_time, time_elapsed);
+		d3.selectAll(".question-selector-circle").data(all_data);
+	} else {
+		prev_time = d.getTime();
+	}
+}
 
 
+
+function setDate(d, ind) {
+	var n = d.toLocaleString();
+	var all_data = d3.selectAll(".question-selector-circle").data();
+	all_data[ind].start_time = n;
+	d3.selectAll(".question-selector-circle").data(all_data);
+}
 
 
 

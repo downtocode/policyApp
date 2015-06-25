@@ -1,5 +1,3 @@
-var prev_time;
-
 $(document).ready(function() {
 
 	// FB init
@@ -224,29 +222,6 @@ $(document).ready(function() {
 
 });
 
-
-function setTime(d, ind) {
-	if (ind > 0) {
-		curr_time = d.getTime();
-		time_elapsed = curr_time - prev_time;
-		prev_time = curr_time;
-
-		var all_data = d3.selectAll(".question-selector-circle").data();
-		all_data[ind - 1].answer_time = time_elapsed;
-		console.log(prev_time, curr_time, time_elapsed);
-		d3.selectAll(".question-selector-circle").data(all_data);
-	} else {
-		prev_time = d.getTime();
-	}
-}
-
-
-function setDate(d, ind) {
-	var n = d.toLocaleString();
-	var all_data = d3.selectAll(".question-selector-circle").data();
-	all_data[ind].start_time = n;
-	d3.selectAll(".question-selector-circle").data(all_data);
-}
 
 
 function showQuestion(num) {

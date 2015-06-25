@@ -139,8 +139,9 @@ function downloadAnswers() {
 		dataType: 'JSON',
 		success: function(data) {
 			var data_str = data.join('\r\n');
+			//csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
 			var a = document.createElement('a');
-			a.href = 'data:attachment/csv,' + data_str;
+			a.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(data_str);
 			a.target = '_blank';
 			a.download = 'myFile.csv';
 

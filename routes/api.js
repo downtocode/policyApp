@@ -2,6 +2,16 @@ var express = require('express');
 var router = express.Router();
 var ObjectId = require('mongodb').ObjectID;
 
+function capitalizeTitle(str, split) {
+	var str_arr = str.split(/[\s-_]+/);
+	for (var i in str_arr) {
+		str_arr[i] = str_arr[i].replace(/[^A-Za-z0-9\s]+/g, "");
+		str_arr[i] = str_arr[i].toLowerCase();
+		//str_arr[i] = str_arr[i].charAt(0).toUpperCase() + str_arr[i].substr(1, str_arr[i].length).toLowerCase();
+	}
+	return str_arr.join("_");
+}
+
 router.get('/api', function(req, res, next) {
 	var db = req.db;
 	db.test.insert({title: 'blah'}, function(err, doc) {
@@ -191,6 +201,8 @@ router.post('/api/getFriendData', function(req, res, next) {
 router.post('/api/sendCSV', function(req, res, next) {
 	var db = req.db; 
 
+	var extra_demo = ['first_name','last_name', 'gender'];
+
 	db.users.find({}, function(err, users) {
 		db.questions.find({}, function(err, questions) {
 			db.userAnswers.find({}, function(err, userAnswers) {
@@ -198,9 +210,14 @@ router.post('/api/sendCSV', function(req, res, next) {
 					db.petitions.find({}, function(err, petitions) {
 						// write header and make header array
 						var header = "user"
+
+						for (var j in extra_demo)
+							header += "," + extra_demo[j];
+
 						var lineArr = []
 						for (var i in questions) {
-							header += ",opinion_" + questions[i].title + "," + "importance_" + questions[i].title + "," + "treatment_" + questions[i].title;
+							var curr_title = capitalizeTitle(questions[i].title, " ");
+							header += ",opinion_" + curr_title + "," + "importance_" + curr_title + "," + "treatment_" + curr_title + "," + "local_type_" + curr_title + "," + "start_time_" + curr_title + "," + "answer_time_" + curr_title;
 							lineArr.push(questions[i]._id);
 						}
 
@@ -211,8 +228,7 @@ router.post('/api/sendCSV', function(req, res, next) {
 						var userDemographics = {}
 
 						for (var j in users) {
-							console.log(users[j]);
-							userDemographics[users[j]] = users[j];
+							userDemographics[users[j].id] = users[j];
 						}
 
 						var userAnswersArr = {}
@@ -233,22 +249,38 @@ router.post('/api/sendCSV', function(req, res, next) {
 
 						for (var p in userAnswersArr) {
 							var user = userAnswersArr[p];
+							var currUserDemo = {};
+							if (userDemographics[p] != undefined) 
+								currUserDemo = userDemographics[p];
+
+							
 							var newLine = "" + p;
+							
+							for (var j in extra_demo) {
+								if (extra_demo[j] in currUserDemo)
+									newLine += "," + currUserDemo[extra_demo[j]];
+								else
+									newLine += ",";
+							}
+
 							for (var s in lineArr) {
 								var currQuestion = lineArr[s];
+
 								if (currQuestion in user)
-									newLine += "," + user[currQuestion].question + "," + user[currQuestion].importance + "," + user[currQuestion].treatment;
+									newLine += "," + user[currQuestion].question + "," + user[currQuestion].importance + "," + user[currQuestion].treatment + "," + user[currQuestion].treatment_l_type + "," + user[currQuestion].start_time + "," + user[currQuestion].answer_time;
 								else
 									newLine += "," + "," + ",";
 							}
 
+							
+
 							for (var r in demographics) {
-								if (demographics[r] in userDemographics)
-									newLine += "," + userDemographics[user.user_id][demographics[r]];
+								if (demographics[r].name in currUserDemo)
+									newLine += "," + currUserDemo[demographics[r].name];
 								else
 									newLine += ",";
 							}
-							allLines.push(newLine + "\n");
+							allLines.push(newLine);
 						}
 
 						res.send(allLines);
