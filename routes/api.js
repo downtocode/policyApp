@@ -12,6 +12,16 @@ function capitalizeTitle(str, split) {
 	return str_arr.join("_");
 }
 
+
+function removeCommasAddQuotes(str) {
+	if (typeof str === 'number')
+		str = str.toString();
+	if (str != undefined) 
+		str = str.replace(/,/g, "");
+	return '"' + str + '"';
+}
+
+
 router.get('/api', function(req, res, next) {
 	var db = req.db;
 	db.test.insert({title: 'blah'}, function(err, doc) {
@@ -224,6 +234,7 @@ router.post('/api/getFriendData', function(req, res, next) {
 	});
 });
 
+
 router.post('/api/sendCSV', function(req, res, next) {
 	var db = req.db; 
 
@@ -234,21 +245,31 @@ router.post('/api/sendCSV', function(req, res, next) {
 			db.userAnswers.find({}, function(err, userAnswers) {
 				db.demographics.find({}, function(err, demographics) {
 					db.petitions.find({}, function(err, petitions) {
+						var userPetitions = {};
+						for (var p in petitions) {
+							if (petitions[p].user_id in userPetitions)
+								userPetitions[petitions[p].user_id].push(parseInt(petitions[p].petition));
+							else
+								userPetitions[petitions[p].user_id] = [parseInt(petitions[p].petition)];
+						}
+
+						console.log(userPetitions);
+
 						// write header and make header array
 						var header = "user"
 
 						for (var j in extra_demo)
-							header += "," + extra_demo[j];
+							header += "," + removeCommasAddQuotes(extra_demo[j]);
 
 						var lineArr = []
 						for (var i in questions) {
 							var curr_title = capitalizeTitle(questions[i].title, " ");
-							header += ",opinion_" + curr_title + "," + "importance_" + curr_title + "," + "treatment_" + curr_title + "," + "local_type_" + curr_title + "," + "start_time_" + curr_title + "," + "answer_time_" + curr_title;
+							header += ',"opinion_' + curr_title + '","importance_' + curr_title + '","treatment_' + curr_title + '","local_type_' + curr_title + '","start_time_' + curr_title + '","answer_time_' + curr_title+'","petition_' + curr_title + '"';
 							lineArr.push(questions[i]._id);
 						}
 
 						for (var d in demographics) {
-							header += ",user_" + demographics[d].name;
+							header += ',"user_' + demographics[d].name+'"';
 						}
 
 						var userDemographics = {}
@@ -275,34 +296,45 @@ router.post('/api/sendCSV', function(req, res, next) {
 
 						for (var p in userAnswersArr) {
 							var user = userAnswersArr[p];
+							var userPetition = [];
+							if (userPetitions[p] != undefined)
+								userPetition = userPetitions[p];
+
 							var currUserDemo = {};
 							if (userDemographics[p] != undefined) 
 								currUserDemo = userDemographics[p];
 
 							
-							var newLine = "" + p;
+							var newLine = "" + removeCommasAddQuotes(p);
 							
 							for (var j in extra_demo) {
 								if (extra_demo[j] in currUserDemo)
-									newLine += "," + currUserDemo[extra_demo[j]];
+									newLine += "," + removeCommasAddQuotes(currUserDemo[extra_demo[j]]);
 								else
 									newLine += ",";
 							}
 
 							for (var s in lineArr) {
 								var currQuestion = lineArr[s];
+								console.log(currQuestion);
 
 								if (currQuestion in user)
-									newLine += "," + user[currQuestion].question + "," + user[currQuestion].importance + "," + user[currQuestion].treatment + "," + user[currQuestion].treatment_l_type + "," + user[currQuestion].start_time.replace(/,/g,"") + "," + user[currQuestion].answer_time;
+									newLine += "," + removeCommasAddQuotes(user[currQuestion].question) + "," + removeCommasAddQuotes(user[currQuestion].importance) + "," + removeCommasAddQuotes(user[currQuestion].treatment) + "," + removeCommasAddQuotes(user[currQuestion].treatment_l_type) + "," + removeCommasAddQuotes(user[currQuestion].start_time) + "," + removeCommasAddQuotes(user[currQuestion].answer_time);
 								else
-									newLine += "," + "," + ",";
+									newLine += "," + "," + "," + "," + "," + ",";
+
+								console.log(userPetition, currQuestion);
+								if (userPetition.indexOf(parseInt(currQuestion)) >= 0)
+									newLine += ",1";
+								else 
+									newLine += ",0";
 							}
 
 							
 
 							for (var r in demographics) {
 								if (demographics[r].name in currUserDemo)
-									newLine += "," + currUserDemo[demographics[r].name];
+									newLine += "," + removeCommasAddQuotes(currUserDemo[demographics[r].name]);
 								else
 									newLine += ",";
 							}

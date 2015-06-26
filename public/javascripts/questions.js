@@ -201,7 +201,7 @@ $(document).ready(function() {
 
 
 	$(document).on("click", ".petition-link a", function() {
-		var petition = $(this).parent().text();
+		var petition = $(this).attr('id');
 		var link = $(this).text();
 		var userID = d3.select(".user-info").data()[0].id;
 		
@@ -424,9 +424,9 @@ function getAllAnswers() {
 
 		if (question.type.toLowerCase() == 'range') {
 			if (tempArr[0] <= 50)
-				petitions[question.title] = question.petitions_1;
+				petitions[question.title + "|" + question._id] = question.petitions_1;
 			else
-				petitions[question.title] = question.petitions_2;
+				petitions[question.title + "|" + question._id] = question.petitions_2;
 		}
 	});
 
@@ -442,9 +442,9 @@ function getAllAnswers() {
 
 			if (question.type.toLowerCase() == 'range') {
 				if (tempArr[0] <= 50)
-					petitions[question.title] = question.petitions_1;
+					petitions[question.title + "|" + question._id] = question.petitions_1;
 				else
-					petitions[question.title] = question.petitions_2;
+					petitions[question.title + "|" + question._id] = question.petitions_2;
 			}
 
 		});
@@ -464,10 +464,11 @@ function submitQuestionnaire(answers, petitions) {
 			$("#question-text").html("Thank you! Based on your answers, we invite you to sign the petitions below: " +
 				"<div id = 'petitions' class = 'left font-16'></div>");
 
+			console.log(petitions);
 			for (var p in petitions) {
 				if (petitions[p].length > 0) {
-					$("#petitions").append("<div class = 'petition-link'>" + capitalizeSentence(p) + 
-						": <a href = '" + petitions[p] + "' id = 'petition-" + p + "' target = _blank>" + petitions[p] + "</a></div>");
+					$("#petitions").append("<div class = 'petition-link'>" + capitalizeSentence(p.split("|")[0]) + 
+						": <a href = '" + petitions[p] + "' id = '" + p.split("|")[1] + "' target = _blank>" + petitions[p] + "</a></div>");
 				}
 			}
 
