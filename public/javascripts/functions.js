@@ -167,7 +167,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 		success: function(friends) {
 			var local_treatments = [];
 			var local_treatments_ids = [];
-			var hasLocal = 1;
+			var hasLocal = 0;
 			// see how many friends are also using the app
 			// which means they have answers
 			// if more than 5, we want to use local treatments
@@ -284,8 +284,8 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 					"558aed26675db983c140888f", "558aed26675db983c140888c",
 					"558aed26675db983c1408896"];*/
 
-				app_friends = [10205628652891800, 10153306689188552, 10152911970233212,
-				10152909706628845];
+				/*app_friends = [10205628652891800, 10153306689188552, 10152911970233212,
+				10152909706628845];*/
 
 				$.ajax({
 					url: '/api/getFriendData',
