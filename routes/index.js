@@ -33,8 +33,15 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 			questionnaire = capitalize(questionnaire);
 			if (name.toLowerCase() === "music")
 				res.render(name + 'Home',{questions: questions, title: questionnaire, name: name});
-			else
-				res.render('questions', {questions: questions, title: questionnaire, name: name});
+			else {
+				db.coefficients.find({name: "coefficients"}, {type: 1}, function(err, coeffs) {
+					var hasIdentity = [];
+					for (var k in coeffs) {
+						hasIdentity.push(coeffs[k].type);
+					}
+					res.render('questions', {questions: questions, title: questionnaire, name: name, hasIdentity: hasIdentity});
+				});
+			}
 		
 		});
 	}

@@ -489,6 +489,12 @@ svg {
 	margin-bottom: 10px;
 }
 
+#questionnaire-top-text {
+	position: absolute;
+	width: 100%;
+	margin: 20px auto;
+}
+
 .all-question div {
 	display: inline-block;
 }

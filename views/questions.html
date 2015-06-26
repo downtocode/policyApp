@@ -20,6 +20,7 @@
 			$(document).ready(function() {
 				var questionnaireName = <%- JSON.stringify(title) %>
 				var questions = <%- JSON.stringify(questions) %>
+				var hasIdentity =  <%- JSON.stringify(hasIdentity) %>
 				$("header li.hidden").text(capitalizeSentence(questionnaireName));
 
 				if (questions === null)
@@ -27,7 +28,7 @@
 				else {
 					createTreatments(accessToken, questions, function() {
 						$("#submit-instructions").attr('disabled', false);
-					});
+					}, hasIdentity);
 					getUserLikes(accessToken);
 				}
 

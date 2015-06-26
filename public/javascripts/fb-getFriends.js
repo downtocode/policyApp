@@ -110,7 +110,7 @@ $(document).ready(function() {
 		var next_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind + 1];
 
 		if (curr_question_ind == $(".question-selector-circle").length - 1) {
-			$("#next-important").attr('id','submit-more-page').val('Submit!');
+			$("#next-important").attr('id','answer-more').val('Submit!');
 		} else {
 			$("#next-important").attr('id','next-question').val('Next');
 		}
@@ -202,15 +202,8 @@ $(document).ready(function() {
 	});
 
 
-	$(document).on("click", "#answer-more", function() {
-		var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
-		getAllQuestions(questionnaireName);
-	});
-
-
-	$(document).on("click", "#submit-questionnaire", function() {
-		var user = d3.select(".user-info").data()[0];
-		getAllAnswers(user);
+	$(document).on("click", "#submit-questionnaire, #answer-more", function() {
+		getAllAnswers();
 	});
 
 
@@ -416,7 +409,7 @@ function showQuestion(num) {
 
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	$("#question-box div").html("<div id = 'preview-album'><div id = 'question-text'></div></div>");
-	$("#question-text").html("<div class = 'font-black bold'>" + question.artist + " - <span class ='italics'> " + question.song + "</span></div>");
+	$("#question-text").html("<div id = 'question-title' class = 'font-black'>" + question.artist + " - <span class ='italics'> " + question.song + "</span></div>");
 
 	showTreatment(num);
 }
@@ -430,17 +423,11 @@ function showTreatment(num) {
 		if (question.treatment.length > 0) {
 			switch(question.treatment_type) {
 				case "treatment_g":
-					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + " Last FM Listeners</div>");
+					$("#question-text").append("<div class = 'font-black font-15 bold italics' id = 'question-treatment'>This song has " + question.treatment + " Last FM listeners.</div>");
 					break;
-				case "treatment_s":
-					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + "</div>");
-					break;
-				case "treatment_l":
-					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>Your friend Juan David gave this song " + question.treatment + " stars</div>");
-					break;
-				case "treatment_i":
-					$("#question-text").append("<div class = 'font-black font-15' id = 'question-treatment'>" + question.treatment + "</div>");
-					break;
+				default:
+					$("#question-text").append("<div class = 'font-black font-15 bold italics' id = 'question-treatment'>" + question.treatment + "</div>");
+					break; 
 			}
 		}
 	}
@@ -546,8 +533,6 @@ function getAllQuestions(questionnaire) {
 			dataType: "JSON",
 			contentType: "application/json",
 			success: function(response) {
-				console.log(response);
-				console.log(questionIds, questionnaire);
 				$.ajax({
 					url: "/api/getRestQuestions",
 					method: "POST",
@@ -566,7 +551,6 @@ function getAllQuestions(questionnaire) {
 
 
 function displayAllQuestions(questions) {
-	console.log(questions);
 	$(".display-table").html('<div class = "display-table-cell font-18" id = "questionnaires-wrapper">' +
 								'<div id = "questionnaires" class = "border-box">' +
 									'<div class = "global-title display-table-cell border-box font-15 center">Title</div>' + 
@@ -608,6 +592,7 @@ function displayAllQuestions(questions) {
 		$("#user-questions").val().push("|");
 	}
 
+	$("#question-box").prepend("<div id = 'questionnaire-top-text'>Thanks for your ratings! Please feel free to rate more songs below.</div>");
 	$("header").append("<input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>")
 	
 }
@@ -620,16 +605,6 @@ function getAllAnswers() {
 	var end_date = new Date();
 	var end_time = end_date.getTime();
 
-	$(".question-selector-circle").each(function(i) {
-		var question = d3.select(this).data()[0];
-		var questionID = d3.select(this).data()[0]._id;
-		var treatment = d3.select(this).data()[0].treatment_type;
-		var localType = question.local_type;
-		tempArr = answersArr[i].split("|");
-		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment, treatment_l_type: localType, start_time: question.start_time, answer_time: question.answer_time};
-		userAnswers.push(userAnswer);
-	});
-
 	if ($(".all-question").length > 0) {
 		$(".all-question").each(function(i) {
 			var questionID = d3.select(this).data()[0]._id;
@@ -637,6 +612,16 @@ function getAllAnswers() {
 			var ind = i + $(".question-selector-circle").length;
 			tempArr = answersArr[ind].split("|");
 			userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], knowledge: tempArr[1], treatment: treatment};
+			userAnswers.push(userAnswer);
+		});
+	} else {
+		$(".question-selector-circle").each(function(i) {
+			var question = d3.select(this).data()[0];
+			var questionID = d3.select(this).data()[0]._id;
+			var treatment = d3.select(this).data()[0].treatment_type;
+			var localType = question.local_type;
+			tempArr = answersArr[i].split("|");
+			userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment, treatment_l_type: localType, start_time: question.start_time, answer_time: question.answer_time};
 			userAnswers.push(userAnswer);
 		});
 	}
@@ -651,10 +636,14 @@ function submitQuestionnaire(answers) {
 		contentType: 'application/json',
 		data: JSON.stringify({answers: answers}),
 		success: function(response) {	
-			console.log(response);
-			$(".display-table-cell").html("Thank You! We also encourage you to invite your friends to participate in this study as well by clicking the button below!<br/>" + 
-				"<input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>")
-
+			if ($(".all-question").length > 0) {
+				$("#questionnaire-top-text").remove();
+				$(".display-table-cell").html("Thank You! We also encourage you to invite your friends to <br/>participate in this study as well by clicking the button below!<br/>" + 
+					"<br/><input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>")
+			} else {
+				var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
+				getAllQuestions(questionnaireName);
+			}
 		}
 	});
 }

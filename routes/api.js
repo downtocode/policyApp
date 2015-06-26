@@ -162,35 +162,61 @@ router.get('/api/getDemographics', function(req, res, next) {
 router.post('/api/getFriendData', function(req, res, next) {
 	var db = req.db;
 	var data = req.body;
+	var questionnaire = data.questionnaire;
 
-	db.userAnswers.find( { user_id: { $in: data.friendIDs } }, function (err, friendData) {
+	console.log(data);
+
+	db.userAnswers.find( { user_id: { $in: data.friendIDs }, question_id: {$in: data.question_id} }, function (err, friendData) {
 		if (!err) {
 			var friend_answers = {};
 			var friend_counts = {};
-			for (var i in friendData) {
-				var curr_answer = (isNaN(parseInt(friendData[i].question))) ? 
-					friendData[i].question :
-					Math.floor( parseInt(friendData[i].question) / 50 );
-
-				if (friendData[i].question_id in friend_answers) {
-					friend_counts[friendData[i].question_id] += 1;
-					if (curr_answer in friend_answers[friendData[i].question_id]) {
-						friend_answers[friendData[i].question_id][curr_answer] += 1;
+				
+			if (questionnaire === 'music') {
+				for (var i in friendData) {
+					var curr_answer = parseInt(friendData[i].question);
+					console.log(curr_answer);
+					if (friendData[i].question_id in friend_answers) {
+						friend_counts[friendData[i].question_id] += 1;
+						friend_answers[friendData[i].question_id] += curr_answer;							
 					} else {
-						friend_answers[friendData[i].question_id][curr_answer] = 1;
+						friend_counts[friendData[i].question_id] = 1;
+						friend_answers[friendData[i].question_id] = curr_answer;
 					}
-				} else {
-					var temp = {};
-					temp[curr_answer] = 1;
-					friend_answers[friendData[i].question_id] = temp;
-					friend_counts[friendData[i].question_id] = 1;
 				}
-			}
 
-			for (var j in friend_answers) {
-				for (var k in friend_answers[j]) {
-					friend_answers[j][k] = Math.round(100 * (friend_answers[j][k]/friend_counts[j]), 2);
+				for (var j in friend_answers) {
+					friend_answers[j] = Math.round(100 * friend_answers[j]/friend_counts[j], 2) / 100;
 				}
+
+
+			} else {
+				for (var i in friendData) {
+					var curr_answer = (isNaN(parseInt(friendData[i].question))) ? 
+						friendData[i].question :
+						Math.floor( parseInt(friendData[i].question) / 50 );
+
+					if (friendData[i].question_id in friend_answers) {
+						friend_counts[friendData[i].question_id] += 1;
+						if (curr_answer in friend_answers[friendData[i].question_id]) {
+							friend_answers[friendData[i].question_id][curr_answer] += 1;
+						} else {
+							friend_answers[friendData[i].question_id][curr_answer] = 1;
+						}
+					} else {
+						var temp = {};
+						temp[curr_answer] = 1;
+						friend_answers[friendData[i].question_id] = temp;
+						friend_counts[friendData[i].question_id] = 1;
+					}
+
+				}
+
+				for (var j in friend_answers) {
+					for (var k in friend_answers[j]) {
+						friend_answers[j][k] = Math.round(100 * (friend_answers[j][k]/friend_counts[j]), 2);
+					}
+				}
+				
 			}
 
 			res.send(friend_answers);

@@ -282,6 +282,8 @@ function showTreatment(num) {
 		} else {
 			if (question.treatment_type.toLowerCase() == "treatment_g")
 				$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#"+question["ref_num_g"]+"' target='_blank'>here</a> to see reference]</div></div>");
+			else if (question.treatment_type.toLowerCase() == "treatment_i")
+				$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='"+question["reference_identity"]+"' target='_blank'>here</a> to see reference]</div></div>");
 
 			$("#question-text").append("<div class = 'font-black font-15 italics bold' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
 		}

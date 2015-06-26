@@ -134,16 +134,16 @@ function shuffle(array) {
 }
 
 
-function hasIdentityTreatment(questions, treatment_i_start) {
+function hasIdentityTreatment(questions, treatment_i_start, hasIdentity) {
 	for (var i = treatment_i_start; i < questions.length; i++) {
-		if (!questions[i].treatment_i)
+		if (hasIdentity.indexOf(questions[i].title) == -1)
 			return false;
 	}
 	return true;
 }
 
 
-function createTreatments(accessToken, questions, callback) {
+function createTreatments(accessToken, questions, callback, hasIdentity) {
 	var questionnaire = questions[0].questionnaire;
 	var count = 1;
 	for (var i = 0; i < questions.length; i++) {
@@ -167,7 +167,7 @@ function createTreatments(accessToken, questions, callback) {
 		success: function(friends) {
 			var local_treatments = [];
 			var local_treatments_ids = [];
-			var hasLocal = 0;
+			var hasLocal = 1;
 			// see how many friends are also using the app
 			// which means they have answers
 			// if more than 5, we want to use local treatments
@@ -228,9 +228,9 @@ function createTreatments(accessToken, questions, callback) {
 			console.log(all_treatments);
 			var identity_treatments = [];
 
-			if (questions[0].treatment_i != undefined) {
+			if (hasIdentity != undefined) {
 				do { shuffle(questions); } 
-				while (!hasIdentityTreatment(questions, treatment_i_start));
+				while (!hasIdentityTreatment(questions, treatment_i_start, hasIdentity));
 			} else {
 				shuffle(questions);
 			}
@@ -282,33 +282,43 @@ function createTreatments(accessToken, questions, callback) {
 					"558aed26675db983c140888e", "558aed26675db983c1408893",
 					"558aed26675db983c1408892", "558aed26675db983c1408894",
 					"558aed26675db983c140888f", "558aed26675db983c140888c",
-					"558aed26675db983c1408896"];
+					"558aed26675db983c1408896"];*/
 
 				app_friends = [10205628652891800, 10153306689188552, 10152911970233212,
-				10152909706628845];*/
+				10152909706628845];
 
 				$.ajax({
 					url: '/api/getFriendData',
 					contentType: 'application/json',
-					data: JSON.stringify({friendIDs: app_friends, question_id: local_treatments_ids}),//question._id}),
+					data: JSON.stringify({friendIDs: app_friends, question_id: local_treatments_ids, questionnaire: questionnaire}),//question._id}),
 					dataType: 'JSON',
 					method: 'POST',
 					success: function(data) {
 						console.log(data);
 						var count = 0;
-						for (var k in data) {
-							var str = "According to your Facebook friends who also took the survey";
 
-							for (var p in data[k]) {
-								var ans = isNaN(parseInt(p)) ? '"' + p + '"' : 
-									( (parseInt(p) == 0) ? "against the policy" : "in favor of the policy");
-								str += ', ' + data[k][p] + '% answered ' + ans + '';
+						if (questionnaire === 'music') {
+							for (var k in data) {
+								var str = "Your Facebook friends who also took the survey gave this song an average rating of " + data[k] + " stars.";
+								questions[local_treatments[count]].treatment = str;
+								count++;
 							}
 
-							str += ".";
+						} else {
+							for (var k in data) {
+								var str = "According to your Facebook friends who also took the survey";
 
-							questions[local_treatments[count]].treatment = str;
-							count++;
+								for (var p in data[k]) {
+									var ans = isNaN(parseInt(p)) ? '"' + p + '"' : 
+										( (parseInt(p) == 0) ? "against the policy" : "in favor of the policy");
+									str += ', ' + data[k][p] + '% answered ' + ans + '';
+								}
+
+								str += ".";
+
+								questions[local_treatments[count]].treatment = str;
+								count++;
+							}
 						}
 					}
 				});
@@ -383,9 +393,15 @@ function askDemographics() {
 								"<ul class = 'importance-list no-list font-15'></ul></div>");
 
 							var values = dataWanted[i].values.split(",");
-							for (var k in values) {
-								$(".importance-list:last").append("<li class = 'inline-block center'>" + values[k] + "</li>");
+							if (values.length == 2) {
+								$(".importance-list:last").append("<li class = 'inline-block left'>" + values[0] + "</li>");
+								$(".importance-list:last").append("<li class = 'inline-block right'>" + values[1] + "</li>");
+							} else {
+								for (var k in values) {
+									$(".importance-list:last").append("<li class = 'inline-block center'>" + values[k] + "</li>");
+								}
 							}
+							
 
 							$(".importance-list:last li").width(100/ values.length + "%");
 							

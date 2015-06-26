@@ -19,9 +19,14 @@
 				var url = window.location.href.split("/login/")[1];
 				if (name.toLowerCase() === 'music') { //friends_actions.music,
 					$('#consent-wrapper').after('<fb:login-button scope="public_profile,email,user_friends,user_actions.music,user_about_me,user_birthday,user_education_history,user_likes" onlogin="checkLoginState(\'/home/'+url+'\');" class = "fb-login-button input"></fb:login-button>');
+
+
+					$("#consent-form").prepend("<p>The purpose of this study is to learn about people’s taste. This Facebook app will collect your basic information (age, gender, education, occupation and your friends list). In the study, you will be asked to rate music songs and complete a short survey. Your participation in this study will take about 15 minutes.</p>");
 					/*$('.display-table-cell').append('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history" onlogin="checkLoginState(\'/home/'+name+'\');" class = "input"></fb:login-button>');*/
 				} else {
 					$('#consent-wrapper').after('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history,user_likes" onlogin="checkLoginState(\'/home/'+url+'\');" class = "fb-login-button input"></fb:login-button>');
+
+					$("#consent-form").prepend("<p>The purpose of this study is to learn about people’s opinions. This Facebook app will collect your basic information (age, gender, education, occupation and your friends list). In the study, you will be asked your opinion about controversial policy and moral dilemmas, and complete a small survey. Participation will take about 15 minutes.</p>");
 
 					$("#consent-wrapper").after("<div id = 'fb-login-blocker'></div>");
 				}
@@ -68,8 +73,6 @@
 		</div>
 
 		<div id = "consent-form" class = "border-box">
-			<p>The purpose of this study is to learn about people’s opinions. This Facebook app will collect your basic information (age, gender, education, occupation and your friends list). In the study, you will be asked your opinion about controversial policy and moral dilemmas, and complete a small survey. Participation will take about 15 minutes.</p>
-
 			<p>Your participation in this study is purely voluntary, and you may withdraw your participation or your data at any time without any constraints.</p>
 
 			<p>Your data will be kept completely confidential and anonymous by the researchers and no individual identification will be attempted.</p>
