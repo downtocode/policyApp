@@ -55,12 +55,14 @@ router.get('/login/:name/:fid?', function(req, res, next) {
 		res.render('adminLogin');
 	else {
 		if (name.toLowerCase() === 'music') {
-			var desc =  "Discover, rate and follow great music. Would you like to volunteer in a behavioural study about music taste?";
+			var desc =  "Discover, rate and follow great music.Would you like to volunteer in our study about music taste? ";
+			var meta_title = "Music Taste";
 		} else if (name.toLowerCase() === 'policy') {
-			var desc = "If your sick daughter needed a medicine to survive and you did not have the money, would it be moral to steal the medicine? Would you like to participate on an study about moral stands?";
+			var desc = "Find out statistics about American’s stands on controversial policies while participating on our survey study.";
+			var meta_title = "Controversial Policies in America?";
 		}
 
-		res.render('questionsLogin', {name: name, meta_title: questionnaire + " Questionnaire", meta_name: questionnaire + " Questionnaire", meta_url: "http://stark-crag-5229.herokuapp.com/login/"+name.toLowerCase()+"/"+req.params.fid, meta_desc: desc});
+		res.render('questionsLogin', {name: name, meta_title: meta_title, meta_name: meta_title, meta_url: "http://stark-crag-5229.herokuapp.com/login/"+name.toLowerCase()+"/"+req.params.fid, meta_desc: desc});
 	}
 });
 

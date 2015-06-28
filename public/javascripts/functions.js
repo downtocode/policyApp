@@ -167,7 +167,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 		success: function(friends) {
 			var local_treatments = [];
 			var local_treatments_ids = [];
-			var hasLocal = 0;
+			var hasLocal = 1;
 			// see how many friends are also using the app
 			// which means they have answers
 			// if more than 5, we want to use local treatments
@@ -284,8 +284,8 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 					"558aed26675db983c140888f", "558aed26675db983c140888c",
 					"558aed26675db983c1408896"];*/
 
-				/*app_friends = [10205628652891800, 10153306689188552, 10152911970233212,
-				10152909706628845];*/
+				app_friends = [10205628652891800, 10153306689188552, 10152911970233212,
+				10152909706628845];
 
 				$.ajax({
 					url: '/api/getFriendData',
@@ -306,12 +306,22 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 
 						} else {
 							for (var k in data) {
-								var str = "According to your Facebook friends who also took the survey";
+								var str = "Out of your Facebook friends who also took the survey";
+								var phrasing = "";
+								
+								if (questions[local_treatments[count]].phrasing_identity.length > 0) {
+									phrasing = questions[local_treatments[count]].phrasing_identity.split("demographics")[1];
+									phrasing = phrasing.trim().substr(0, phrasing.length-2);
+								} else if (questions[local_treatments[count]].title === 'stem_cell_research') {
+									phrasing = "support stem cell research";
+								}
+
 
 								for (var p in data[k]) {
-									var ans = isNaN(parseInt(p)) ? '"' + p + '"' : 
-										( (parseInt(p) == 0) ? "against the policy" : "in favor of the policy");
-									str += ', ' + data[k][p] + '% answered ' + ans + '';
+									console.log(data[k], p);
+									var ans = isNaN(parseInt(p)) ? 'said they would "' + p + '"' : 
+										( (parseInt(p) == 0) ? "do not " : "");
+									str += ', ' + data[k][p] + '% ' + ans + phrasing;
 								}
 
 								str += ".";
@@ -647,7 +657,7 @@ function getIdentityTreatments(questionIds, demographics) {
 			var all_data = d3.selectAll(".question-selector-circle").data();
 
 			for (var i = ind; i < all_data.length; i++) {
-				all_data[i].treatment = treatments.identities[all_data[i].title];
+				all_data[i].treatment = all_data[i].phrasing_identity.replace("X%", treatments.probabilities[all_data[i].title]+"%");
 			}
 
 			console.log(all_data);

@@ -546,18 +546,19 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 				// Change into a probability by doing e^x / (1 + e^x)
 				// Save that probability into dictionary where key is curr question name
 				var curr_probability = Math.exp(curr_user_identity) / ( 1 + Math.exp(curr_user_identity) );
+				curr_probability = Math.round(curr_probability * 100);
 				user_probabilities[curr_question.type] = curr_probability;
 
 				// Write string for treatment using the greater_50 and less_50 text
 				// From coefficients csv file
-				var curr_str = "Approximately " + Math.round(curr_probability * 10000)/100 + "% of people who share similar demographics to you ";
-				user_identities[curr_question.type] = curr_str + curr_question.greater_50 + ".";
+				// var curr_str = "Approximately " + Math.round(curr_probability * 10000)/100 + "% of people who share similar demographics to you ";
+				// user_identities[curr_question.type] = curr_str + curr_question.greater_50 + ".";
 
 				console.log("DONE!");
 			}
 
 			// Once finish for all questions, send the values back for use in questionnaire
-			res.send({probabilities: user_probabilities, identities: user_identities});
+			res.send({probabilities: user_probabilities});
 
 		});
 
