@@ -55,7 +55,7 @@ router.get('/login/:name/:fid?', function(req, res, next) {
 		res.render('adminLogin');
 	else {
 		if (name.toLowerCase() === 'music') {
-			var desc =  "Discover, rate and follow great music.Would you like to volunteer in our study about music taste? ";
+			var desc =  "Discover, rate and follow great music. Would you like to volunteer in our study about music taste? ";
 			var meta_title = "Music Taste";
 		} else if (name.toLowerCase() === 'policy') {
 			var desc = "Find out statistics about American’s stands on controversial policies while participating on our survey study.";

@@ -21,12 +21,12 @@
 					$('#consent-wrapper').after('<fb:login-button scope="public_profile,email,user_friends,user_actions.music,user_about_me,user_birthday,user_education_history,user_likes" onlogin="checkLoginState(\'/home/'+url+'\');" class = "fb-login-button input"></fb:login-button>');
 
 
-					$("#consent-form").prepend("<p>The purpose of this study is to learn about people’s taste. This Facebook app will collect your basic information (age, gender, education, occupation and your friends list). In the study, you will be asked to rate music songs and complete a short survey. Your participation in this study will take about 15 minutes.</p>");
+					$("#consent-form").prepend("<p>The purpose of this study is to learn about people’s musical taste. You will be asked to rate music songs and to complete a short survey. Your participation in this study will take about 15 minutes.  Once you are done, you will have access to a playlist of songs put together by music curators from the study.</p><p>This Facebook app will collect your basic information (age, gender, education, occupation and your list of friends)</p>");
 					/*$('.display-table-cell').append('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history" onlogin="checkLoginState(\'/home/'+name+'\');" class = "input"></fb:login-button>');*/
 				} else {
 					$('#consent-wrapper').after('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history,user_likes" onlogin="checkLoginState(\'/home/'+url+'\');" class = "fb-login-button input"></fb:login-button>');
 
-					$("#consent-form").prepend("<p>The purpose of this study is to learn about people’s opinions. This Facebook app will collect your basic information (age, gender, education, occupation and your friends list). In the study, you will be asked your opinion about controversial policy and moral dilemmas, and complete a small survey. Participation will take about 15 minutes.</p>");
+					$("#consent-form").prepend("<p>The purpose of this study is to learn about people’s opinions regarding certain policies. You will be asked to complete a small survey that will take you about 10 minutes. Note that this Facebook app will collect your basic information (age, gender, education, occupation and your list of friends).</p>");
 
 					$("#consent-wrapper").after("<div id = 'fb-login-blocker'></div>");
 				}
@@ -75,7 +75,7 @@
 		<div id = "consent-form" class = "border-box">
 			<p>Your participation in this study is purely voluntary, and you may withdraw your participation or your data at any time without any constraints.</p>
 
-			<p>Your data will be kept completely confidential and anonymous by the researchers and no individual identification will be attempted.</p>
+			<p><b>Your data will be kept completely confidential and anonymous<b/> by the researchers and no individual identification will be attempted.</p>
 
 			<p>If you have any questions, you can contact: <a href = 'mailto:jr872@cornell.edu'>jr872@cornell.edu</a>
 
