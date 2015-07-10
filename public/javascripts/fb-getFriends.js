@@ -592,7 +592,7 @@ function displayAllQuestions(questions) {
 		$("#user-questions").val().push("|");
 	}
 
-	$("#question-box").prepend("<div id = 'questionnaire-top-text'>Thanks for your ratings! Please feel free to rate more songs below. <br/>If you like what you hear, <a href = 'https://www.youtube.com/playlist?list=PL-F_xeGwyiSKwU0g-4ygo2OjhKQxdF6LF'>follow our playlist</a> on YouTube!</div>");
+	$("#question-box").prepend("<div id = 'questionnaire-top-text'>Thanks for your ratings! Please feel free to rate more songs below. <br/>If you like what you hear, <a href = 'https://www.youtube.com/playlist?list=PL-F_xeGwyiSKwU0g-4ygo2OjhKQxdF6LF' target=_blank>follow our playlist</a> on YouTube!</div>");
 	$("header").append("<input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>")
 	
 }
