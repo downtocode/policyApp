@@ -493,7 +493,7 @@ function showAllQuestion(question) {
 	$("#preview-album").append("<iframe src = '' id = 'preview-iframe' class = 'center'></iframe>");
 	$("iframe").attr('src', question.url);
 
-	//addMusicKnowledge2();
+	addMusicKnowledge2();
 
 }
 
@@ -592,7 +592,7 @@ function displayAllQuestions(questions) {
 		$("#user-questions").val().push("|");
 	}
 
-	$("#question-box").prepend("<div id = 'questionnaire-top-text'>Thanks for your ratings! Please feel free to rate more songs below.</div>");
+	$("#question-box").prepend("<div id = 'questionnaire-top-text'>Thanks for your ratings! Please feel free to rate more songs below. <br/>If you like what you hear, <a href = 'https://www.youtube.com/playlist?list=PL-F_xeGwyiSKwU0g-4ygo2OjhKQxdF6LF'>follow our playlist</a> on YouTube!</div>");
 	$("header").append("<input type = 'button' id = 'submit-questionnaire' value = 'Submit!' class = 'clickable'/>")
 	
 }
@@ -661,11 +661,13 @@ function addMusicKnowledge() {
 
 function addMusicKnowledge2() {
 	$("#importance-section").remove();
-	$(".display-table-cell").append("<div id = 'importance-section' class = 'center font-16'><div class = 'font-black importance-header'>Have you heard this song before?</div></div>");
-	$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
+	$("iframe").after("<div id = 'importance-section' class = 'importance-section-2'><div class = 'font-black importance-header'>Have you heard this song before?</div></div>");
+	$("#importance-section").append("<input type = 'range' name='1' min='0' max='100' class = 'importance-range-2'><ul id = 'importance-list' class = 'no-list font-15 importance-list-2'></ul>");
 	$("#importance-list").append("<li class = 'inline-block center'>Never <br/>Heard It</li>");
 	$("#importance-list").append("<li class = 'inline-block center'>Sounds <br/>Familiar</li>");
 	$("#importance-list").append("<li class = 'inline-block center'>Know of This<br/>Song or Artist</li>");
 	$("#importance-list").append("<li class = 'inline-block center'>Know of This Song<br/>or Artist Very Well</li>");	
 	$("#importance-list li").width("25%");
+	$("#importance-list li").css("vertical-align", "top");
+	$("#importance-list li").css("border-bottom", "none");
 }

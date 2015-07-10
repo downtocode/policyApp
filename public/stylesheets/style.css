@@ -402,6 +402,11 @@ svg {
 	margin: 5px auto;
 }
 
+.importance-list-2 {
+	width: 115% !important;
+	margin-left: -10% !important;
+}
+
 #question-title {
 	font-size: 25px;
 	margin-bottom: 10px;
@@ -473,7 +478,8 @@ svg {
 }
 
 #questionnaires-wrapper > div {
-	height: 75%;
+	margin-top: 25px;
+	height: 80%;
 	padding: 10px 20px;
 	float: left;
 	overflow: auto;
@@ -628,6 +634,14 @@ input[type=button]:disabled {
 	width: 600px;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.importance-section-2 {
+	width: 75% !important;
+}
+
+.importance-range-2 {
+	width: 100% !important;
 }
 
 .small-box {

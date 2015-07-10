@@ -696,7 +696,7 @@ function getMainYoutubePlaylist(songs, nexPageToken, callback) {
 		url: 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=PL-F_xeGwyiSKMWDdGI1ExLjcqJWW6u4lB&key='+apiKey+nextPageToken,
 		dataType: 'JSON',
 		success: function(response) {
-			console.log(response);
+			//console.log(response);
 			for (var i in response.items) {
 				var curr_song = response.items[i].snippet;
 				songs.push(curr_song.resourceId.videoId);
@@ -724,7 +724,7 @@ function getYoutubePlaylist(songs, nextPageToken, callback) {
 		url: 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=PL-F_xeGwyiSKwU0g-4ygo2OjhKQxdF6LF&key='+apiKey+nextPageToken,
 		dataType: 'JSON',
 		success: function(response) {
-			console.log(response);
+			//console.log(response);
 			for (var i in response.items) {
 				var curr_song = response.items[i].snippet;
 				songs.push(curr_song.resourceId.videoId);
@@ -755,13 +755,13 @@ function getYoutubeSongs(songs, callback) {
 				var url = "https://www.youtube.com/embed/"+curr_song.id;
 
 				all_songs.push({id: curr_song.id, questionnaire: "music", title: title, treatment_g: parseInt(treatment_g), url: url, main: 0});
-				console.log(title + ": " + url);
+				//console.log(title + ": " + url);
 				count++;
 
 				if (count == Object.keys(songs).length) {
-					console.log("DONE!");
+					/*console.log("DONE!");
 					console.log(all_songs);
-					console.log(all_songs.length)
+					console.log(all_songs.length)*/
 					callback(all_songs);
 				}
 			}
@@ -778,7 +778,7 @@ function setTime(d, ind) {
 
 		var all_data = d3.selectAll(".question-selector-circle").data();
 		all_data[ind - 1].answer_time = time_elapsed;
-		console.log(prev_time, curr_time, time_elapsed);
+		//console.log(prev_time, curr_time, time_elapsed);
 		d3.selectAll(".question-selector-circle").data(all_data);
 	} else {
 		prev_time = d.getTime();
