@@ -82,7 +82,6 @@ router.post('/api/getRestQuestions', function(req, res, next) {
 
 	var treatments = ['treatment_g', 'control'];
 	var rand = Math.floor(Math.random() * treatments.length);
-	rand = 0;
 	var treatment_type = treatments[rand];
 
 	if (treatment_type === 'treatment_g') {
