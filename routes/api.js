@@ -174,6 +174,9 @@ router.post('/api/getFriendData', function(req, res, next) {
 	var questionnaire = data.questionnaire;
 
 	console.log(data);
+	data.friendIDs = ["10205628652891800", "10102448158687165", "10155757337020024", "10153412403562412","10204946575448268","10152940616468344","1598128497117358","10156030113445643","10153604523353054",	"10105261756794020",	"10204578253641778",	"10102935824895198",	"10153148939798789",	"10153197380298773",	"10153051804596149",	"10153133658553985",	"10153532691401983",	"10100399397406561",	"10153218863199807",	"10153009048000737",	"516917897743",	"1122891377725762"];
+	//data.question_id = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+
 
 	db.userAnswers.find( { user_id: { $in: data.friendIDs }, question_id: {$in: data.question_id} }, function (err, friendData) {
 		if (!err) {
@@ -200,22 +203,26 @@ router.post('/api/getFriendData', function(req, res, next) {
 
 			} else {
 				for (var i in friendData) {
-					var curr_answer = (isNaN(parseInt(friendData[i].question))) ? 
-						friendData[i].question :
-						Math.floor( parseInt(friendData[i].question) / 50 );
+					if (friendData[i].question.length > 0) {
+						var curr_answer = (isNaN(parseInt(friendData[i].question))) ? 
+							friendData[i].question :
+							Math.floor( parseInt(friendData[i].question) / 51 );
 
-					if (friendData[i].question_id in friend_answers) {
-						friend_counts[friendData[i].question_id] += 1;
-						if (curr_answer in friend_answers[friendData[i].question_id]) {
-							friend_answers[friendData[i].question_id][curr_answer] += 1;
+						console.log(friendData[i].question, curr_answer);
+
+						if (friendData[i].question_id in friend_answers) {
+							friend_counts[friendData[i].question_id] += 1;
+							if (curr_answer in friend_answers[friendData[i].question_id]) {
+								friend_answers[friendData[i].question_id][curr_answer] += 1;
+							} else {
+								friend_answers[friendData[i].question_id][curr_answer] = 1;
+							}
 						} else {
-							friend_answers[friendData[i].question_id][curr_answer] = 1;
+							var temp = {};
+							temp[curr_answer] = 1;
+							friend_answers[friendData[i].question_id] = temp;
+							friend_counts[friendData[i].question_id] = 1;
 						}
-					} else {
-						var temp = {};
-						temp[curr_answer] = 1;
-						friend_answers[friendData[i].question_id] = temp;
-						friend_counts[friendData[i].question_id] = 1;
 					}
 
 				}
@@ -227,6 +234,8 @@ router.post('/api/getFriendData', function(req, res, next) {
 				}
 				
 			}
+
+			console.log(friend_answers);
 
 			res.send(friend_answers);
 		}

@@ -1,5 +1,6 @@
 var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI';
 var prev_time;
+var url_name = 'https://stark-crag-5229.herokuapp.com';
 
 $(document).ready(function() {
 	$(document).on("click", "#submit-instructions", function() {
@@ -93,7 +94,7 @@ function getFriendsAnswers(questions, question, callback) {
 	$.ajax({
 		url: '/api/getFriendData',
 		contentType: 'application/json',
-		data: JSON.stringify({friendIDs: app_friends, question_id: '5535b299675db983c13fbed6'}),//question._id}),
+		data: JSON.stringify({friendIDs: app_friends, question_id: question._id}),
 		dataType: 'JSON',
 		method: 'POST',
 		success: function(data) {
@@ -174,6 +175,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 			if (friends.data.length > 5)
 				hasLocal = Math.floor(Math.random() * 2) + 1;
 
+			hasLocal = 1;
 			if (hasLocal || hasLocal == 1) {
 					var app_friends = [];
 					for (var i in friends.data)
@@ -290,7 +292,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 				$.ajax({
 					url: '/api/getFriendData',
 					contentType: 'application/json',
-					data: JSON.stringify({friendIDs: app_friends, question_id: local_treatments_ids, questionnaire: questionnaire}),//question._id}),
+					data: JSON.stringify({friendIDs: app_friends, question_id: local_treatments_ids, questionnaire: questionnaire}),
 					dataType: 'JSON',
 					method: 'POST',
 					success: function(data) {
@@ -305,29 +307,37 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 							}
 
 						} else {
-							for (var k in data) {
+							for (var ind in local_treatments) {
+								// For each local treatment, find its corresponding answers using the 
+								// index in array and corresponding ID
+								var curr_ind = local_treatments[ind];
+								var curr_id = local_treatments_ids[ind];
+								var curr_data = data[curr_id];
+
+								console.log(curr_data);
+
 								var str = "Out of your Facebook friends who also took the survey";
 								var phrasing = "";
 								
-								if (questions[local_treatments[count]].phrasing_identity.length > 0) {
-									phrasing = questions[local_treatments[count]].phrasing_identity.split("demographics")[1];
-									phrasing = phrasing.trim().substr(0, phrasing.length-2);
-								} else if (questions[local_treatments[count]].title === 'stem_cell_research') {
+								console.log(questions[curr_ind]);
+								if (questions[curr_ind].phrasing_identity.length > 0) {
+									phrasing = questions[curr_ind].phrasing_identity.split("demographics")[1];
+									var sub_end = (phrasing.lastIndexOf(".") == phrasing.length - 1) ? phrasing.length-2 : phrasing.length-1;
+									phrasing = phrasing.trim().substring(0, sub_end);
+								} else if (questions[curr_ind].title === 'stem_cell_research') {
 									phrasing = "support stem cell research";
 								}
 
 
-								for (var p in data[k]) {
-									console.log(data[k], p);
+								for (var p in curr_data) {
 									var ans = isNaN(parseInt(p)) ? 'said they would "' + p + '"' : 
 										( (parseInt(p) == 0) ? "do not " : "");
-									str += ', ' + data[k][p] + '% ' + ans + phrasing;
+									str += ', ' + curr_data[p] + '% ' + ans + phrasing;
 								}
 
 								str += ".";
 
-								questions[local_treatments[count]].treatment = str;
-								count++;
+								questions[curr_ind].treatment = str;
 							}
 						}
 					}
@@ -501,9 +511,9 @@ function sendFriendsDialog() {
 		var loginUrl = urlArray[urlArray.length - 1];
 
 	if (userID == '1368751615')
-		var link = 'https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+userID+userID+'/';
+		var link = url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
 	else
-		var link = 'https://stark-crag-5229.herokuapp.com/login/'+loginUrl+'/'+userID+'/';
+		var link = url_name + '/login/'+loginUrl+'/'+userID+'/';
 
 	FB.ui({
 		method: 'send',

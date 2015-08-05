@@ -20,7 +20,7 @@
 					if ($(this).html().indexOf("http") >= 0) {
 						var old_text = $(this).text(); 
 						var new_text = old_text.replace(/http[\S]+/gi, function(str) {
-							return "<a href = 'str'>"+str+"</a>";
+							return "<a href = '" + str + "'>"+str+"</a>";
 						});
 						$(this).html(new_text);
 					}

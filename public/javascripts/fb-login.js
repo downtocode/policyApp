@@ -1,4 +1,5 @@
 var appId = '486648534724015';
+var url_name = 'https://stark-crag-5229.herokuapp.com';
 
 $(document).ready(function() {
 
@@ -66,7 +67,7 @@ function statusChangeCallback(url, response) {
           });*/
 
 
-          window.location.href = 'https://stark-crag-5229.herokuapp.com'+url;
+          window.location.href = url_name+url;
         }
       });
     } else if (response.status === 'not_authorized') {
