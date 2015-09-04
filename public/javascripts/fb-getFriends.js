@@ -1,16 +1,26 @@
+//////////////////////////////////////////////////////////////
+// This file is for functions that are unique to the music 	//
+// questionnaire. It also includes old code	from using the 	//
+// Spotify API.												//
+//////////////////////////////////////////////////////////////
+
+// Sets up key-value data storage for user info access later
 var user = {};
+
+// Access token for FB app permissions
 var accessToken2 = 'CAACEdEose0cBANZBMg6QpbEzpwNXX6f2bJdaernrv3YvO8CUSTu07j7jX9QGXJC3UKgvHkRf03xZCAooVNYA2FU4q2szrYid8C9ZAvG3QoVah5p6KZCFbXvXOkoo7gXXjBAp399Wk8fJZA5ngRdCJIk62e39RA1loki1mBWojsGzcppsMABUhBU5vhZAsEobXEwCdyarTKwKhisuy4tMPFwHV1AEABvMkZD';
 
 $(document).ready(function() {
 
-  window.fbAsyncInit = function() {
+	// Initializes FB object
+	window.fbAsyncInit = function() {
   		FB.init({
-    		appId      : '486648534724015',// '150997527214'
+    		appId      : '486648534724015', // '150997527214'
     		cookie     : true,  // enable cookies to allow the server to access 
     		xfbml      : true,  // parse social plugins on this page
     		version    : 'v2.3' // use version 2.2
   		});
-  	};
+	};
 
 	(function(d, s, id){
     	var js, fjs = d.getElementsByTagName(s)[0];
@@ -20,26 +30,21 @@ $(document).ready(function() {
     	fjs.parentNode.insertBefore(js, fjs);
    	}(document, 'script', 'facebook-jssdk'));
 
+
+	// Checks if a cookie exists with the FB token
+	// Stores result in accessToken variable
 	var accessToken = hasCookie('fb_access');
 
+	
+	/***************** EVENT HANDLERS *****************/
 
+	// User clicks on "I Agree" button
 	$(document).on("click", "#submit-consent", function() {
 		submitConsent();
 	});
 
-
-	$(document).on("click", ".question-selector-circle", function() {
-		$('.question-selector-circle.selected').removeClass('selected');
-		$(this).addClass('selected');
-		var ind = $('.question-selector-circle').index($(this));
-		showQuestion(ind);
-		/*$("iframe").attr('src', song[0].top_track.preview_url);
-		$("#preview-album img").attr('src', song[0].top_track.album.images[0].url);
-		$("#question-text").empty();
-		$("#question-text").html("<span class = 'font-black'>" + song[0].name + ": </span><span class = 'font-grey'>" + song[0].song + "</span>");*/
-	});
-
-
+	// User hovers over rating stars (fills in only that one 
+	// and ones to the left)
 	$(document).on({
 	    mouseenter: function () {
 	    	$(this).children('.preview-star').css('fill', '#AD8D26');
@@ -66,7 +71,8 @@ $(document).ready(function() {
 	    }
 	}, "svg");
 
-
+	// When user clicks on rating star, keeps track of this by 
+	// changing properties of elements and fills them in
 	$(document).on("click", "svg", function() {
 		$(".custom-button").prop("disabled", false);
 		$('.selected-star').attr('class', 'clickable');
@@ -82,10 +88,14 @@ $(document).ready(function() {
 		var currData = d3.select('.selected').data();
 	});
 
-
+	// When user submits the consent form and starts answering questions
 	$(document).on("click", "#submit-consent", function() {
+
+		// Get the questionnaire name to display on top based on first question information
 		var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
 		$("header li").text(capitalizeSentence(questionnaireName));
+
+		// Hide consent form and show 1st question
 		$("#consent-form").fadeOut(500, function() {
 			$("#container").fadeIn(100);
 			showQuestion(0);
@@ -100,59 +110,73 @@ $(document).ready(function() {
 		showSong(ind);
 	});
 
-
+	// When user rates the song and clicks the "Next" button for
+	// how well they know the song
 	$(document).on("click", "#next-important", function() {
 		$("svg").remove();
 		addMusicKnowledge();
 
+		// Get current question's index so that we can get the next one
 		var curr_question_ind = $(".question-selector-circle").index($(".selected"));
 		var curr_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind];
 		var next_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind + 1];
 
+		// If the next one is the last one, the following "Next" button 
+		// is a "Submit" button instead 
 		if (curr_question_ind == $(".question-selector-circle").length - 1) {
 			$("#next-important").attr('id','answer-more').val('Submit!');
 		} else {
 			$("#next-important").attr('id','next-question').val('Next');
 		}
 
+		// Disable the button until the user answers
 		$("input[type=button]").prop("disabled", true);
 	});
 
-
+	// When user either finishes the knowledge question, skips the question,
+	// or skips the demographics, go to the next question
 	$(document).on("click", "#next-question, #skip-question, #skip-demographics", function() {
    		$("#skip-question").remove();
 
+   		// Get index of current question
    		var ind = $('.question-selector-circle').index($('.selected'));
 		var curr_question = d3.selectAll(".question-selector-circle").data()[ind];
 		var next_question = d3.selectAll(".question-selector-circle").data()[ind + 1];
 
+		// Checks if this is the demographics
    		if ( $(".demographics-next").length > 0) {
+   			// If so, submit user's info to database and then show question
    			submitUserInfo(0);
    			$("li:first").remove();
    			$("li.hidden").show();
    			showQuestion(ind);
    		} else {
+   			// Otherwise just show the next question
    			$('.selected').removeClass('selected');
    			$($('.question-selector-circle')[ind]).next().addClass('selected');
    			showQuestion(ind + 1);
    		}
    	});
 
-
+	// When user gives rating, adds their rating to a hidden value in 
+	// an HTML div 
    	$(document).on("click", "svg", function() {
-		if ($(".all-question").length == 0)
+   		// Checks if this is the rating at the end with all songs
+		if ($(".all-question").length == 0) // if not, then index is as is
 			var ind = $(".question-selector-circle").index($(".selected"));
-		else
+		else // if so, then index is num of "main" questions plus question's index in all questions list
 			var ind = $(".question-selector-circle").length + $("#questionnaires-list li").index($(".all-question-selected"));
 
+		// Adds user's answer to the array
 		var blah = $("#user-questions").val()[ind].split("|");
 		blah[0] = $(".selected-star").length;
 		$("#user-questions").val()[ind] = blah.join("|");		
 	});
 
-
+   	// When user answers a question
 	$(document).on("change", "input, select", function() {
-		if ($(".demographics-next").length == 0) {
+		// Checks if demographic question
+		if ($(".demographics-next").length == 0) { // if not, then add to user's answer array
 			$("input[type=button]").prop("disabled", false);
 			if ($(".all-question").length == 0)
 				var ind = $(".question-selector-circle").index($(".selected"));
@@ -162,7 +186,7 @@ $(document).ready(function() {
 			var blah = $("#user-questions").val()[ind].split("|");
 			blah[1] = $(this).val();
 			$("#user-questions").val()[ind] = blah.join("|");
-		} else {
+		} else { // else add to user's information array
 			var user = d3.select(".user-info").data()[0];
 			user[$(this).attr("name")] = $(this).val();
 
@@ -183,7 +207,7 @@ $(document).ready(function() {
 		}
 	});
 
-
+	// When user gets to demographic page, get demographic questions
 	$(document).on("click", "#get-user-info", function() {
 		$(this).hide();
 		$("li:first").remove();
@@ -191,7 +215,7 @@ $(document).ready(function() {
 		askDemographics();
 	});
 
-
+	// When user finishes answering questions, asks if they want to rate more
 	$(document).on("click", "#submit-more-page", function() {
 		$("#question-selector").css("display", "none");
 		$(this).css("display", "none");
@@ -201,12 +225,12 @@ $(document).ready(function() {
 		$("#question-text").append("<input type = 'button' id = 'answer-more' value = 'Yes' class = 'clickable'/><input type = 'button' id = 'submit-questionnaire' value = 'No' class = 'clickable'/>");
 	});
 
-
+	// When user finishes answering all questions, submit to database
 	$(document).on("click", "#submit-questionnaire, #answer-more", function() {
 		getAllAnswers();
 	});
 
-
+	// When user clicks on a question in the all quetion list, display on right side
 	$(document).on("click", ".all-question", function() {
 		$(this).addClass("italics");
 		$(this).children().css("opacity", ".5");
@@ -224,6 +248,7 @@ $(document).ready(function() {
 
 });
 
+// Gets FB friends' music (not currently used)
 function getFriendsMusic(accessToken, callback) {
 	//var accessToken = accessToken2;
 	var artists = {};
@@ -239,6 +264,8 @@ function getFriendsMusic(accessToken, callback) {
 	});
 }
 
+// Makes actual FB API call and continues calling until all
+// friends are retrieved
 function makeFriendAPICall(url, accessToken, artists, callback) {
 	$.ajax({
 		url: url,
@@ -287,6 +314,7 @@ function makeFriendAPICall(url, accessToken, artists, callback) {
 	});
 }
 
+// Get the top song for each artist using Spotify API (also not used)
 function getArtistTopSong(randArtists, artists, i, callback) {
 	var artist = artists[Object.keys(artists)[i]];
 	var artistNameSearch = artist.name.replace(/ /g, '%20');
@@ -320,6 +348,8 @@ function getArtistTopSong(randArtists, artists, i, callback) {
 	});
 }
 
+// Switches dictionary from key:value to value:key
+// Next few functions not used
 function switchDictionaryAggregate(artists, newKey) {
 	var newArtists = {};
 	for (var artist in artists) {
@@ -401,26 +431,32 @@ function displaySongs(randArtists) {
 	$("#question-text").html("<span class = 'font-black'>" + firstArtist.name + ": </span><span class = 'font-grey'>" + firstArtist.song + "</span>");
 }
 
-
+// Shows question at index num
 function showQuestion(num) {
+	// Gets current date/time to figure out amt of time spent on question
 	var d = new Date();
 	setTime(d, num);
 	setDate(d, num);
 
+	// Gets that question's data to display 
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	$("#question-box div").html("<div id = 'preview-album'><div id = 'question-text'></div></div>");
 	$("#question-text").html("<div id = 'question-title' class = 'font-black'>" + question.artist + " - <span class ='italics'> " + question.song + "</span></div>");
 
+	// Shows treatment for question
 	showTreatment(num);
 }
 
-
+// Displays treatment
 function showTreatment(num) {
+	// Gets the current question information based on the index num provided
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 
-	//$("#preview-album img").attr('src', question.info.album.images[0].url);
+	// If the treatment isn't a control 
 	if (question.treatment_type.toLowerCase() != "control") {
+		// If the treatment isn't undefined
 		if (question.treatment.length > 0) {
+			// Displays treatment based on what type it is
 			switch(question.treatment_type) {
 				case "treatment_g":
 					$("#question-text").append("<div class = 'font-black font-15 bold italics' id = 'question-treatment'>This song has " + question.treatment + " Last FM listeners.</div>");
@@ -432,10 +468,11 @@ function showTreatment(num) {
 		}
 	}
 
+	// Adds "Next" button
 	$("#question-text").append("<input type='button' class='custom-button clickable' id='show-song' value='Next'/>");
 }
 
-
+// Shows song itself from YouTube
 function showSong(num) {
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	$("#preview-album").append("<iframe src = '' id = 'preview-iframe' class = 'center'></iframe>");
@@ -443,7 +480,7 @@ function showSong(num) {
 	showStars();
 }
 
-
+// Shows the stars for the user to rate song
 function showStars() {
 	for (var i = 0; i < 5; i++) {
 		$("#preview-album").append('<svg height="26" width="26" class = "clickable rating-star"><polygon points=".25,10 6,10 8,5.5 10,10 15.5,10 11.5,13.5 13,18.5 8.25,15.25 3.75,18.5 5,13.5" class = "preview-star"/></svg>');
@@ -453,12 +490,16 @@ function showStars() {
 	$("#next-important").prop("disabled", true);
 }
 
-
+// Shows a song at the end when user is answering 
 function showAllQuestion(question) {
+	// Calculates the actual index based on position in the list
 	var ind = $(".all-question").index($(".all-question-selected")) + $(".question-selector-circle").length;
+
+	// Gets previous answer in case user already submitted rating previously
 	var user_answer = parseInt($("#user-questions").val()[ind].split("|")[0]);
 	$("#question-text").html("<div id = 'preview-album'></div>");
 
+	// Displays the stars
 	for (var i = 0; i < 5; i++) {
 		if (user_answer.length != NaN && i < user_answer) {
 			$("#preview-album").append('<svg height="26" width="26" class = "clickable selected-star"><polygon points=".25,10 6,10 8,5.5 10,10 15.5,10 11.5,13.5 13,18.5 8.25,15.25 3.75,18.5 5,13.5" class = "preview-star" style="fill: #ad8d26;"/></svg>');
@@ -468,9 +509,9 @@ function showAllQuestion(question) {
 		}
 	}
 	
-
 	$("#preview-album").append("<div class = 'font-black bold'>" + question.title + "</div>");
 
+	// Displays the treatment
 	if (question.treatment_type.toLowerCase() != 'control' && question.treatment != null && question.treatment.length > 0) {
 		switch(question.treatment_type) {
 			case "treatment_l":
@@ -493,10 +534,12 @@ function showAllQuestion(question) {
 	$("#preview-album").append("<iframe src = '' id = 'preview-iframe' class = 'center'></iframe>");
 	$("iframe").attr('src', question.url);
 
+	// Displays section asking how well they know the song/artist
 	addMusicKnowledge2();
 
 }
 
+// Get songs from Spotify API (not used)
 function getSongs(songs, callback) {
 	var count = 0;
 	for (var i in songs) {
@@ -507,6 +550,7 @@ function getSongs(songs, callback) {
 	}
 }
 
+// Get single song
 function getSong(songs, i, artist, song) {
 	artist = artist.replace(/ /g,"%20");
 	song = song.replace(/ /g, "%20");
@@ -519,13 +563,16 @@ function getSong(songs, i, artist, song) {
 	});
 }
 
+// Gets all songs from YouTube playlist 
 function getAllQuestions(questionnaire) {
 	var questionIds = [];
 	$(".question-selector-circle").each(function(i) {
 		questionIds.push(d3.select(this).data()[0]._id);
 	});
 
+	// Makes YouTube API call and gets data in variable songs
 	getYoutubePlaylist(null, null, function(songs) {
+		// Takes the songs retrieved and saves them into database
 		$.ajax({ 
 			url: '/api/saveNewSongs',
 			method: 'POST',
@@ -533,6 +580,7 @@ function getAllQuestions(questionnaire) {
 			dataType: "JSON",
 			contentType: "application/json",
 			success: function(response) {
+				// Gets all questions from database
 				$.ajax({
 					url: "/api/getRestQuestions",
 					method: "POST",
@@ -549,7 +597,7 @@ function getAllQuestions(questionnaire) {
 	
 }
 
-
+// Displays all song names in left column 
 function displayAllQuestions(questions) {
 	$(".display-table").html('<div class = "display-table-cell font-18" id = "questionnaires-wrapper">' +
 								'<div id = "questionnaires" class = "border-box">' +
@@ -567,6 +615,7 @@ function displayAllQuestions(questions) {
 	$("#question-text").width("20%");
 	$("#question-box").height("100% !important");
 
+	// Creates list element for all songs
 	d3.select("#questionnaires-list").selectAll("li")
 		.data(questions)
 		.enter()
@@ -588,6 +637,7 @@ function displayAllQuestions(questions) {
 				return d.title;
 		});
 
+	// Appends to user answers array
 	for (var i in questions) {
 		$("#user-questions").val().push("|");
 	}
@@ -597,14 +647,21 @@ function displayAllQuestions(questions) {
 	
 }
 
+// Gets all answers from user answers array and adds to database
 function getAllAnswers() {
 	var answersArr = $("#user-questions").val();
 	var tempArr, userAnswer;
 	var userAnswers = [];
+
+	// Gets user's ID for database storage
 	var userID = d3.selectAll(".user-info").data()[0].id;
+
+	// Gets date/time for duration of last rating
 	var end_date = new Date();
 	var end_time = end_date.getTime();
 
+	// Checks if song at the end is main song or in playlist
+	// Changes the ind and treatment storage appropriately
 	if ($(".all-question").length > 0) {
 		$(".all-question").each(function(i) {
 			var questionID = d3.select(this).data()[0]._id;
@@ -626,9 +683,11 @@ function getAllAnswers() {
 		});
 	}
 
+	// After finishes creating the array of user answers, submits to database
 	submitQuestionnaire(userAnswers);
 }
 
+// Submits user answers to database
 function submitQuestionnaire(answers) {
 	$.ajax({
 		url: '/api/sendAnswers',
@@ -636,11 +695,13 @@ function submitQuestionnaire(answers) {
 		contentType: 'application/json',
 		data: JSON.stringify({answers: answers}),
 		success: function(response) {	
+			// If submitting the full playlist, then displays a thank you message and button for FB dialog
 			if ($(".all-question").length > 0) {
 				$("#questionnaire-top-text").remove();
 				$(".display-table-cell").html("Thank You! We also encourage you to invite your friends to <br/>participate in this study as well by clicking the button below!<br/>" + 
 					"<br/><input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>")
 			} else {
+				// Otherwise, gets full playlist
 				var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
 				getAllQuestions(questionnaireName);
 			}
@@ -648,7 +709,7 @@ function submitQuestionnaire(answers) {
 	});
 }
 
-
+// Adds the slider for if they've heard song before
 function addMusicKnowledge() {
 	$("iframe").after("<div id = 'importance-section'><div class = 'font-black importance-header'>Have you heard this song before?</div></div>");
 	$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
@@ -659,6 +720,7 @@ function addMusicKnowledge() {
 	$("#importance-list li").width("25%");
 }
 
+// Adds slider for playlist songs (displays differently)
 function addMusicKnowledge2() {
 	$("#importance-section").remove();
 	$("iframe").after("<div id = 'importance-section' class = 'importance-section-2'><div class = 'font-black importance-header'>Have you heard this song before?</div></div>");

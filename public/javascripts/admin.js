@@ -1,11 +1,23 @@
+//////////////////////////////////////////////////////////////
+// This file handles the functions on the Admin page (ie. 	//
+// the adding questions interface). However, it is still  	//
+// better to use the Terminal since the page is not fully 	//
+// fleshed out.												//
+//////////////////////////////////////////////////////////////
+
 $(document).ready(function() {
 
+	// Get all questionnaires so can display names
 	getQuestionnaires();
 
+	// EVENT HANDLERS 
+
+	// When user clicks login button
 	$(document).on("click", "#admin-login", function() {
 		checkAdminLogin();
 	});
 
+	// When user uses enter key to login
 	$(document).on("keypress", function(e) {
 		var key = e.keyCode || e.which;
 		if(key == 13) {

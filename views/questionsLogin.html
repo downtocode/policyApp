@@ -15,9 +15,12 @@
 		<script src = "../../../javascripts/fb-login.js"></script>
 		<script>
 			$(document).ready(function() {
+				// Returns appropriate consent form text for questionnaire
+				// Also creates FB button for logging in with the necessary permissions
 				var name = <%-JSON.stringify(name)%>
 				var url = window.location.href.split("/login/")[1];
-				if (name.toLowerCase() === 'music') { //friends_actions.music,
+
+				if (name.toLowerCase() === 'music') {
 					$('#consent-wrapper').after('<fb:login-button scope="public_profile,email,user_friends,user_actions.music,user_about_me,user_birthday,user_education_history,user_likes" onlogin="checkLoginState(\'/home/'+url+'\');" class = "fb-login-button input"></fb:login-button>');
 
 
@@ -28,9 +31,11 @@
 
 					$("#consent-form").prepend("<p>The purpose of this study is to learn about people’s opinions regarding certain policies. You will be asked to complete a small survey that will take you about 10 minutes. Note that this Facebook app will collect your basic information (age, gender, education, occupation and your list of friends).</p>");
 
+					// Prevent FB login button from being clicked until the "I Agree" checkbox is clicked
 					$("#consent-wrapper").after("<div id = 'fb-login-blocker'></div>");
 				}
 
+				// When user clicks "I Agree" button
 				$(document).on("click", "#submit-consent", function() {
 					if (document.getElementById('submit-consent').checked) {
 					    $(".fb-login-button").css("opacity", "1");

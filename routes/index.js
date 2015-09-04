@@ -1,6 +1,13 @@
+//////////////////////////////////////////////////////////////
+// This file is for basic routing information (directing 	//
+// to the correct page and returning necessary information	//
+// upon receiving the URL request.							//
+//////////////////////////////////////////////////////////////
+
 var express = require('express');
 var router = express.Router();
 
+// Capitalize word (ie. policy -> Policy)
 function capitalize(str) {
 	var arr = str.split(" ");
 	var strCap = "";
@@ -11,16 +18,26 @@ function capitalize(str) {
 	return strCap.trim();
 }
 
+// Loads home page with appropriate questions retrieved from database
+// Can either be for admin page or question page
 router.get('/home/:name/:fid?', function(req, res, next) {
+	// Get parameters if they have
+	// :name means there is a name variable for which questionnaire
+	// :fid means there is a value for a friend ID so we can add connection to backend
+	// :fid? with question mark means fid is optional 
+	// ie. /music or /music/12345667
 	var db = req.db;
 	var name = req.params.name;
 	var limit = {};
 
+	// If admin, then simply render HTML page
 	if (name.toLowerCase() === "admin") {
 		res.render(name + 'Home');
 	}
-	else {
+	else { // Otherwise is a question page so fetch questions
 		var questionnaire = name.replace(/-/g, " ").toLowerCase();
+
+		// Limit to 15 main questions
 		limit.limit = 15;
 		var query = {questionnaire: questionnaire};
 
@@ -29,11 +46,13 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 		}  
 
 		db.questions.find(query, {}, limit, function(err, questions) {
-
+			// Questions are returned in variable questions
 			questionnaire = capitalize(questionnaire);
+
+			// If music questionnaire, then return information as is
 			if (name.toLowerCase() === "music")
 				res.render(name + 'Home',{questions: questions, title: questionnaire, name: name});
-			else {
+			else { // Otherwise if policy, also get coefficients to later calculate identity treatments
 				db.coefficients.find({name: "coefficients"}, {type: 1}, function(err, coeffs) {
 					var hasIdentity = [];
 					for (var k in coeffs) {
@@ -47,6 +66,8 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 	}
 });
 
+// Loads login page and contains information for the FB metadata 
+// (what shows up when invite friends dialog is displayed)
 router.get('/login/:name/:fid?', function(req, res, next) {
 	var name = capitalize(req.params.name);
 	var questionnaire = capitalize(name.replace(/-/g, " ").toLowerCase());
@@ -70,6 +91,7 @@ router.get('/createQuestionnaire', function(req, res, next) {
 	res.render('createQuestions');
 });
 
+// Gets references from questions for reference page
 router.get('/references', function(req, res, next) {
 	var db = req.db;
 
@@ -78,6 +100,8 @@ router.get('/references', function(req, res, next) {
 	});
 });
 
+// Default page is questions login
+// Page that loads when URL doesn't have any specific data
 router.get('/', function(req, res, next) {
 	res.render('questionsLogin', {name: 'music'});
 });

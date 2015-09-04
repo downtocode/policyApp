@@ -1,3 +1,9 @@
+//////////////////////////////////////////////////////////////
+// This file is for functions that are unique to the  		//
+// policy questionnaire.									//
+//////////////////////////////////////////////////////////////
+
+
 $(document).ready(function() {
 
 	// FB init
@@ -17,11 +23,6 @@ $(document).ready(function() {
     	js.src = "//connect.facebook.net/en_US/sdk.js";
     	fjs.parentNode.insertBefore(js, fjs);
    	}(document, 'script', 'facebook-jssdk'));
-
-
-	// If user submits consent form
-	// Take them to the first question
-	
 
 
 	// If user clicks "Next" to see treatment.
@@ -200,6 +201,7 @@ $(document).ready(function() {
 	});
 
 
+	// If user clicks on the petition, records which one they clicked on
 	$(document).on("click", ".petition-link a", function() {
 		var petition = $(this).attr('id');
 		var link = $(this).text();
@@ -216,6 +218,7 @@ $(document).ready(function() {
 	});
 
 
+	// If user clicks "Finish" button, shows invite dialog box
 	$(document).on("click", "#invite-friends", function() {
 		sendFriendsDialog();
 	});
@@ -223,23 +226,28 @@ $(document).ready(function() {
 });
 
 
-
+// Shows question based on index number
 function showQuestion(num) {
+
+	// Sets up date to figure out time elapsed
 	var d = new Date();
 	setTime(d, num);
 	setDate(d, num);
 
+	// Gets corresponding question
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	$("#question-box div").html("<div id = 'question-text'></div>");
 	$("#question-text").empty();
 
-
+	// If moral dilemma, need to separate question differently so that last part of question 
+	// is only shown after user clicks "Next"
 	if (question.title == 'moral_dilemma') {
 		var i = question.question.lastIndexOf(". ");
 		var q = question.question.substr(0, i);
 		$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(q) + ".</div>"); 
 	}
 
+	// Shows the appropriate treatment on screen
 	showTreatment(num);
 
 	/*if (question.treatment_type.toLowerCase() != 'control') {
@@ -259,12 +267,17 @@ function showQuestion(num) {
 	}*/	
 }
 
+// Shows treatment appropriately
 function showTreatment(num) {
+	// Gets the corresponding question based on the index provided in variable num
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 
+	// Displays the question's title (ie. Moral Dilemma, Same-Sex Marriage)
 	$("#question-text").prepend("<div id = 'question-title'>" + capitalizeSentence(question.title) +"</div>");
 	
+	// If there is a treatment (ie. not control)
 	if (question.treatment_type.toLowerCase() != 'control' && question.treatment != undefined) {
+		// If we want to create a graph for the treatment (ie. global treatment)
 		if (question.treatment.indexOf("|") >= 0 && question.treatment_type.toLowerCase() != "treatment_s" && question.title != "moral_dilemma") {
 			var arr = question.treatment.split('|');
 			$("#question-text").append("<div class = 'font-black font-18 bold' id = 'question-treatment'>" + 
@@ -272,7 +285,7 @@ function showTreatment(num) {
 
 			var data = [];
 			
-
+			// Set up data in format that is understandable to d3 library
 			data.push({"year": arr[1].split(":")[0].trim(), "value": arr[1].split(":")[1].trim()});
 			data.push({"year": arr[2].split(":")[0].trim(), "value": arr[2].split(":")[1].trim()});
 
@@ -280,6 +293,7 @@ function showTreatment(num) {
 			$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#"+question["ref_num_g"]+"' target='_blank'>here</a> to see reference]</div></div>");
 
 		} else {
+			// Otherwise just show the treatment as is displayed
 			if (question.treatment_type.toLowerCase() == "treatment_g")
 				$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#"+question["ref_num_g"]+"' target='_blank'>here</a> to see reference]</div></div>");
 			else if (question.treatment_type.toLowerCase() == "treatment_i")
@@ -288,6 +302,7 @@ function showTreatment(num) {
 			$("#question-text").append("<div class = 'font-black font-15 italics bold' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
 		}
 
+		// If a status treatment, then add on the reference link
 		if (question.treatment_type.toLowerCase() == 'treatment_s') {
 			if ( question.reference_status != undefined ) {
 				var reference = question["ref_num_" + question.treatment_type.split("_")[1]];
@@ -305,7 +320,7 @@ function showTreatment(num) {
 	//$("#question-treatment").slideDown('slow');
 }
 
-
+// Displays actual question text
 function showQuestionText(num) {
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	if (question.title != 'moral_dilemma') {
@@ -315,7 +330,7 @@ function showQuestionText(num) {
 	$("#question-text").append("<div id = 'question-answers'></div>");
 }
 
-
+// Spearates question choices into array so they are usable
 function getValues(type, values) {
 	if (type === "checklist" || type === "radio") {
 		var valuesArr = values.split(",");
@@ -332,6 +347,7 @@ function getValues(type, values) {
 	return valuesArr;
 }
 
+// Shows question's choices with appropriate input type (ie. slider, radio buttons)
 function showValues(type, values) {
 	if ($(".question-header").text().length > 300) {
 		$("#question-answers").append("<br/>Should " + $(".question-header").text().split(" ")[0] + ": <br/>");
@@ -362,6 +378,7 @@ function showValues(type, values) {
 	$("#question-answers .hidden").slideDown('slow');
 }
 
+// Adds "How important is this to you" or "How hard was it for you to answer" (for moral dilemma)
 function addQuestionImportance() {
 	$("#question-treatment").remove();
 	$("#question-answers").children().remove();
@@ -372,6 +389,7 @@ function addQuestionImportance() {
 	var curr_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind];
 	var next_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind + 1];
 
+	// Inserts correct phrasing based on title
 	if (curr_question.title == 'moral_dilemma') {
 		$("#question-answers").append("<div id = 'importance-section'><div class = 'font-black importance-header'>How hard was it for you to answer this question?</div></div>");
 		$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
@@ -386,6 +404,7 @@ function addQuestionImportance() {
 		$("#importance-list li").width("50%");
 	}
 
+	// Adds either "Next" button or "Submit" if it is the last question
 	if (curr_question_ind == $(".question-selector-circle").length - 1) {
 		$("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
 	} else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
@@ -394,16 +413,18 @@ function addQuestionImportance() {
 		$("#question-text input[type=button]").attr('id','next-question').val('Next');
 	}
 
+	// Disables button until user answers question
 	$("#question-text input[type=button]").prop("disabled", true);
 
-	if ($("#question-treatment").text().length > 500) {
+	// if ($("#question-treatment").text().length > 500) {
 		//question.treatment.length > 500 && (question.treatment_type.toLowerCase() === "treatment_s" || question.treatment_type.toLowerCase() === "treatment_i" ||
 		//question.treatment_type.toLowerCase() === "treatment_g" )) {
 		$("#question-treatment").hide();
-	}
+	// }
 
 }
 
+// Gets all user answers and submits to database
 function getAllAnswers() {
 	var answersArr = $("#user-questions").val();
 	var tempArr, userAnswer;
@@ -413,15 +434,19 @@ function getAllAnswers() {
 	var end_date = new Date();
 	var end_time = end_date.getTime();
 
+	// Gets all main policy questions
 	$(".question-selector-circle").each(function(i) {
 		var question = d3.select(this).data()[0];
 		var questionID = question._id;
 		var treatment = question.treatment_type;
 		var localType = question.local_type;
 		tempArr = answersArr[i].split("|");
+
+		// Creates dictionary for each answer with necessary information
 		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], treatment: treatment, treatment_l_type: localType, start_time: question.start_time, answer_time: question.answer_time};
 		userAnswers.push(userAnswer);
 
+		// Gets appropriate petition to display based on user's answer
 		if (question.type.toLowerCase() == 'range') {
 			if (tempArr[0] <= 50)
 				petitions[question.title + "|" + question._id] = question.petitions_1;
@@ -430,6 +455,7 @@ function getAllAnswers() {
 		}
 	});
 
+	// If any additional questions, get answers and peitions for those as well
 	if ($(".all-question").length > 0) {
 		$(".all-question").each(function(i) {
 			var question = d3.select(this).data()[0];
@@ -454,6 +480,7 @@ function getAllAnswers() {
 
 }
 
+// Submits answers to database and displays petitions collected in previous function
 function submitQuestionnaire(answers, petitions) {
 	$.ajax({
 		url: '/api/sendAnswers',
@@ -472,13 +499,14 @@ function submitQuestionnaire(answers, petitions) {
 				}
 			}
 
+			// After petitions, displays button to invite friends to do questionnaire
 			$("#petitions").after("<br/>We also encourage you to invite your friends to participate in this study as well!" + 
 				"<br/><input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>")
 		}
 	});
 }
 
-
+// Get any additional questions from backend
 function getAllQuestions(questionnaire) {
 	var questionIds = [];
 	$(".question-selector-circle").each(function(i) {
@@ -497,7 +525,9 @@ function getAllQuestions(questionnaire) {
 	});
 }
 
+// Displays all additional questions from database into list in left column on screen
 function displayAllQuestions(questions) {
+	// Checks to make sure there are actually additional questions
 	if (questions.length > 0) {
 		$(".display-table").html('<div class = "display-table-cell font-18" id = "questionnaires-wrapper">' +
 									'<div id = "questionnaires" class = "border-box">' +
@@ -528,7 +558,7 @@ function displayAllQuestions(questions) {
 		for (var i in questions) {
 			$("#user-questions").val().push("|");
 		}
-	} else {
+	} else { // If no additional questions, then just display "Finish" button
 		$(".display-table").html('<div class = "display-table-cell font-18" id = "questionnaires-wrapper">' +
 			'<span id = "error-msg">Sorry! There are actually no more questions to answer. Please click below to finish this questionnaire. Thanks!</span></div>'+
 			'<div id = "question-text" class = "border-box">' +
@@ -536,13 +566,13 @@ function displayAllQuestions(questions) {
 	}
 }
 
-
+// Helper function to get current question without index number
 function getQuestion() {
 	var ind = $(".question-selector-circle").index(".question-selector-circle.selected");
 	return d3.selectAll(".question-selector-circle").data()[ind];
 }
 
-
+// Helper function to get current question with index number
 function getQuestion(num) {
 	return d3.selectAll(".question-selector-circle").data()[num];
 }

@@ -8,8 +8,8 @@
 
 		<script>
 			$(document).ready(function() {
-				//var references = <%- JSON.stringify(references) %> 
-				//console.log( references );
+				// Display the reference information and bold the one that was clicked on during questionnaire
+				// based on the number variable in URL
 				var url = window.location.href;
 				var id = url.split("#")[1];
 				console.log("li:nth-child("+id+")");

@@ -11,21 +11,27 @@
 		<script src = "../../../javascripts/inviteFriends.js"></script>
 
 		<script>
+			// Checks for cookie with FB access, meaning user is logged in
 			var accessToken = hasCookie('fb_access');
 			var url = window.location.href.split("/home/")[1];
+
+			// If no access token, then redirect to login page
 			if (accessToken === null) {
 				window.location.href = '/login/'+url;
 			}
 
+			// Otherwise get questions for policy 
 			$(document).ready(function() {
 				var questionnaireName = <%- JSON.stringify(title) %>
 				var questions = <%- JSON.stringify(questions) %>
 				var hasIdentity =  <%- JSON.stringify(hasIdentity) %>
 				$("header li.hidden").text(capitalizeSentence(questionnaireName));
 
+				// If no questions, issue with accessing database so redirect to login
 				if (questions === null)
 					window.location.href = '/login/'+url;
 				else {
+					// Otherwise create treatments / setup questions
 					createTreatments(accessToken, questions, function() {
 						$("#submit-instructions").attr('disabled', false);
 					}, hasIdentity);

@@ -1,7 +1,13 @@
+//////////////////////////////////////////////////////////////
+// This file has functions used for original invite friends //
+// list. NO LONGER USED.									//
+//////////////////////////////////////////////////////////////
+
 $(document).ready(function() {
 	getFriends();
 	var user_friends;
 
+	// Sets up FB object to use for FB API later
 	window.fbAsyncInit = function() {
 		FB.init({
     		appId      : '486648534724015',// '150997527214'
@@ -11,6 +17,7 @@ $(document).ready(function() {
   		});
 	};
 
+	// NOT USED
 	$(document).on("keyup", "#invite-search", function() {
 		var search_value = $(this).val();
 		d3.selectAll("#invite-friends-list li")
@@ -23,6 +30,7 @@ $(document).ready(function() {
 			});
 	});
 
+	// NOT USED
 	$(document).on("click", "#invite-search", function() {
 		var search_value = $(this).val();
 		d3.selectAll("#invite-friends-list li")
@@ -36,6 +44,7 @@ $(document).ready(function() {
 			});
 	});
 
+	// NOT USED
 	$(document).on("click", "#invite-friends-list li", function() {
 		if ($(this).hasClass("selected-friend")) {
 			$(this).removeClass("selected-friend");
@@ -51,6 +60,8 @@ $(document).ready(function() {
 	});
 });
 
+// NOT USED
+// Gets 
 function getFriends() {
 	$.ajax({
 		url: 'https://graph.facebook.com/me/invitable_friends',

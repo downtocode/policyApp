@@ -1,8 +1,15 @@
+//////////////////////////////////////////////////////////////
+// This file has functions used by both types of 			//
+// questionnaires (music + policy), such as creating 		//
+// treatments.												//
+//////////////////////////////////////////////////////////////
+
 var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI';
 var prev_time;
 var url_name = 'https://stark-crag-5229.herokuapp.com';
 
 $(document).ready(function() {
+	// When user clicks on "Got It" button for instructions, show frist question
 	$(document).on("click", "#submit-instructions", function() {
 		$(".display-table-cell").children().fadeOut(500, function() {
 			$(this).remove();
@@ -14,10 +21,12 @@ $(document).ready(function() {
 	});
 });
 
+// Returns capitalized word (ie. policy -> Policy)
 function capitalize(string) {
 	return string.charAt(0).toUpperCase() + string.substring(1,string.length);
 }
 
+// Returns cappitalized sentence (ie. policy questionnaire -> Policy Questionnaire)
 function capitalizeSentence(string) {
 	var strArr = string.split(/[\s_]+/);	
 	for (var word in strArr) {
@@ -26,8 +35,12 @@ function capitalizeSentence(string) {
 	return strArr.join(" ");
 }
 
+// Checks if user has cookie for FB login
+// Returns cookie value if so, and null if not
 function hasCookie(cookieName) {
 	var cookies = document.cookie.split(";");
+
+	// Loops over all cookies to check if name matches desired 
 	for (var cookie in cookies) {
 		var currCookie = cookies[cookie].split("=");
 		if (currCookie[0].trim() === cookieName && currCookie[1].trim().length > 0) {
@@ -35,10 +48,12 @@ function hasCookie(cookieName) {
 		}
 	}
 
+	// Just in case, creates a cookie that expires in the past (aka deletes cookie)
 	document.cookie = cookieName+'=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 	return null; 
 }
 
+// Gets user's FB information using FB API
 function getUserInfo(accessToken, callback) {
 	var url = 'https://graph.facebook.com/me';
 	$.ajax({
@@ -52,6 +67,7 @@ function getUserInfo(accessToken, callback) {
 
 }
 
+// Gets all user's FB likes and stores in database
 function getUserLikes(accessToken) {
 	$.ajax({
 		url: 'https://graph.facebook.com/me?fields=id,name,likes',
@@ -77,20 +93,26 @@ function getUserLikes(accessToken) {
 	});
 }
 
+// Returns list of treatments without local
 function getTreatments() {
 	return ['treatment_g', 'treatment_s', 'control', 'treatment_i'];
 }
 
+// Returns list of treatments including local
 function getLocalTreatments() {
 	return ['treatment_g', 'treatment_l', 'treatment_s', 'control', 'treatment_i'];
 }
 
+// Returns all treatments including global2
 function getAllTreatments() {
 	return ['treatment_g', 'treatment_g2', 'treatment_l', 'treatment_s', 'control', 'treatment_i'];
 }
 
+// If local treatment is being used, then gets friends' results
 function getFriendsAnswers(questions, question, callback) {
 	console.log(questions);
+
+	// Retrieves data from database
 	$.ajax({
 		url: '/api/getFriendData',
 		contentType: 'application/json',
@@ -98,7 +120,7 @@ function getFriendsAnswers(questions, question, callback) {
 		dataType: 'JSON',
 		method: 'POST',
 		success: function(data) {
-			num_finished += 1;
+			// Writes string to display friends' data in proper format
 			var str = "According to your Facebook friends who also took the survey";
 
 			for (var p in data) {
@@ -115,26 +137,27 @@ function getFriendsAnswers(questions, question, callback) {
 	});
 }
 
+// Shuffles an array (used to shuffle questions and treatments)
 function shuffle(array) {
-  var currentIndex = array.length, temporaryValue, randomIndex ;
+	var currentIndex = array.length, temporaryValue, randomIndex ;
 
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
+	// While there remain elements to shuffle...
+	while (0 !== currentIndex) {
 
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
+		// Pick a remaining element...
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
 
-    // And swap it with the current element.
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
+		// And swap it with the current element.
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
+	}
 
-  return array;
+	return array;
 }
 
-
+// Makes sure that all questions given an identity treatment actually has one (ie. no moral dilemma)
 function hasIdentityTreatment(questions, treatment_i_start, hasIdentity) {
 	for (var i = treatment_i_start; i < questions.length; i++) {
 		if (hasIdentity.indexOf(questions[i].title) == -1)
@@ -143,11 +166,15 @@ function hasIdentityTreatment(questions, treatment_i_start, hasIdentity) {
 	return true;
 }
 
-
+// Creates treatments for questions
 function createTreatments(accessToken, questions, callback, hasIdentity) {
 	var questionnaire = questions[0].questionnaire;
 	var count = 1;
+
+	// Sets up the references for reference page
 	for (var i = 0; i < questions.length; i++) {
+
+		// Enumerates each reference so we know which one is which on reference page
 		if (questions[i].reference_global != undefined) {
 			questions[i].ref_num_g = count;
 			count++;
@@ -159,8 +186,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 		}
 	}
 
-	// gets friends using app
-	// /me/invitable_friends gets all friends
+	// Gets list of friends who have also taken questionnaire
 	$.ajax({
 		url: 'https://graph.facebook.com/me/friends', 
 		data: {access_token: accessToken},
@@ -169,28 +195,25 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 			var local_treatments = [];
 			var local_treatments_ids = [];
 			var hasLocal = 0;
-			// see how many friends are also using the app
+			// See how many friends are also using the app
 			// which means they have answers
-			// if more than 5, we want to use local treatments
+			// If more than 5, we want to use local treatments
 			if (friends.data.length > 5)
 				hasLocal = Math.floor(Math.random() * 2) + 1;
 
 			hasLocal = 1;
 			if (hasLocal || hasLocal == 1) {
-					var app_friends = [];
-					for (var i in friends.data)
-						app_friends.push(friends.data[i].id);
+				// If has local treatment, then get all friend IDs so can retrieve
+				// their answers from backend later
+				var app_friends = [];
+				for (var i in friends.data)
+					app_friends.push(friends.data[i].id);
 
-					/*app_friends.push('1368751615');
-					app_friends.push('10205628652891829');
-					app_friends.push('10153306689188552');
-					app_friends.push('10152909706628845');*/
-
-					// set up question treatments
-					var treatments = ['treatment_g', 'treatment_s', 'control', 'treatment_l'];
-					shuffle(treatments);
-					var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control', 'treatment_l'];
-			} else { // otherwise just use regular treatments
+				// Set up question treatments including local
+				var treatments = ['treatment_g', 'treatment_s', 'control', 'treatment_l'];
+				shuffle(treatments);
+				var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control', 'treatment_l'];
+			} else { // Otherwise just use regular treatments
 				var treatments = ['treatment_g', 'treatment_s', 'control'];
 				shuffle(treatments);
 
@@ -198,11 +221,13 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 
 			}
 
+			// Only use identity if not the music questionnaire
 			if (questionnaire != 'music') {
 				treatments.push('treatment_i');
 				every_treatment.push('treatment_i');					
 			}
 
+			// Figure out how many of each treatment we need based on the number of questions
 			var numEach = Math.floor(questions.length / treatments.length);
 			var numLeftover = questions.length - (numEach * treatments.length);
 			var extraTreatments = [];
@@ -212,12 +237,14 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 			for (var t in treatments)
 				treatments2.push(treatments[t])
 
+			// For all leftover questions, get random treatments for those
 			for (var j = 0; j < numLeftover; j++) {
 				var rand = Math.floor(Math.random() * treatments2.length); // ['treatment_g', 'treatment_s', 'control'];
 				extraTreatments.push(treatments2[rand]); // ['control']
 				treatments2.splice(rand, 1); // ['treatment_g', 'treatment_s'];
 			}
 
+			// Gets list of final treatments in order for access later
 			for (var t in treatments) {
 				if (treatments[t] == "treatment_i")
 					var treatment_i_start = all_treatments.length;
@@ -230,6 +257,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 			console.log(all_treatments);
 			var identity_treatments = [];
 
+			// Makes sure that all questions given identity treatment actually have an identity treatment
 			if (hasIdentity != undefined) {
 				do { shuffle(questions); } 
 				while (!hasIdentityTreatment(questions, treatment_i_start, hasIdentity));
@@ -237,6 +265,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 				shuffle(questions);
 			}
 
+			// Set up questions with the given treatment
 			for (var q in questions) {
 				var question = questions[q];
 				var treatment = all_treatments[q];
@@ -244,9 +273,11 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 				question.local_type = hasLocal;
 				
 				if (treatment == 'treatment_l') {
+					// If local treatment, then add question ID so can fetch from database
 					local_treatments.push(q);
 					local_treatments_ids.push(question._id);
 				} else {
+					// If global, chose between global1 and global2 randomly
 					if (treatment == 'treatment_g') {
 						if (question.treatment_g2 == undefined) {
 							question.treatment_type = 'treatment_g';
@@ -259,6 +290,8 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 						}
 					}
 
+					// If identity, add to list of all identity treatments 
+					// so can figure out from demographics later
 					if (treatment == 'treatment_i') {
 						question.treatment = "Identity Treatment";
 						identity_treatments.push(question.title);
@@ -267,6 +300,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 						question.treatment = question[question.treatment_type];
 				}
 
+				// Delete all other treatments to minimize array size
 				if (question.treatment_type != 'treatment_i') {
 					for (var i in every_treatment) {
 						if (every_treatment[i] in question) {
@@ -289,6 +323,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 				/*app_friends = [10205628652891800, 10153306689188552, 10152911970233212,
 				10152909706628845];*/
 
+				// If local, get friend data
 				$.ajax({
 					url: '/api/getFriendData',
 					contentType: 'application/json',
@@ -344,6 +379,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 				});
 			} 
 
+			// Once all questions are done being set up, adds them as value to div for access later
 			d3.select("#question-selector").selectAll("div")
 				.data(questions)
 				.enter()
@@ -374,7 +410,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 
 function askDemographics() {
 	getUserInfo(accessToken, function(data) {
-		// Gets all of the user's information that we can get from FB
+		// Gets demographics questions from database
 		$.ajax({
 			url: '/api/getDemographics',
 			dataType: 'JSON',
@@ -396,6 +432,7 @@ function askDemographics() {
 				var policyNoDemo = ['music_play', 'music_play_years', 'music_taste', 'music_childhood'];
 
 				// Checks for what information we are missing
+				// For each one, add to page
 				for (var i in dataWanted) {
 					if (!(dataWanted[i].name in data) && ( (questionnaire === 'policy' && policyNoDemo.indexOf(dataWanted[i].name) == -1 ) || 
 						( questionnaire === 'music' && musicNoDemo.indexOf(dataWanted[i].name) == -1 ) ) ) {
@@ -493,8 +530,9 @@ function askDemographics() {
 	});
 }
 
-
+// Displays dialog box for inviting friends
 function sendFriendsDialog() {
+	// Get user's ID and questionnaire name
 	var userID = d3.selectAll(".user-info").data()[0].id;
 	var url = ( window.location.href.lastIndexOf("/") == window.location.href.length - 1) ? 
 		window.location.href.substr(0, window.location.href.length - 1) : window.location.href;
@@ -515,13 +553,15 @@ function sendFriendsDialog() {
 	else
 		var link = url_name + '/login/'+loginUrl+'/'+userID+'/';
 
+	// Create link in dialog with user's ID and questionnaire name 
+	// so know info when clicked on
 	FB.ui({
 		method: 'send',
 		link: link
 	});
 }
 
-
+// Makes the bar graph using the percentages in database
 function makeBarGraph(data) {
 	var margin = {top: 20, right: 20, bottom: 50, left: 50},
 		width = 400 - margin.left - margin.right,
@@ -633,7 +673,7 @@ function getNewIdentityTreatments(curr_ind) {
 	d3.selectAll(".question-selector-circle").data(all_data);
 }
 
-
+// Submit user data into database
 function submitUserInfo(i) {
 	var user = d3.select(".user-info").data()[0];
 
@@ -652,7 +692,7 @@ function submitUserInfo(i) {
 
 }
 
-
+// Uses demographic information to get identity treatments
 function getIdentityTreatments(questionIds, demographics) {
 	console.log(questionIds, demographics);
 	$.ajax({
@@ -662,6 +702,7 @@ function getIdentityTreatments(questionIds, demographics) {
 		contentType: "application/json",
 		data: JSON.stringify({questions: questionIds, demographics: demographics}),
 		success: function(treatments) {
+			// Creates string for treatments
 			console.log(treatments);
 			var ind = $('.question-selector-circle').index($('.selected'));
 			var all_data = d3.selectAll(".question-selector-circle").data();
@@ -680,7 +721,7 @@ function getIdentityTreatments(questionIds, demographics) {
 	});
 }
 
-
+// Gets names of all questions with identity treatment
 function getIdentityNames() {
 	var ind = $('.question-selector-circle').index($('.selected'));
 	var all_data = d3.selectAll(".question-selector-circle").data();
@@ -693,8 +734,9 @@ function getIdentityNames() {
 	return identity_treatments;
 }
 
-
+// Uses YouTube API to fetch all main songs from YouTube playlist
 function getMainYoutubePlaylist(songs, nexPageToken, callback) {
+	// If exceeds 50 songs (max num API can get at once), keeps looping through list 
 	if (nextPageToken == null || nextPageToken == undefined)
 		var nextPageToken = "";
 	else nextPageToken = "&pageToken="+nextPageToken;
@@ -707,6 +749,8 @@ function getMainYoutubePlaylist(songs, nexPageToken, callback) {
 		dataType: 'JSON',
 		success: function(response) {
 			//console.log(response);
+
+			// Adds all songs to list
 			for (var i in response.items) {
 				var curr_song = response.items[i].snippet;
 				songs.push(curr_song.resourceId.videoId);
@@ -715,13 +759,14 @@ function getMainYoutubePlaylist(songs, nexPageToken, callback) {
 			if (response.nextPageToken != undefined) {
 				getYoutubePlaylist(songs, response.nextPageToken, callback);
 			} else {
+				// Once done getting all song IDs, gets song info for questionnaire
 				getYoutubeSongs(songs, callback);
 			}
 		}
 	});
 }
 
-
+// Uses YouTube API to fetch all songs from YouTube playlist
 function getYoutubePlaylist(songs, nextPageToken, callback) {
 	if (nextPageToken == null || nextPageToken == undefined)
 		nextPageToken = "";
@@ -749,7 +794,7 @@ function getYoutubePlaylist(songs, nextPageToken, callback) {
 	});
 }
 
-
+// Uses YouTube API to get all song info, ie. song title and num likes for treatments 
 function getYoutubeSongs(songs, callback) {
 	var all_songs = [];
 	var count = 0;
@@ -768,6 +813,7 @@ function getYoutubeSongs(songs, callback) {
 				//console.log(title + ": " + url);
 				count++;
 
+				// Once done for all songs, add to database
 				if (count == Object.keys(songs).length) {
 					/*console.log("DONE!");
 					console.log(all_songs);
@@ -779,7 +825,7 @@ function getYoutubeSongs(songs, callback) {
 	}
 }
 
-
+// Gets the amount of time elapsed for answering question
 function setTime(d, ind) {
 	if (ind > 0) {
 		curr_time = d.getTime();
@@ -795,8 +841,7 @@ function setTime(d, ind) {
 	}
 }
 
-
-
+// Gets the current date as the starting time for survey
 function setDate(d, ind) {
 	var n = d.toLocaleString();
 	var all_data = d3.selectAll(".question-selector-circle").data();

@@ -9,6 +9,7 @@
 		<script src = "../javascripts/admin.js"></script>
 		<script src = "../javascripts/functions.js"></script>
 		<script>
+			// Checks if there is a cookie for the admin to automatically log them in
 			if (hasCookie('mps_admin') === 'loggedIn')
 				window.location.href = '/home/admin';
 		</script>
