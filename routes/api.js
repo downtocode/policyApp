@@ -194,8 +194,9 @@ router.get('/api/getDemographics', function(req, res, next) {
 		res.send(demographics);
 	});
 });
-
+// ***************************************************************************
 // Get all friends' answers based on the IDs we have for users and questions
+// ***************************************************************************
 router.post('/api/getFriendData', function(req, res, next) {
 	var db = req.db;
 	var data = req.body;

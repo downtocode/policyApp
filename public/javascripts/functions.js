@@ -194,15 +194,14 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 		success: function(friends) {
 			var local_treatments = [];
 			var local_treatments_ids = [];
-			var hasLocal = 0;
+			var hasLocal = 0;  
 			// See how many friends are also using the app
 			// which means they have answers
 			// If more than 5, we want to use local treatments
-			if (friends.data.length > 5)
+			if (friends.data.length > 3)
 				hasLocal = Math.floor(Math.random() * 2) + 1;
 
-			hasLocal = 1;
-			if (hasLocal || hasLocal == 1) {
+			if (hasLocal == 1) {
 				// If has local treatment, then get all friend IDs so can retrieve
 				// their answers from backend later
 				var app_friends = [];
@@ -210,20 +209,21 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 					app_friends.push(friends.data[i].id);
 
 				// Set up question treatments including local
-				var treatments = ['treatment_g', 'treatment_s', 'control', 'treatment_l'];
+				var treatments = ['treatment_l'];  // 'treatment_g', 'treatment_s', 'control', 
 				shuffle(treatments);
-				var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control', 'treatment_l'];
+				var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control','treatment_l'];  
 			} else { // Otherwise just use regular treatments
 				var treatments = ['treatment_g', 'treatment_s', 'control'];
-				shuffle(treatments);
+				shuffle(treatments);			// this shuffles order of treatments.
 
 				var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control'];
 
 			}
-
+			console.log(hasLocal);	
 			// Only use identity if not the music questionnaire
-			if (questionnaire != 'music') {
-				treatments.push('treatment_i');
+			if (questionnaire != 'music' && hasLocal!=1) {
+				console.log("Adding identity treatment");
+				treatments.push('treatment_i');    // this add 'treatment_i' to the end of the treatments array
 				every_treatment.push('treatment_i');					
 			}
 
@@ -234,7 +234,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 			var all_treatments = [];
 			var treatments2 = []
 
-			for (var t in treatments)
+			for (var t in treatments)   // we need to do it like this so that pointers are not equal
 				treatments2.push(treatments[t])
 
 			// For all leftover questions, get random treatments for those
@@ -254,7 +254,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 					all_treatments.push(treatments[t]);
 			}
 
-			console.log(all_treatments);
+			console.log(all_treatments);  // for checking
 			var identity_treatments = [];
 
 			// Makes sure that all questions given identity treatment actually have an identity treatment
@@ -311,7 +311,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 				
 			}
 
-			if (hasLocal || hasLocal == 1) {
+			if (hasLocal == 1) {
 				//console.log(local_treatments_ids);
 				/*local_treatments_ids = ["558aed26675db983c140888d", "558aed26675db983c1408890",
 					"558aed26675db983c1408891", "558aed26675db983c1408895",
@@ -510,10 +510,13 @@ function askDemographics() {
 					else 						
 						$("#question-text").prepend("<br/>Now we would like to know what people like you believe. Please answer a few questions about yourself.");
 				}
-
-				$("#question-text").append("<br/><input type = 'button' id = 'skip-demographics' value = 'Skip' class = 'clickable'/>" +
+				var ind = $(".question-selector-circle").index($(".selected"));
+				if (ind==$(".question-selector-circle").length-1)	{
+					$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Skip' class = 'clickable'/>" +
+						"<input type = 'button' id = 'submit-questionnaire' value = 'Next' class = 'demographics-next clickable' disabled/>");
+				} else {$("#question-text").append("<br/><input type = 'button' id = 'skip-demographics' value = 'Skip' class = 'clickable'/>" +
 					"<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable' disabled/>");
-				
+				}
 				// Adds user information to a hidden div
 				d3.select("#user")
 					.selectAll("div")

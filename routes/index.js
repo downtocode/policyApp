@@ -56,7 +56,7 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 				db.coefficients.find({name: "coefficients"}, {type: 1}, function(err, coeffs) {
 					var hasIdentity = [];
 					for (var k in coeffs) {
-						hasIdentity.push(coeffs[k].type);
+						hasIdentity.push(coeffs[k].type);   // this becomes an array with the titles of all question which have coeffitients for identity.
 					}
 					res.render('questions', {questions: questions, title: questionnaire, name: name, hasIdentity: hasIdentity});
 				});

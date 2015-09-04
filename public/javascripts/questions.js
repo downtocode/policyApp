@@ -49,8 +49,11 @@ $(document).ready(function() {
 		$("#next-important").prop("disabled", true);
 		$("#next-important").val("Next");
 
-		if (ind == $(".question-selector-circle").length - 1)
-			$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'submit-questionnaire' value = 'Prefer Not to Answer' />")
+		if (ind == $(".question-selector-circle").length - 1) {
+			if (question.treatment_type.toLowerCase()=='treatment_l'  ) {
+				$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'get-user-info' value = 'Prefer Not to Answer' />")
+			} else $("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'submit-questionnaire' value = 'Prefer Not to Answer' />")
+		}
 		else 	
 			$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'skip-question' value = 'Prefer Not to Answer' />")
 	});
@@ -72,15 +75,19 @@ $(document).ready(function() {
    		var ind = $('.question-selector-circle').index($('.selected'));
 		var curr_question = d3.selectAll(".question-selector-circle").data()[ind];
 		var next_question = d3.selectAll(".question-selector-circle").data()[ind + 1];
-
-   		if ( curr_question.treatment_type.toLowerCase() == 'treatment_i' || next_question.treatment_type.toLowerCase() != "treatment_i" || $(".demographics-next").length > 0) {
+console.log(curr_question.treatment_type.toLowerCase(), 'treatment_l' , ind+1, $('.question-selector-circle').length-1);
+		
+   		if (curr_question.treatment_type.toLowerCase() == 'treatment_i' || next_question.treatment_type.toLowerCase() != "treatment_i" || $(".demographics-next").length > 0) {
    			// Remove this question as the selected one
 			$('.selected').removeClass('selected');
-
+			console.log("Submiting");	
 			// Make the next question the selected one
 			$($('.question-selector-circle')[ind]).next().addClass('selected');
 
-   			if ($(this).hasClass('demographics-next')) {
+   			if (curr_question.treatment_type.toLowerCase()=='treatment_l' && ind==$('.question-selector-circle').length-1) {
+				$(this).hide();
+				askDemographics();	
+			} else if ($(this).hasClass('demographics-next')) {
    				submitUserInfo();
    			} else {
    				if ($(this).attr('id') === 'skip-demographics') {
@@ -406,7 +413,9 @@ function addQuestionImportance() {
 
 	// Adds either "Next" button or "Submit" if it is the last question
 	if (curr_question_ind == $(".question-selector-circle").length - 1) {
-		$("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
+		if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
+			$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
+		} else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
 	} else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
 		$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
 	} else {
