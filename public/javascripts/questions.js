@@ -510,7 +510,10 @@ function submitQuestionnaire(answers, petitions) {
 
 			// After petitions, displays button to invite friends to do questionnaire
 			$("#petitions").after("<br/>We also encourage you to invite your friends to participate in this study as well!" + 
-				"<br/><input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>")
+				"<br/><input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>");
+
+			var userID = d3.selectAll(".user-info").data()[0].id;
+			$("#invite-friends").after("<br/>Your Amazon Mechanical Turk value is: " + userID);
 		}
 	});
 }

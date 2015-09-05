@@ -146,21 +146,33 @@ function addQuestionnaire(questions) {
 
 function downloadAnswers() {
 	$.ajax({
-		url: '/api/sendCSV',
-		method: 'POST',
-		dataType: 'JSON',
-		success: function(data) {
-			var data_str = data.join('\r\n');
-			//csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
-			var a = document.createElement('a');
-			a.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(data_str);
-			a.target = '_blank';
-			a.download = 'myFile.csv';
+		url: '/api/getQuestionnaires',
+		method: 'GET',
+		success: function(questionnaires) {
+			for (var q in questionnaires) {
+				$.ajax({
+					url: '/api/sendCSV',
+					method: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify({questionnaire: questionnaires[q]}),
+					dataType: 'JSON',
+					success: function(data) {
+						var data_str = data.join('\r\n');
+						//csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+						var a = document.createElement('a');
+						a.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(data_str);
+						a.target = '_blank';
+						a.download = 'myFile.csv';
 
-			document.body.appendChild(a);
-			a.click();
+						document.body.appendChild(a);
+						a.click();
+					}
+				});
+			}
 		}
-	});
+	})
+	
+
 }
 
 function hash(string) {
