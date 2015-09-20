@@ -203,7 +203,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 			if (friends.data.length > 3)
 				hasLocal = Math.floor(Math.random() * 2) + 1;
 
-			if (true || hasLocal == 1) {
+			if (hasLocal == 1) {
 				// If has local treatment, then get all friend IDs so can retrieve
 				// their answers from backend later
 				var app_friends = [];
@@ -422,6 +422,8 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 
 function askDemographics() {
 	getUserInfo(accessToken, function(data) {
+		console.log("Initial data: ");
+		console.log(data);
 		// Gets demographics questions from database
 		$.ajax({
 			url: '/api/getDemographics',
@@ -529,6 +531,9 @@ function askDemographics() {
 				} else {$("#question-text").append("<br/><input type = 'button' id = 'skip-demographics' value = 'Skip' class = 'clickable'/>" +
 					"<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable' disabled/>");
 				}
+
+				console.log("After data: ");
+				console.log(data);
 				// Adds user information to a hidden div
 				d3.select("#user")
 					.selectAll("div")
