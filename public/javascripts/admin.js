@@ -35,6 +35,7 @@ $(document).ready(function() {
 
 	$(document).on("click", "#download-answers", function() {
 		downloadAnswers();
+		downloadFriends();
 	});
 
 	$(document).on("click", "#add-button", function() {
@@ -171,8 +172,23 @@ function downloadAnswers() {
 			}
 		}
 	})
-	
+}
 
+function downloadFriends() {
+	$.ajax({
+		url: '/api/sendFriendCSV',
+		method: 'GET',
+		success: function(data) {
+			var data_str = data.join('\r\n');
+			var a = document.createElement('a');
+			a.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(data_str);
+			a.target = '_blank';
+			a.download = 'myFile.csv';
+
+			document.body.appendChild(a);
+			a.click();
+		}
+	});
 }
 
 function hash(string) {

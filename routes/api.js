@@ -404,6 +404,93 @@ router.post('/api/sendCSV', function(req, res, next) {
 	});
 });
 
+// Create friends CSV
+router.get('/api/sendFriendCSV', function(req, res, next) {
+	var db = req.db;
+
+	// Gets list of all users
+	db.users.find({}, {_id: 0, id: 1, first_name: 1, last_name: 1}, function(err, users) {
+
+		// Gets list of all user->friend pairs
+		db.friends.find({}, {_id: 0}, function(err, friends) {
+			if (!err) {
+				// Dictionary of all friends
+				var friendsDict = {};
+
+				// Dictionary of all friends who a user invited
+				var inviteDict = {};
+				var maxNumFriends = 0;
+
+				// For each user->friend pair
+				for (var j in friends) {
+
+					var currFriend = friends[j];
+					console.log(currFriend);
+
+					// If userID is in currFriend, then this is a userID-friendID pair
+					if ("userID" in currFriend) {
+						// So check if the friendID already exists in our dictionary of user->[friends invited]
+						/*if (currFriend.friendID in inviteDict) {
+							inviteDict[currFriend.friendID].push(currFriend.userID);
+						} else {
+							inviteDict[currFriend.friendID] = [currFriend.userID];
+							console.log(inviteDict);
+						}*/
+						inviteDict[currFriend.userID] = currFriend.friendID;
+					} 
+
+					// Else this is a userID-[friends list] pair
+					else if ("user_id" in currFriend) {
+						if (currFriend.friends.length > maxNumFriends) 
+							maxNumFriends = currFriend.friends.length;
+
+						if (currFriend.user_id in friendsDict) {
+							friendsDict[currFriend.user_id].push.apply(friendsDict[currFriend.user_id], currFriend.friends);
+						} else {
+							friendsDict[currFriend.user_id] = currFriend.friends;
+						}
+					}
+				}
+
+				console.log("INVITE DICT");
+				console.log(inviteDict);
+				console.log("\nFRIENDS DICT");
+				console.log(friendsDict);
+
+				var headerString = "userID,firstName,lastName,inviterID";
+
+				for (var i = 1; i <= maxNumFriends; i++) {
+					headerString += ",friend" + i;
+				}
+
+				var allUserString =  [headerString];
+				
+
+				for (var i in users) {
+					var currUserID = users[i].id;
+					var currUserString = currUserID + "," + users[i].first_name + "," + users[i].last_name + ",";
+					currUserString += (inviteDict[currUserID] == undefined) ? "N/A" : inviteDict[currUserID];
+
+					var currUserFriends = friendsDict[currUserID];
+					for (var j in currUserFriends) {
+						currUserString += "," + currUserFriends[j];
+					}
+
+					var extraCommas = (currUserFriends == undefined) ? maxNumFriends : maxNumFriends - currUserFriends.length;
+					for (var k = 0; k < extraCommas; k++) {
+						currUserString += ",";
+					}
+
+					allUserString.push(currUserString);
+				}
+
+				res.send(allUserString);
+			}
+		});
+	});
+
+});
+
 // Records whether the user clicked on a petition link
 router.post('/api/petitionClick', function(req, res, next) {
 	var db = req.db;
