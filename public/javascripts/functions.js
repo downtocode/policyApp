@@ -356,7 +356,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 								
 								console.log(questions[curr_ind]);
 								if (questions[curr_ind].phrasing_identity.length > 0) {
-									phrasing = questions[curr_ind].phrasing_identity.split("demographics")[1];
+									phrasing = questions[curr_ind].phrasing_identity.split("background,")[1];
 									var sub_end = (phrasing.lastIndexOf(".") == phrasing.length - 1) ? phrasing.length-2 : phrasing.length-1;
 									phrasing = phrasing.trim().substring(0, sub_end);
 								} else if (questions[curr_ind].title === 'stem_cell_research') {
