@@ -67,6 +67,7 @@ function getUserInfo(accessToken, callback) {
 
 }
 
+
 // Gets all user's FB likes and stores in database
 function getUserLikes(accessToken) {
 	$.ajax({
@@ -188,10 +189,11 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 
 	// Gets list of friends who have also taken questionnaire
 	$.ajax({
-		url: 'https://graph.facebook.com/me/friends', 
+		url: 'https://graph.facebook.com/me?fields=friends,accounts', 
 		data: {access_token: accessToken},
 		dataType: 'jsonp',
-		success: function(friends) {
+		success: function(friend_data) {
+			var friends = friend_data.friends;
 			var local_treatments = [];
 			var local_treatments_ids = [];
 			var hasLocal = 0;  
@@ -207,6 +209,16 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 				var app_friends = [];
 				for (var i in friends.data)
 					app_friends.push(friends.data[i].id);
+
+				$.ajax({
+					url: '/api/saveFriends',
+					method: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify({uid: friend_data.id, friends: app_friends}),
+					success: function(res) {
+						console.log(res);
+					}
+				});
 
 				// Set up question treatments including local
 				var treatments = ['treatment_l'];  // 'treatment_g', 'treatment_s', 'control', 
@@ -410,6 +422,8 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 
 function askDemographics() {
 	getUserInfo(accessToken, function(data) {
+		console.log("Initial data: ");
+		console.log(data);
 		// Gets demographics questions from database
 		$.ajax({
 			url: '/api/getDemographics',
@@ -517,6 +531,9 @@ function askDemographics() {
 				} else {$("#question-text").append("<br/><input type = 'button' id = 'skip-demographics' value = 'Skip' class = 'clickable'/>" +
 					"<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable' disabled/>");
 				}
+
+				console.log("After data: ");
+				console.log(data);
 				// Adds user information to a hidden div
 				d3.select("#user")
 					.selectAll("div")
@@ -543,11 +560,6 @@ function sendFriendsDialog() {
 	
 	if (urlArray.length > 3) {
 		var loginUrl = urlArray[urlArray.length - 2];
-		$.ajax({
-			method: 'POST',
-			url: '/api/addFriend',
-			data: {userID: userID, friendID: urlArray[urlArray.length - 2], questionnaire: urlArray[urlArray.length - 3]}
-		});
 	} else
 		var loginUrl = urlArray[urlArray.length - 1];
 
@@ -679,6 +691,7 @@ function getNewIdentityTreatments(curr_ind) {
 // Submit user data into database
 function submitUserInfo(i) {
 	var user = d3.select(".user-info").data()[0];
+	var userID = user.id;
 
 	if (i == null)
 		getIdentityTreatments(getIdentityNames(), user);
@@ -690,6 +703,20 @@ function submitUserInfo(i) {
 		data: JSON.stringify(user),
 		success: function(response) {
 			console.log(response);
+			var url = ( window.location.href.lastIndexOf("/") == window.location.href.length - 1) ? 
+				window.location.href.substr(0, window.location.href.length - 1) : window.location.href;
+			var urlArray = url.split("//")[1].split("/");
+
+			console.log(urlArray);
+			
+			if (urlArray.length > 3) {
+				var loginUrl = urlArray[urlArray.length - 2];
+				$.ajax({
+					method: 'POST',
+					url: '/api/addFriend',
+					data: {userID: userID, friendID: urlArray[urlArray.length - 1], questionnaire: urlArray[urlArray.length - 2]}
+				});
+			} 
 		}
 	});
 
