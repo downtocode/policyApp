@@ -303,7 +303,7 @@ router.post('/api/sendCSV', function(req, res, next) {
 
 
 						// Write header and make header array
-						var header = "user"
+						var header = "user";
 
 						// First get all extra demographics from above
 						for (var j in extra_demo)
