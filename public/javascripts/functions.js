@@ -363,7 +363,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 
 								console.log(curr_data);
 
-								var str = "Out of your Facebook friends who also took the survey";
+								var str = "Out of your Facebook friends whom you invited to take the survey";
 								var phrasing = "";
 								
 								console.log(questions[curr_ind]);

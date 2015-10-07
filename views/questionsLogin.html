@@ -29,7 +29,7 @@
 				} else {
 					$('#consent-wrapper').after('<fb:login-button scope="public_profile,email,user_friends,user_about_me,user_birthday,user_education_history,user_likes" onlogin="checkLoginState(\'/home/'+url+'\');" class = "fb-login-button input"></fb:login-button>');
 
-					$("#consent-form").prepend("<p>The purpose of this study is to learn about people’s opinions regarding certain policies. You will be asked to complete a small survey that will take you about 10 minutes. Note that this Facebook app will collect your basic information (age, gender, education, occupation and your list of friends).</p>");
+					$("#consent-form").prepend("<p>The purpose of this study is to learn about people’s opinions regarding certain policies. You will be asked to complete a small survey that will take you about 8 minutes. Note that this Facebook app will collect your basic information.</p>");
 
 					// Prevent FB login button from being clicked until the "I Agree" checkbox is clicked
 					$("#consent-wrapper").after("<div id = 'fb-login-blocker'></div>");
