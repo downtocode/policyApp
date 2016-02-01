@@ -8,7 +8,7 @@
 $(document).ready(function() {
 
 	// Get all questionnaires so can display names
-	getQuestionnaires();
+	//getQuestionnaires();
 
 	// EVENT HANDLERS 
 
@@ -145,7 +145,7 @@ function addQuestionnaire(questions) {
 	});
 }
 
-function downloadAnswers() {
+function downloadAnswers1() {
 	$.ajax({
 		url: '/api/getQuestionnaires',
 		method: 'GET',
@@ -171,7 +171,29 @@ function downloadAnswers() {
 				});
 			}
 		}
-	})
+
+	});
+}
+
+function downloadAnswers(){
+	$.ajax({
+		url: '/api/sendCSV',
+		method: 'POST',
+		contentType: 'application/json',
+		data: JSON.stringify({questionnaire: questionnaires[0]}),
+		dataType: 'JSON',
+		success: function(data) {
+			var data_str = data.join('\r\n');
+			//csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+			var a = document.createElement('a');
+			a.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(data_str);
+			a.target = '_blank';
+			a.download = 'answers_file.csv';
+
+			document.body.appendChild(a);
+			a.click();
+		}
+	});
 }
 
 function downloadFriends() {
@@ -183,7 +205,7 @@ function downloadFriends() {
 			var a = document.createElement('a');
 			a.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(data_str);
 			a.target = '_blank';
-			a.download = 'myFile.csv';
+			a.download = 'friends_file.csv';
 
 			document.body.appendChild(a);
 			a.click();

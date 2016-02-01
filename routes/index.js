@@ -12,7 +12,7 @@ function capitalize(str) {
 	var arr = str.split(" ");
 	var strCap = "";
 	for (var i in arr) {
-		strCap += arr[i].charAt(0).toUpperCase() + arr[i].substring(1,arr[i].length) + " ";
+		strCap += arr[i].charAt(0).toUpperCase() + arr[i].substring(1, arr[i].length) + " ";
 	}
 
 	return strCap.trim();
@@ -33,17 +33,18 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 	// If admin, then simply render HTML page
 	if (name.toLowerCase() === "admin") {
 		res.render(name + 'Home');
-	}
-	else { // Otherwise is a question page so fetch questions
+	} else { // Otherwise is a question page so fetch questions
 		var questionnaire = name.replace(/-/g, " ").toLowerCase();
 
 		// Limit to 15 main questions
 		limit.limit = 15;
-		var query = {questionnaire: questionnaire};
+		var query = {
+			questionnaire: questionnaire
+		};
 
 		if (name.toLowerCase() === "music") {
 			query.main = 1;
-		}  
+		}
 
 		db.questions.find(query, {}, limit, function(err, questions) {
 			// Questions are returned in variable questions
@@ -51,17 +52,30 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 
 			// If music questionnaire, then return information as is
 			if (name.toLowerCase() === "music")
-				res.render(name + 'Home',{questions: questions, title: questionnaire, name: name});
+				res.render(name + 'Home', {
+					questions: questions,
+					title: questionnaire,
+					name: name
+				});
 			else { // Otherwise if policy, also get coefficients to later calculate identity treatments
-				db.coefficients.find({name: "coefficients"}, {type: 1}, function(err, coeffs) {
+				db.coefficients.find({
+					name: "coefficients"
+				}, {
+					type: 1
+				}, function(err, coeffs) {
 					var hasIdentity = [];
 					for (var k in coeffs) {
-						hasIdentity.push(coeffs[k].type);   // this becomes an array with the titles of all question which have coeffitients for identity.
+						hasIdentity.push(coeffs[k].type); // this becomes an array with the titles of all question which have coeffitients for identity.
 					}
-					res.render('questions', {questions: questions, title: questionnaire, name: name, hasIdentity: hasIdentity});
+					res.render('questions', {
+						questions: questions,
+						title: questionnaire,
+						name: name,
+						hasIdentity: hasIdentity
+					});
 				});
 			}
-		
+
 		});
 	}
 });
@@ -76,14 +90,20 @@ router.get('/login/:name/:fid?', function(req, res, next) {
 		res.render('adminLogin');
 	else {
 		if (name.toLowerCase() === 'music') {
-			var desc =  "Discover, rate and follow great music. Would you like to volunteer in our study about music taste? ";
+			var desc = "Discover, rate and follow great music. Would you like to volunteer in our study about music taste? ";
 			var meta_title = "Music Taste";
 		} else if (name.toLowerCase() === 'policy') {
 			var desc = "Find out statistics about American’s stands on controversial policies while participating on our survey study.";
 			var meta_title = "Controversial Policies in America?";
 		}
 
-		res.render('questionsLogin', {name: name, meta_title: meta_title, meta_name: meta_title, meta_url: "http://stark-crag-5229.herokuapp.com/login/"+name.toLowerCase()+"/"+req.params.fid, meta_desc: desc});
+		res.render('questionsLogin', {
+			name: name,
+			meta_title: meta_title,
+			meta_name: meta_title,
+			meta_url: "http://localhost:5000/login/" + name.toLowerCase() + "/" + req.params.fid,
+			meta_desc: desc
+		});
 	}
 });
 
@@ -95,23 +115,38 @@ router.get('/createQuestionnaire', function(req, res, next) {
 router.get('/references', function(req, res, next) {
 	var db = req.db;
 
-	db.questions.find({questionnaire: 'policy'}, {reference_global: 1, reference_status: 1}, function(err, references) {
-		res.render('references', {references: references});
+	db.questions.find({
+		questionnaire: 'policy'
+	}, {
+		reference_global: 1,
+		reference_status: 1
+	}, function(err, references) {
+		res.render('references', {
+			references: references
+		});
 	});
 });
 
 // Default page is questions login
 // Page that loads when URL doesn't have any specific data
 router.get('/', function(req, res, next) {
-	res.render('questionsLogin', {name: 'music'});
+	res.render('questionsLogin', {
+		name: 'policy'
+	});
 });
 
 router.post('/', function(req, res) {
-  res.redirect('/');
+	res.redirect('/');
+});
+
+router.post('*', function(req, res) {
+	res.redirect('/');
 });
 
 router.get('*', function(req, res, next) {
-	res.render('questionsLogin', {name: 'policy'});
+	res.render('questionsLogin', {
+		name: 'policy'
+	});
 });
 
 

@@ -6,10 +6,11 @@
 
 var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI';
 var prev_time;
-var url_name = 'https://stark-crag-5229.herokuapp.com';
+var url_name = 'http://localhost:5000/';
+var is_wave2 = 1 // 0 means false (i.e. NOT wave 2); 1 means true (i.e. we ARE in wave 2)
 
 $(document).ready(function() {
-	// When user clicks on "Got It" button for instructions, show frist question
+	// When user clicks on "Got It" button for instructions, show first question
 	$(document).on("click", "#submit-instructions", function() {
 		$(".display-table-cell").children().fadeOut(500, function() {
 			$(this).remove();
@@ -20,10 +21,9 @@ $(document).ready(function() {
 		});
 	});
 });
-
 // Returns capitalized word (ie. policy -> Policy)
 function capitalize(string) {
-	return string.charAt(0).toUpperCase() + string.substring(1,string.length);
+	return string.charAt(0).toUpperCase() + string.substring(1, string.length);
 }
 
 // Returns cappitalized sentence (ie. policy questionnaire -> Policy Questionnaire)
@@ -112,7 +112,6 @@ function getAllTreatments() {
 // If local treatment is being used, then gets friends' results
 function getFriendsAnswers(questions, question, callback) {
 	console.log(questions);
-
 	// Retrieves data from database
 	$.ajax({
 		url: '/api/getFriendData',
@@ -123,13 +122,12 @@ function getFriendsAnswers(questions, question, callback) {
 		success: function(data) {
 			// Writes string to display friends' data in proper format
 			var str = "According to your Facebook friends who also took the survey";
-
 			for (var p in data) {
+				console.log('data from friend: ' + data)
 				str += ', ' + data[p] + '% answered "' + p + '"';
 			}
 
 			str += ".";
-
 			question.treatment = str;
 			questions.push(question);
 			console.log(questions);
@@ -171,7 +169,6 @@ function hasIdentityTreatment(questions, treatment_i_start, hasIdentity) {
 function createTreatments(accessToken, questions, callback, hasIdentity) {
 	var questionnaire = questions[0].questionnaire;
 	var count = 1;
-
 	// Sets up the references for reference page
 	for (var i = 0; i < questions.length; i++) {
 
@@ -186,7 +183,6 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 			count++;
 		}
 	}
-
 	// Gets list of friends who have also taken questionnaire
 	$.ajax({
 		url: 'https://graph.facebook.com/me?fields=friends,accounts', 
@@ -200,9 +196,12 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 			// See how many friends are also using the app
 			// which means they have answers
 			// If more than 5, we want to use local treatments
-			if (friends.data.length > 3)
-				hasLocal = Math.floor(Math.random() * 2) + 1;
-
+			if (friends.data.length > 0)
+				hasLocal = is_wave2
+				// hasLocal = Math.floor(Math.random() * 2) + 1;
+				
+				// if hasLocal == 1 this is wave 2. Only present either local treatment or control questions
+				// if hasLocal == 0 this is wave 1. Shuffle all treatments except local
 			if (hasLocal == 1) {
 				// If has local treatment, then get all friend IDs so can retrieve
 				// their answers from backend later
@@ -220,22 +219,25 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 					}
 				});
 
-				// Set up question treatments including local
-				var treatments = ['treatment_l'];  // 'treatment_g', 'treatment_s', 'control', 
+				// Set up question treatments by randomizing between local and control
+				var treatments = [];
+				Math.random() < 0.5 ? treatments.push('treatment_l') : treatments.push('control');
 				shuffle(treatments);
 				var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control','treatment_l'];  
-			} else { // Otherwise just use regular treatments
+			} 
+
+			else { // Otherwise just use regular treatments
 				var treatments = ['treatment_g', 'treatment_s', 'control'];
 				shuffle(treatments);			// this shuffles order of treatments.
 
 				var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control'];
 
 			}
-			console.log(hasLocal);	
-			// Only use identity if not the music questionnaire
+			console.log('Currently in wave 2: ' + (hasLocal == 1 ? 'True' : 'False'));	
+			// Only add identity treatment if not the music questionnaire and is policy wave 1
 			if (questionnaire != 'music' && hasLocal!=1) {
 				console.log("Adding identity treatment");
-				treatments.push('treatment_i');    // this add 'treatment_i' to the end of the treatments array
+				treatments.push('treatment_i');    // this adds 'treatment_i' to the end of the treatments array
 				every_treatment.push('treatment_i');					
 			}
 
@@ -271,9 +273,9 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 
 			// Makes sure that all questions given identity treatment actually have an identity treatment
 			if (hasIdentity != undefined) {
-				do { shuffle(questions); } 
-				while (!hasIdentityTreatment(questions, treatment_i_start, hasIdentity));
-			} else {
+				do { shuffle(questions); } while (!hasIdentityTreatment(questions, treatment_i_start, hasIdentity));
+			} 
+			else {
 				shuffle(questions);
 			}
 
@@ -288,12 +290,14 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 					// If local treatment, then add question ID so can fetch from database
 					local_treatments.push(q);
 					local_treatments_ids.push(question._id);
-				} else {
+				} 
+				else {
 					// If global, chose between global1 and global2 randomly
 					if (treatment == 'treatment_g') {
 						if (question.treatment_g2 == undefined) {
 							question.treatment_type = 'treatment_g';
-						} else {
+						} 
+						else {
 							var rand_g = Math.floor(Math.random() * 2)
 							if (rand_g == 0)
 								question.treatment_type = 'treatment_g';
@@ -353,7 +357,9 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 								count++;
 							}
 
-						} else {
+						} 
+						else {
+							debugger;
 							for (var ind in local_treatments) {
 								// For each local treatment, find its corresponding answers using the 
 								// index in array and corresponding ID
@@ -362,8 +368,11 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 								var curr_data = data[curr_id];
 
 								console.log(curr_data);
-
+								// string for wave 2
 								var str = "Out of your Facebook friends whom you invited to take the survey";
+								// string for wave 1
+								var str_wv_1 = "Out of your Facebook friends who have taken the survey";
+
 								var phrasing = "";
 								
 								console.log(questions[curr_ind]);
@@ -371,20 +380,24 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 									phrasing = questions[curr_ind].phrasing_identity.split("background,")[1];
 									var sub_end = (phrasing.lastIndexOf(".") == phrasing.length - 1) ? phrasing.length-2 : phrasing.length-1;
 									phrasing = phrasing.trim().substring(0, sub_end);
-								} else if (questions[curr_ind].title === 'stem_cell_research') {
+								} 
+								else if (questions[curr_ind].title === 'stem_cell_research') {
 									phrasing = "support stem cell research";
 								}
 
+								// if question is online privacy change phrasing to avoid "do not are very"
 
+
+								var local_t_value = 0;
 								for (var p in curr_data) {
-									var ans = isNaN(parseInt(p)) ? 'said they would "' + p + '"' : 
-										( (parseInt(p) == 0) ? "do not " : "");
-									str += ', ' + curr_data[p] + '% ' + ans + phrasing;
+									local_t_value = curr_data[p];
+									var ans = isNaN(parseInt(p)) ? 'said they would "' + p + '"' : ( (parseInt(p) == 0) ? "do not " : "");
+									str_wv_1 += ', ' + curr_data[p] + '% ' + ans + phrasing;
 								}
 
-								str += ".";
-
-								questions[curr_ind].treatment = str;
+								str_wv_1 += ".";
+								questions[curr_ind].treatment_l_value = local_t_value;
+								questions[curr_ind].treatment = str_wv_1;
 							}
 						}
 					}
@@ -467,7 +480,8 @@ function askDemographics() {
 							if (values.length == 2) {
 								$(".importance-list:last").append("<li class = 'inline-block left'>" + values[0] + "</li>");
 								$(".importance-list:last").append("<li class = 'inline-block right'>" + values[1] + "</li>");
-							} else {
+							} 
+							else {
 								for (var k in values) {
 									$(".importance-list:last").append("<li class = 'inline-block center'>" + values[k] + "</li>");
 								}
@@ -476,7 +490,8 @@ function askDemographics() {
 
 							$(".importance-list:last li").width(100/ values.length + "%");
 							
-						} else if (dataWanted[i].type.toLowerCase() == 'radio') {
+						} 
+						else if (dataWanted[i].type.toLowerCase() == 'radio') {
 							var values = dataWanted[i].values.split(",");
 							$("#question-text").append("<div class = 'font-15 demographics-header radio-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
 								"<ul class = 'no-list font-15 question-list-larger'></ul></div>");
@@ -485,7 +500,8 @@ function askDemographics() {
 								if ( (j + 1) % 3 == 0)
 									$(".question-list-larger:last").append("<br/>");
 							}
-						} else if (dataWanted[i].type.toLowerCase() == 'select') {
+						} 
+						else if (dataWanted[i].type.toLowerCase() == 'select') {
 							var values = dataWanted[i].values.split(",");
 							//var location_prev = $("input[type=text]:last").parent();
 							//( questionnaire === 'music' ) ? $("input[type=text]:last") : $("input[type=range]:last").after();
@@ -528,7 +544,8 @@ function askDemographics() {
 				if (ind==$(".question-selector-circle").length-1)	{
 					$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Skip' class = 'clickable'/>" +
 						"<input type = 'button' id = 'submit-questionnaire' value = 'Next' class = 'demographics-next clickable' disabled/>");
-				} else {$("#question-text").append("<br/><input type = 'button' id = 'skip-demographics' value = 'Skip' class = 'clickable'/>" +
+				} 
+				else {$("#question-text").append("<br/><input type = 'button' id = 'skip-demographics' value = 'Skip' class = 'clickable'/>" +
 					"<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable' disabled/>");
 				}
 
@@ -553,6 +570,7 @@ function askDemographics() {
 // Displays dialog box for inviting friends
 function sendFriendsDialog() {
 	// Get user's ID and questionnaire name
+	debugger;
 	var userID = d3.selectAll(".user-info").data()[0].id;
 	var url = ( window.location.href.lastIndexOf("/") == window.location.href.length - 1) ? 
 		window.location.href.substr(0, window.location.href.length - 1) : window.location.href;
@@ -560,9 +578,12 @@ function sendFriendsDialog() {
 	
 	if (urlArray.length > 3) {
 		var loginUrl = urlArray[urlArray.length - 2];
-	} else
+	} 
+	else
 		var loginUrl = urlArray[urlArray.length - 1];
 
+	console.log(userID)
+	
 	if (userID == '1368751615')
 		var link = url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
 	else

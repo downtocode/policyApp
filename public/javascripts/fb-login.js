@@ -3,15 +3,15 @@
 // able to access the FB API calls.							//
 //////////////////////////////////////////////////////////////
 
-var appId = '486648534724015';
-var url_name = 'https://stark-crag-5229.herokuapp.com';
+var appId = '1724641247754857';
+var url_name = 'http://localhost:5000';
 
 $(document).ready(function() {
 
 	// Initializes the FB object using app details
 	window.fbAsyncInit = function() {
 		FB.init({
-			appId      : '486648534724015',// '150997527214'
+			appId      : '1724641247754857',// '150997527214' // original:'486648534724015'
 			cookie     : true,  // enable cookies to allow the server to access 
 			xfbml      : true,  // parse social plugins on this page
 			version    : 'v2.3' // use version 2.2
@@ -37,11 +37,11 @@ function statusChangeCallback(url, response) {
 	if (response.status === 'connected') {
 		// Logged into your app and Facebook.
 		var accessToken = response.authResponse.accessToken;
-
+		// original client secret: '2774e05ae31b641f9e23c29c70102536'
 		$.ajax({
 			url: 'https://graph.facebook.com/oauth/access_token',
 			method: 'POST',
-			data: {grant_type: 'fb_exchange_token', client_id: '486648534724015', client_secret: '2774e05ae31b641f9e23c29c70102536', fb_exchange_token: accessToken},
+			data: {grant_type: 'fb_exchange_token', client_id: '1724641247754857', client_secret: 'ecc1220ee8ccd42a989eae6e35862bb9', fb_exchange_token: accessToken},
 			success: function(response) {
 				//var d = new Date();
 				//var expiresTime = response.authResponse.expires + d.getTime();
@@ -82,13 +82,16 @@ function statusChangeCallback(url, response) {
 	} else {
 	  // The person is not logged into Facebook, so we're not sure if
 	  // they are logged into this app or not.
+	  
 	  document.getElementById('status').innerHTML = 'Please log into Facebook.';
 	}
 }
 
 // Checks state of login so can make appropriate response
 function checkLoginState(url) {
+	console.log('callback url is: ' +url)
 	FB.getLoginStatus(function(response) {
+		console.log('login response: '+ response.status)
 		statusChangeCallback(url, response);
 	});
 }

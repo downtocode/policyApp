@@ -51,8 +51,10 @@ router.post('/api/adminLogin', function(req, res, next) {
 
 // Get all questionnaires to display on admin page
 router.get('/api/getQuestionnaires', function(req, res, next) {
+
 	var db = req.db;
 	db.questions.distinct('questionnaire', function(err, questionnaires) {
+		console.log(questionnaires)
 		res.send(questionnaires);
 	});
 });
@@ -127,6 +129,7 @@ router.post('/api/getRestQuestions', function(req, res, next) {
 
 // Get all main questions limited to 10
 router.post('/api/getQuestions', function(req, res, next) {
+	debugger;
 	var db = req.db;
 	var query = req.body;
 
@@ -148,10 +151,12 @@ router.post('/api/getQuestionsControl', function(req, res, next) {
 router.post('/api/sendAnswers', function(req, res, next) {
 	var db = req.db;
 	var answers = req.body.answers;
+	console.log("Answers about to BE SENT TO MONGO" + answers)
 	var userId = answers[0].user_id;
 	for (var i in answers) {
 		var currDetails = {user_id: userId, question_id: answers[i].question_id};
 		// Updates instead of inserts in case user is taking quiz second time; will overwrite previous data
+		console.log(answers[i])
 		db.userAnswers.update(currDetails, answers[i], {upsert:true});
 	}
 	res.send({success: 'success'});
@@ -278,8 +283,9 @@ router.post('/api/getFriendData', function(req, res, next) {
 // Creates downloadable CSV for answers
 router.post('/api/sendCSV', function(req, res, next) {
 	var db = req.db; 
-	var questionnaire = req.body.questionnaire;
-
+	// var questionnaire = req.body.questionnaire;
+	var questionnaire = 'policy'
+	debugger;
 	// Adds extra demographics that were not asked to use in CSV
 	var extra_demo = ['first_name','last_name', 'gender'];
 
@@ -314,15 +320,23 @@ router.post('/api/sendCSV', function(req, res, next) {
 						// Get all question titles and appropriate information in user answers
 						for (var i in questions) {
 							var curr_title = capitalizeTitle(questions[i].title, " ");
-							header += ',"opinion_' + curr_title + '","importance_' + curr_title + '","treatment_' + curr_title + '","local_type_' + curr_title + '","start_time_' + curr_title + '","answer_time_' + curr_title+'","petition_' + curr_title + '"';
+							// 
+							header += ',"opinion_' + curr_title + 
+							'","importance_' + curr_title + 
+							'","frequency_' + curr_title + 
+							'","treatment_' + curr_title + 
+							'","local_type_' + curr_title + 
+							'","local_value_' + curr_title + // the value from friends
+							'","start_time_' + curr_title + 
+							'","answer_time_' + curr_title +
+							'","petition_' + curr_title + '"';
 							lineArr.push(questions[i]._id);
 						}
-
 						// Get all demographics
 						for (var d in demographics) {
 							header += ',"user_' + demographics[d].name+'"';
 						}
-
+						
 						var userDemographics = {}
 
 						for (var j in users) {
@@ -376,9 +390,16 @@ router.post('/api/sendCSV', function(req, res, next) {
 								var currQuestion = lineArr[s];
 
 								if (currQuestion in user)
-									newLine += "," + removeCommasAddQuotes(user[currQuestion].question) + "," + removeCommasAddQuotes(user[currQuestion].importance) + "," + removeCommasAddQuotes(user[currQuestion].treatment) + "," + removeCommasAddQuotes(user[currQuestion].treatment_l_type) + "," + removeCommasAddQuotes(user[currQuestion].start_time) + "," + removeCommasAddQuotes(user[currQuestion].answer_time);
+									newLine += "," + removeCommasAddQuotes(user[currQuestion].question) + "," + 
+										removeCommasAddQuotes(user[currQuestion].importance) + "," +
+										removeCommasAddQuotes(user[currQuestion].frequency) + "," + 
+										removeCommasAddQuotes(user[currQuestion].treatment) + "," + 
+										removeCommasAddQuotes(user[currQuestion].treatment_l_type) + "," + 
+										removeCommasAddQuotes(user[currQuestion].treatment_l_value) + "," +
+										removeCommasAddQuotes(user[currQuestion].start_time) + "," + 
+										removeCommasAddQuotes(user[currQuestion].answer_time);
 								else
-									newLine += "," + "," + "," + "," + "," + ",";
+									newLine += "," + "," + "," + "," + "," + "," + "," + ",";
 
 								if (userPetition.indexOf(parseInt(currQuestion)) >= 0)
 									newLine += ",1";
