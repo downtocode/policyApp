@@ -101,7 +101,7 @@ router.get('/login/:name/:fid?', function(req, res, next) {
 			name: name,
 			meta_title: meta_title,
 			meta_name: meta_title,
-			meta_url: "http://stark-crag-dev.herokuapp.com/login/" + name.toLowerCase() + "/" + req.params.fid,
+			meta_url: process.env.HOST_URI + "/login/" + name.toLowerCase() + "/" + req.params.fid,
 			meta_desc: desc
 		});
 	}

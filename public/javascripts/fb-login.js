@@ -4,7 +4,7 @@
 //////////////////////////////////////////////////////////////
 
 var appId = '1724641247754857';
-var url_name = 'http://stark-crag-dev.herokuapp.com';
+var url_name = process.env.HOST_URI; //http://stark-crag-dev.herokuapp.com';
 
 $(document).ready(function() {
 
