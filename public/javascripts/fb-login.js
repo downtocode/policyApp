@@ -77,7 +77,7 @@ function statusChangeCallback(url, response) {
 				});*/
 
 
-				window.location.href = test_url_name+url;
+				window.location.href = url_name+url;
 			}
 		});
 	} else if (response.status === 'not_authorized') {
