@@ -6,6 +6,7 @@
 
 var express = require('express');
 var router = express.Router();
+var url_name = 'http://localhost:5000'
 
 // Capitalize word (ie. policy -> Policy)
 function capitalize(str) {
@@ -101,7 +102,7 @@ router.get('/login/:name/:fid?', function(req, res, next) {
 			name: name,
 			meta_title: meta_title,
 			meta_name: meta_title,
-			meta_url: process.env.HOST_URI + "/login/" + name.toLowerCase() + "/" + req.params.fid,
+			meta_url: url_name + "/login/" + name.toLowerCase() + "/" + req.params.fid,
 			meta_desc: desc
 		});
 	}

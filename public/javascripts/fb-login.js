@@ -4,14 +4,17 @@
 //////////////////////////////////////////////////////////////
 
 var appId = '1724641247754857';
-var url_name = process.env.HOST_URI; //http://stark-crag-dev.herokuapp.com';
+var secret = 'ecc1220ee8ccd42a989eae6e35862bb9';
+var testappId = '1729142133971435';
+var testsecret = 'cb7830bb2f2376e1d88b89645de92f0b';
+var url_name = 'http://localhost:5000'; //http://stark-crag-dev.herokuapp.com';
 
 $(document).ready(function() {
 
 	// Initializes the FB object using app details
 	window.fbAsyncInit = function() {
 		FB.init({
-			appId      : '1724641247754857',// '150997527214' // original:'486648534724015'
+			appId      : testappId,// '150997527214' // original:'486648534724015'
 			cookie     : true,  // enable cookies to allow the server to access 
 			xfbml      : true,  // parse social plugins on this page
 			version    : 'v2.3' // use version 2.2
@@ -41,9 +44,9 @@ function statusChangeCallback(url, response) {
 		$.ajax({
 			url: 'https://graph.facebook.com/oauth/access_token',
 			method: 'POST',
-			data: {grant_type: 'fb_exchange_token', client_id: '1724641247754857', client_secret: 'ecc1220ee8ccd42a989eae6e35862bb9', fb_exchange_token: accessToken},
+			data: {grant_type: 'fb_exchange_token', client_id: testappId, client_secret: testsecret, fb_exchange_token: accessToken},
 			success: function(response) {
-				//var d = new Date();
+				//var d = new Date(); 'cb7830bb2f2376e1d88b89645de92f0b'
 				//var expiresTime = response.authResponse.expires + d.getTime();
 				document.cookie = "fb_access=" + response.split("=")[1].split("&")[0] + ";expires=;path=/";
 

@@ -3,13 +3,15 @@
 // policy questionnaire.									//
 //////////////////////////////////////////////////////////////
 
+var testId = '1729142133971435';
+var realId = '1724641247754857';
 
 $(document).ready(function() {
 
 	// FB init
 	window.fbAsyncInit = function() {
 		FB.init({
-    		appId      : '1724641247754857',// '150997527214' '486648534724015'
+    		appId      : testId,// '150997527214' '486648534724015'
     		cookie     : true,  // enable cookies to allow the server to access 
     		xfbml      : true,  // parse social plugins on this page
     		version    : 'v2.3' // use version 2.2

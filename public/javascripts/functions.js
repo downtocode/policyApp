@@ -4,9 +4,9 @@
 // treatments.												//
 //////////////////////////////////////////////////////////////
 
-var apiKey = process.env.API_KEY;
+var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI';
 var prev_time;
-var url_name = process.env.HOST_URI + '/'; //http://stark-crag-dev.herokuapp.com';
+var url_name = 'http://localhost:5000'; //http://stark-crag-dev.herokuapp.com';
 var is_wave2 = 1 // 0 means false (i.e. NOT wave 2); 1 means true (i.e. we ARE in wave 2)
 
 $(document).ready(function() {
