@@ -129,7 +129,6 @@ router.post('/api/getRestQuestions', function(req, res, next) {
 
 // Get all main questions limited to 10
 router.post('/api/getQuestions', function(req, res, next) {
-	debugger;
 	var db = req.db;
 	var query = req.body;
 
@@ -151,7 +150,7 @@ router.post('/api/getQuestionsControl', function(req, res, next) {
 router.post('/api/sendAnswers', function(req, res, next) {
 	var db = req.db;
 	var answers = req.body.answers;
-	console.log("Answers about to BE SENT TO MONGO" + answers)
+	console.log("Answers about to BE SENT TO MONGO" + answers);
 	var userId = answers[0].user_id;
 	for (var i in answers) {
 		var currDetails = {user_id: userId, question_id: answers[i].question_id};
@@ -285,7 +284,6 @@ router.post('/api/sendCSV', function(req, res, next) {
 	var db = req.db; 
 	// var questionnaire = req.body.questionnaire;
 	var questionnaire = 'policy'
-	debugger;
 	// Adds extra demographics that were not asked to use in CSV
 	var extra_demo = ['first_name','last_name', 'gender'];
 
@@ -343,7 +341,7 @@ router.post('/api/sendCSV', function(req, res, next) {
 							userDemographics[users[j].id] = users[j];
 						}
 
-						var userAnswersArr = {}
+						var userAnswersArr = {};
 
 						// user_ids -> question_id -> user_question_answer
 

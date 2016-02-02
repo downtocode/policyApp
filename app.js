@@ -11,7 +11,7 @@ var connect = require('connect'),
 var routes = requireDir('./routes');
 
 var app = express();
-var server = app.listen(process.env.PORT || 5000)
+var server = app.listen(process.env.PORT || 5000);
 //var io = require('socket.io').listen(server); // this tells socket.io to use our express server
 
 // view engine setup
@@ -28,7 +28,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-var uri = "mongodb://phil:tbp5982u42triu0ow2bkb47227@ds055525.mongolab.com:55525/phil?replicaSet=rs-ds055525",
+var uri = "mongodb://phil:tbp5982u42triu0ow2bkb47227@ds055525.mongolab.com:55525/heroku_bg8bldkt?replicaSet=rs-ds055525",
     db = mongojs(uri, ["test", "questions", "users", "accounts", "userAnswers", "friends", "demographics", "petitions", "coefficients", "userLikes"]);
 
 app.use(function(req,res,next) { 

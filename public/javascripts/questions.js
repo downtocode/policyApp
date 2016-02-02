@@ -37,7 +37,6 @@ $(document).ready(function() {
 
 	// If user clicks on "Show Choices" for question answers
 	$(document).on("click", "#show-values", function() {
-		debugger;
 		var ind = $('.question-selector-circle').index($('.selected'));
 		var question = d3.select(".question-selector-circle.selected").data()[0];
 		var values = getValues(question.type, question.values);
@@ -244,7 +243,6 @@ $(document).ready(function() {
 
 // Shows question based on index number
 function showQuestion(num) {
-
 	// Sets up date to figure out time elapsed
 	var d = new Date();
 	setTime(d, num);

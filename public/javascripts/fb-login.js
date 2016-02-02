@@ -92,9 +92,9 @@ function statusChangeCallback(url, response) {
 
 // Checks state of login so can make appropriate response
 function checkLoginState(url) {
-	console.log('callback url is: ' +url)
+	console.log('callback url is: ' +url);
 	FB.getLoginStatus(function(response) {
-		console.log('login response: '+ response.status)
+		console.log('login response: '+ response.status);
 		statusChangeCallback(url, response);
 	});
 }

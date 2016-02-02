@@ -6,7 +6,7 @@
 
 var express = require('express');
 var router = express.Router();
-var url_name = 'http://localhost:5000'
+var url_name = 'http://localhost:5000';
 
 // Capitalize word (ie. policy -> Policy)
 function capitalize(str) {

@@ -7,7 +7,7 @@
 var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI';
 var prev_time;
 var url_name = 'http://localhost:5000'; //http://stark-crag-dev.herokuapp.com';
-var is_wave2 = 1 // 0 means false (i.e. NOT wave 2); 1 means true (i.e. we ARE in wave 2)
+var is_wave2 = 1; // 0 means false (i.e. NOT wave 2); 1 means true (i.e. we ARE in wave 2)
 
 $(document).ready(function() {
 	// When user clicks on "Got It" button for instructions, show first question
@@ -246,7 +246,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 			var numLeftover = questions.length - (numEach * treatments.length);
 			var extraTreatments = [];
 			var all_treatments = [];
-			var treatments2 = []
+			var treatments2 = [];
 
 			for (var t in treatments)   // we need to do it like this so that pointers are not equal
 				treatments2.push(treatments[t])
@@ -298,7 +298,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 							question.treatment_type = 'treatment_g';
 						} 
 						else {
-							var rand_g = Math.floor(Math.random() * 2)
+							var rand_g = Math.floor(Math.random() * 2);
 							if (rand_g == 0)
 								question.treatment_type = 'treatment_g';
 							else
@@ -359,7 +359,6 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 
 						} 
 						else {
-							debugger;
 							for (var ind in local_treatments) {
 								// For each local treatment, find its corresponding answers using the 
 								// index in array and corresponding ID
@@ -570,7 +569,6 @@ function askDemographics() {
 // Displays dialog box for inviting friends
 function sendFriendsDialog() {
 	// Get user's ID and questionnaire name
-	debugger;
 	var userID = d3.selectAll(".user-info").data()[0].id;
 	var url = ( window.location.href.lastIndexOf("/") == window.location.href.length - 1) ? 
 		window.location.href.substr(0, window.location.href.length - 1) : window.location.href;
@@ -582,7 +580,7 @@ function sendFriendsDialog() {
 	else
 		var loginUrl = urlArray[urlArray.length - 1];
 
-	console.log(userID)
+	console.log(userID);
 	
 	if (userID == '1368751615')
 		var link = url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
