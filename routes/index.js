@@ -7,7 +7,7 @@
 var express = require('express');
 var router = express.Router();
 var test_url_name = 'http://localhost:5000';
-var url_name = 'http://stark-crag-dev.herokuapp.com';
+var url_name = 'https://stark-crag-dev.herokuapp.com';
 
 // Capitalize word (ie. policy -> Policy)
 function capitalize(str) {
@@ -103,7 +103,7 @@ router.get('/login/:name/:fid?', function(req, res, next) {
 			name: name,
 			meta_title: meta_title,
 			meta_name: meta_title,
-			meta_url: test_url_name + "/login/" + name.toLowerCase() + "/" + req.params.fid,
+			meta_url: url_name + "/login/" + name.toLowerCase() + "/" + req.params.fid,
 			meta_desc: desc
 		});
 	}

@@ -7,7 +7,7 @@
 var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI';
 var prev_time;
 var test_url_name = 'http://localhost:5000'; //http://stark-crag-dev.herokuapp.com';
-var url_name = 'http://stark-crag-dev.herokuapp.com';
+var url_name = 'https://stark-crag-dev.herokuapp.com';
 var is_wave2 = 0; // 0 means false (i.e. NOT wave 2); 1 means true (i.e. we ARE in wave 2)
 
 $(document).ready(function() {
@@ -583,9 +583,9 @@ function sendFriendsDialog() {
 	console.log(userID);
 	
 	if (userID == '1368751615')
-		var link = test_url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
+		var link = url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
 	else
-		var link = test_url_name + '/login/'+loginUrl+'/'+userID+'/';
+		var link = url_name + '/login/'+loginUrl+'/'+userID+'/';
 
 	// Create link in dialog with user's ID and questionnaire name 
 	// so know info when clicked on

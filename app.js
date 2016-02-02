@@ -27,8 +27,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-var uri = "mongodb://phil:tbp5982u42triu0ow2bkb47227@ds055525.mongolab.com:55525/heroku_bg8bldkt?replicaSet=rs-ds055525",
+var dev_uri = "mongodb://phil:tbp5982u42triu0ow2bkb47227@ds055525.mongolab.com:55525/heroku_bg8bldkt?replicaSet=rs-ds055525"
+var prod_uri = "mongodb://heroku_app35837312:jfl6ps1binv31ke665qm7ss99f@ds061731.mongolab.com:61731/heroku_app35837312?replicaSet=rs-ds061731";
+var uri = prod_ur,
     db = mongojs(uri, ["test", "questions", "users", "accounts", "userAnswers", "friends", "demographics", "petitions", "coefficients", "userLikes"]);
 
 app.use(function(req,res,next) { 

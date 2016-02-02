@@ -8,7 +8,7 @@ var real_secret = 'ecc1220ee8ccd42a989eae6e35862bb9';
 var testappId = '1729142133971435';
 var testsecret = 'cb7830bb2f2376e1d88b89645de92f0b';
 var test_url_name = 'http://localhost:5000'; 
-var url_name = 'http://stark-crag-dev.herokuapp.com';
+var url_name = 'https://stark-crag-dev.herokuapp.com';
 
 $(document).ready(function() {
 
@@ -77,7 +77,7 @@ function statusChangeCallback(url, response) {
 				});*/
 
 
-				window.location.href = test_url_name+url;
+				window.location.href = url_name+url;
 			}
 		});
 	} else if (response.status === 'not_authorized') {
