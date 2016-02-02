@@ -6,8 +6,9 @@
 
 var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI';
 var prev_time;
-var url_name = 'http://localhost:5000'; //http://stark-crag-dev.herokuapp.com';
-var is_wave2 = 1; // 0 means false (i.e. NOT wave 2); 1 means true (i.e. we ARE in wave 2)
+var test_url_name = 'http://localhost:5000'; //http://stark-crag-dev.herokuapp.com';
+var url_name = 'http://stark-crag-dev.herokuapp.com';
+var is_wave2 = 0; // 0 means false (i.e. NOT wave 2); 1 means true (i.e. we ARE in wave 2)
 
 $(document).ready(function() {
 	// When user clicks on "Got It" button for instructions, show first question
@@ -21,6 +22,7 @@ $(document).ready(function() {
 		});
 	});
 });
+
 // Returns capitalized word (ie. policy -> Policy)
 function capitalize(string) {
 	return string.charAt(0).toUpperCase() + string.substring(1, string.length);
@@ -208,7 +210,6 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 				var app_friends = [];
 				for (var i in friends.data)
 					app_friends.push(friends.data[i].id);
-
 				$.ajax({
 					url: '/api/saveFriends',
 					method: 'POST',
@@ -218,7 +219,6 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 						console.log(res);
 					}
 				});
-
 				// Set up question treatments by randomizing between local and control
 				var treatments = [];
 				Math.random() < 0.5 ? treatments.push('treatment_l') : treatments.push('control');
@@ -583,9 +583,9 @@ function sendFriendsDialog() {
 	console.log(userID);
 	
 	if (userID == '1368751615')
-		var link = url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
+		var link = test_url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
 	else
-		var link = url_name + '/login/'+loginUrl+'/'+userID+'/';
+		var link = test_url_name + '/login/'+loginUrl+'/'+userID+'/';
 
 	// Create link in dialog with user's ID and questionnaire name 
 	// so know info when clicked on
@@ -740,6 +740,98 @@ function submitUserInfo(i) {
 	});
 
 }
+
+// Shows question based on index number
+/*function showQuestion(num) {
+	// Sets up date to figure out time elapsed
+	var d = new Date();
+	setTime(d, num);
+	setDate(d, num);
+
+	// Gets corresponding question
+	var question = d3.selectAll(".question-selector-circle").data()[num];
+	$("#question-box div").html("<div id = 'question-text'></div>");
+	$("#question-text").empty();
+
+	// If moral dilemma, need to separate question differently so that last part of question 
+	// is only shown after user clicks "Next"
+	if (question.title == 'moral_dilemma') {
+		var i = question.question.lastIndexOf(". ");
+		var q = question.question.substr(0, i);
+		$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(q) + ".</div>"); 
+	}
+
+	// Shows the appropriate treatment on screen
+	showTreatment(num);
+
+	/*if (question.treatment_type.toLowerCase() != 'control') {
+		if ($("#next-question").length > 0) {
+			$("#next-question").attr('id','show-treatment');
+			$("#next-question").val('Next')
+		} else {
+			$("#question-text").append("<input type='button' class='custom-button clickable' id='show-treatment' value='Next'/>");
+		}
+	} else {
+		if ($("#next-question").length > 0) {
+			$("#next-question").attr('id','show-values');
+			$("#next-question").val('Show Choices')
+		} else {
+			$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Show Choices'/>");
+		}
+	}*/	
+//} 
+
+/*function showTreatment(num) {
+	// Gets the corresponding question based on the index provided in variable num
+	var question = d3.selectAll(".question-selector-circle").data()[num];
+
+	// Displays the question's title (ie. Moral Dilemma, Same-Sex Marriage)
+	$("#question-text").prepend("<div id = 'question-title'>" + capitalizeSentence(question.title) +"</div>");
+	
+	// If there is a treatment (ie. not control)
+	if (question.treatment_type.toLowerCase() != 'control' && question.treatment != undefined) {
+		// If we want to create a graph for the treatment (ie. global treatment)
+		if (question.treatment.indexOf("|") >= 0 && question.treatment_type.toLowerCase() != "treatment_s" && question.title != "moral_dilemma") {
+			var arr = question.treatment.split('|');
+			$("#question-text").append("<div class = 'font-black font-18 bold' id = 'question-treatment'>" + 
+				capitalize(arr[0]) + "<br/></div>");
+
+			var data = [];
+			
+			// Set up data in format that is understandable to d3 library
+			data.push({"year": arr[1].split(":")[0].trim(), "value": arr[1].split(":")[1].trim()});
+			data.push({"year": arr[2].split(":")[0].trim(), "value": arr[2].split(":")[1].trim()});
+
+			makeBarGraph(data);
+			$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#"+question["ref_num_g"]+"' target='_blank'>here</a> to see reference]</div></div>");
+
+		} else {
+			// Otherwise just show the treatment as is displayed
+			if (question.treatment_type.toLowerCase() == "treatment_g")
+				$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#"+question["ref_num_g"]+"' target='_blank'>here</a> to see reference]</div></div>");
+			else if (question.treatment_type.toLowerCase() == "treatment_i")
+				$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='"+question["reference_identity"]+"' target='_blank'>here</a> to see reference]</div></div>");
+
+			$("#question-text").append("<div class = 'font-black font-15 italics bold' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
+		}
+
+		// If a status treatment, then add on the reference link
+		if (question.treatment_type.toLowerCase() == 'treatment_s') {
+			if ( question.reference_status != undefined ) {
+				var reference = question["ref_num_" + question.treatment_type.split("_")[1]];
+				$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#"+reference+"' target='_blank'>here</a> to see reference]</div></div>");
+			}
+
+			$("#question-treatment").append("<div class = 'font-black bold' id = 'question-footnote'>" + capitalize(question.treatment_s_footnote) + "</div>");
+		}
+
+	}
+	
+
+	$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Next'/>");
+
+	//$("#question-treatment").slideDown('slow');
+}*/
 
 // Uses demographic information to get identity treatments
 function getIdentityTreatments(questionIds, demographics) {

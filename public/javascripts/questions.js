@@ -4,24 +4,28 @@
 //////////////////////////////////////////////////////////////
 
 var testId = '1729142133971435';
-var realId = '1724641247754857';
+var real_appId = '1724641247754857';
 
 $(document).ready(function() {
 
 	// FB init
 	window.fbAsyncInit = function() {
 		FB.init({
-    		appId      : testId,// '150997527214' '486648534724015'
-    		cookie     : true,  // enable cookies to allow the server to access 
-    		xfbml      : true,  // parse social plugins on this page
-    		version    : 'v2.3' // use version 2.2
-    	});
+			appId: real_appId, // '150997527214' '486648534724015'
+			cookie: true, // enable cookies to allow the server to access 
+			xfbml: true, // parse social plugins on this page
+			version: 'v2.3' // use version 2.2
+		});
 	};
 
-	(function(d, s, id){
+
+	(function(d, s, id) {
 		var js, fjs = d.getElementsByTagName(s)[0];
-		if (d.getElementById(id)) {return;}
-		js = d.createElement(s); js.id = id;
+		if (d.getElementById(id)) {
+			return;
+		}
+		js = d.createElement(s);
+		js.id = id;
 		js.src = "//connect.facebook.net/en_US/sdk.js";
 		fjs.parentNode.insertBefore(js, fjs);
 	}(document, 'script', 'facebook-jssdk'));
@@ -55,71 +59,78 @@ $(document).ready(function() {
 			if (question.treatment_type.toLowerCase() == 'treatment_l') {
 				$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'get-user-info' value = 'Prefer Not to Answer' />")
 			} else $("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'submit-questionnaire' value = 'Prefer Not to Answer' />")
-		} else
+		} 
+		else
 			$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'skip-question' value = 'Prefer Not to Answer' />")
 	});
 
 
- 	// If user clicks "Next" button to get importance value
- 	$(document).on("click", "#next-important", function() {
- 		$("#skip-question").remove();
- 		$("#submit-questionnaire").remove();
- 		addQuestionImportance();
- 	});
+	// If user clicks "Next" button to get importance value
+	$(document).on("click", "#next-important", function() {
+		$("#skip-question").remove();
+		$("#submit-questionnaire").remove();
+		addQuestionImportance();
+	});
 
- 	// If user clicks "Next" button to get the frequency question
- 	$(document).on("click", "#next-frequency", function(){
- 		$("skip-question").remove();
- 		$("#submit-questionnaire").remove();
- 		addHowOften();
- 	});
+	// If user clicks "Next" button to get the frequency question
+	$(document).on("click", "#next-frequency", function() {
+		$("skip-question").remove();
+		$("#submit-questionnaire").remove();
+		addHowOften();
+	});
+
+	// When user clicks "Next" button after frequency question
+	$(document).on("click", "#petition-choice", function() {
+		$("skip-question").remove();
+		$("#submit-questionnaire").remove();
+		askPetition();
+	});
+
 
 
 	// If user clicks on "Next" button for next question
 	$(document).on("click", "#next-question, #skip-question, #skip-demographics", function() {
 		$("#skip-question").remove();
-   		// Get the index of the current question
-   		var ind = $('.question-selector-circle').index($('.selected'));
-   		var curr_question = d3.selectAll(".question-selector-circle").data()[ind];
-   		var next_question = d3.selectAll(".question-selector-circle").data()[ind + 1];
-   		console.log(curr_question.treatment_type.toLowerCase(), 'treatment_l' , ind+1, $('.question-selector-circle').length-1);
+		// Get the index of the current question
+		var ind = $('.question-selector-circle').index($('.selected'));
+		var curr_question = d3.selectAll(".question-selector-circle").data()[ind];
+		var next_question = d3.selectAll(".question-selector-circle").data()[ind + 1];
+		console.log(curr_question.treatment_type.toLowerCase(), 'treatment_l', ind + 1, $('.question-selector-circle').length - 1);
 
-   		if (curr_question.treatment_type.toLowerCase() == 'treatment_i' || next_question.treatment_type.toLowerCase() != "treatment_i" || $(".demographics-next").length > 0) {
-   			// Remove this question as the selected one
-   			$('.selected').removeClass('selected');
-				// Make the next question the selected one
-				$($('.question-selector-circle')[ind]).next().addClass('selected');
+		if (curr_question.treatment_type.toLowerCase() == 'treatment_i' || next_question.treatment_type.toLowerCase() != "treatment_i" || $(".demographics-next").length > 0) {
+			// Remove this question as the selected one
+			$('.selected').removeClass('selected');
+			// Make the next question the selected one
+			$($('.question-selector-circle')[ind]).next().addClass('selected');
 
-				if (curr_question.treatment_type.toLowerCase()=='treatment_l' && ind==$('.question-selector-circle').length-1) {
-					$(this).hide();
-					askDemographics();	
-				} 
-				else if ($(this).hasClass('demographics-next')) {
-					submitUserInfo();
-				} 
-				else {
-					if ($(this).attr('id') === 'skip-demographics') {
-						$(this).remove();
-						submitUserInfo(1);
-						getNewIdentityTreatments(ind + 1);
-					} 
-
-					// Show the next question
-					showQuestion(ind + 1);		
-					}
-			} 
-			else {
+			if (curr_question.treatment_type.toLowerCase() == 'treatment_l' && ind == $('.question-selector-circle').length - 1) {
 				$(this).hide();
 				askDemographics();
+			} else if ($(this).hasClass('demographics-next')) {
+				submitUserInfo();
+			} else {
+				if ($(this).attr('id') === 'skip-demographics') {
+					$(this).remove();
+					submitUserInfo(1);
+					getNewIdentityTreatments(ind + 1);
+				}
+
+				// Show the next question
+				showQuestion(ind + 1);
 			}
+		} else {
+			$(this).hide();
+			askDemographics();
+		}
 
 	});
 
 
- 	// If user selects an answer for any input
- 	$(document).on("change", "input, select", function() {
- 		if ($(".demographics-next").length == 0) {
- 			$("input[type=button]").prop("disabled", false);
+	// If user selects an answer for any input
+	$(document).on("change", "input, select", function() {
+		debugger;
+		if ($(".demographics-next").length == 0) {
+			$("input[type=button]").prop("disabled", false);
 
 			// If this is an "Answer More" question at the end or regular first 10 questions
 			if ($(".all-question").length == 0)
@@ -138,21 +149,21 @@ $(document).ready(function() {
 				$("#question-list-larger :checked").each(function() {
 					vals += $(this).val() + ",";
 				});
-				answerArr[$(this).attr("name")] = vals.substring(0, vals.length-1);
-			} 
-			else // Otherwise, this is a slider value or radio so we can add the one answer
+				answerArr[$(this).attr("name")] = vals.substring(0, vals.length - 1);
+			} else // Otherwise, this is a slider value or radio so we can add the one answer
 				answerArr[$(this).attr("name")] = $(this).val();
 
 			// Rejoin the first and second answers and set to array index
 			$("#user-questions").val()[ind] = answerArr.join("|");
-		} 
-		else {
+		} else {
 			// Get all the user data
 			var user = d3.select(".user-info").data()[0];
 
 			user[$(this).attr("name")] = $(this).val();
 
-			var empty_inputs = $('input[type=radio]').filter(function() { return this.value == ""; });
+			var empty_inputs = $('input[type=radio]').filter(function() {
+				return this.value == "";
+			});
 
 			if (empty_inputs.length == 0 && $(".radio-header").length == $("input[type=radio]:checked").length) {
 				$("input[type=button]").prop("disabled", false);
@@ -160,11 +171,11 @@ $(document).ready(function() {
 		}
 
 		d3.select("#user")
-		.selectAll("div")
-		.data([user])
-		.enter()
-		.append("div")
-		.attr("class", "hidden user-info");
+			.selectAll("div")
+			.data([user])
+			.enter()
+			.append("div")
+			.attr("class", "hidden user-info");
 	});
 
 	/*$("input[type=text], textarea, input[type=range]").each(function() {
@@ -221,15 +232,19 @@ $(document).ready(function() {
 		var petition = $(this).attr('id');
 		var link = $(this).text();
 		var userID = d3.select(".user-info").data()[0].id;
-		
+
 		$.ajax({
 			url: '/api/petitionClick',
 			method: 'POST',
-			data: {petition: petition, link: link, user_id: userID},
+			data: {
+				petition: petition,
+				link: link,
+				user_id: userID
+			},
 			success: function(response) {
 				console.log(response);
 			}
-		})
+		});
 	});
 
 
@@ -239,7 +254,6 @@ $(document).ready(function() {
 	});
 
 });
-
 
 // Shows question based on index number
 function showQuestion(num) {
@@ -258,7 +272,7 @@ function showQuestion(num) {
 	if (question.title == 'moral_dilemma') {
 		var i = question.question.lastIndexOf(". ");
 		var q = question.question.substr(0, i);
-		$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(q) + ".</div>"); 
+		$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(q) + ".</div>");
 	}
 
 	// Shows the appropriate treatment on screen
@@ -278,7 +292,7 @@ function showQuestion(num) {
 		} else {
 			$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Show Choices'/>");
 		}
-	}*/	
+	}*/
 }
 
 // Shows treatment appropriately
@@ -287,47 +301,53 @@ function showTreatment(num) {
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 
 	// Displays the question's title (ie. Moral Dilemma, Same-Sex Marriage)
-	$("#question-text").prepend("<div id = 'question-title'>" + capitalizeSentence(question.title) +"</div>");
-	
+	$("#question-text").prepend("<div id = 'question-title'>" + capitalizeSentence(question.title) + "</div>");
+
 	// If there is a treatment (ie. not control)
 	if (question.treatment_type.toLowerCase() != 'control' && question.treatment != undefined) {
 		// If we want to create a graph for the treatment (ie. global treatment)
 		if (question.treatment.indexOf("|") >= 0 && question.treatment_type.toLowerCase() != "treatment_s" && question.title != "moral_dilemma") {
 			var arr = question.treatment.split('|');
-			$("#question-text").append("<div class = 'font-black font-18 bold' id = 'question-treatment'>" + 
+			$("#question-text").append("<div class = 'font-black font-18 bold' id = 'question-treatment'>" +
 				capitalize(arr[0]) + "<br/></div>");
 
 			var data = [];
-			
+
 			// Set up data in format that is understandable to d3 library
-			data.push({"year": arr[1].split(":")[0].trim(), "value": arr[1].split(":")[1].trim()});
-			data.push({"year": arr[2].split(":")[0].trim(), "value": arr[2].split(":")[1].trim()});
+			data.push({
+				"year": arr[1].split(":")[0].trim(),
+				"value": arr[1].split(":")[1].trim()
+			});
+			data.push({
+				"year": arr[2].split(":")[0].trim(),
+				"value": arr[2].split(":")[1].trim()
+			});
 
 			makeBarGraph(data);
-			$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#"+question["ref_num_g"]+"' target='_blank'>here</a> to see reference]</div></div>");
+			$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#" + question["ref_num_g"] + "' target='_blank'>here</a> to see reference]</div></div>");
 
 		} else {
 			// Otherwise just show the treatment as is displayed
 			if (question.treatment_type.toLowerCase() == "treatment_g")
-				$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#"+question["ref_num_g"]+"' target='_blank'>here</a> to see reference]</div></div>");
+				$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#" + question["ref_num_g"] + "' target='_blank'>here</a> to see reference]</div></div>");
 			else if (question.treatment_type.toLowerCase() == "treatment_i")
-				$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='"+question["reference_identity"]+"' target='_blank'>here</a> to see reference]</div></div>");
+				$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='" + question["reference_identity"] + "' target='_blank'>here</a> to see reference]</div></div>");
 
 			$("#question-text").append("<div class = 'font-black font-15 italics bold' id = 'question-treatment'>" + capitalize(question.treatment) + "</div>");
 		}
 
 		// If a status treatment, then add on the reference link
 		if (question.treatment_type.toLowerCase() == 'treatment_s') {
-			if ( question.reference_status != undefined ) {
+			if (question.reference_status != undefined) {
 				var reference = question["ref_num_" + question.treatment_type.split("_")[1]];
-				$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#"+reference+"' target='_blank'>here</a> to see reference]</div></div>");
+				$("#question-treatment").append("<div id = 'question-treatment-reference' class = 'font-15 italics bold'>[Click <a href='/references#" + reference + "' target='_blank'>here</a> to see reference]</div></div>");
 			}
 
 			$("#question-treatment").append("<div class = 'font-black bold' id = 'question-footnote'>" + capitalize(question.treatment_s_footnote) + "</div>");
 		}
 
 	}
-	
+
 
 	$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Next'/>");
 
@@ -338,7 +358,7 @@ function showTreatment(num) {
 function showQuestionText(num) {
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	if (question.title != 'moral_dilemma') {
-		$("#question-text").append("<div class = 'font-black question-header'>" + capitalize(question.question) + "</div>");		
+		$("#question-text").append("<div class = 'font-black question-header'>" + capitalize(question.question) + "</div>");
 	}
 
 	$("#question-text").append("<div id = 'question-answers'></div>");
@@ -348,11 +368,9 @@ function showQuestionText(num) {
 function getValues(type, values) {
 	if (type === "checklist" || type === "radio") {
 		var valuesArr = values.split(",");
-	} 
-	else if (values.indexOf("-") > 0) {
+	} else if (values.indexOf("-") > 0) {
 		var valuesArr = values.split("-");
-	} 
-	else {
+	} else {
 		var valuesArr = values.split(",");
 	}
 
@@ -372,14 +390,14 @@ function showValues(type, values) {
 	if (type.toLowerCase().trim() === "checkbox" || type.toLowerCase().trim() === "radio") {
 		$("#question-answers").append("<div class = 'hidden'><ul id = 'question-list-larger' class = 'no-list font-15'></ul></div>");
 		for (var i in values) {
-			$("#question-list-larger").append("<li class = 'left'><input type = '" + type + "' name = '0' value = '"+values[i]+"'><span class = 'question-text-text'>" + capitalize(values[i]) + "</span></li>");		
-		}	
+			$("#question-list-larger").append("<li class = 'left'><input type = '" + type + "' name = '0' value = '" + values[i] + "'><span class = 'question-text-text'>" + capitalize(values[i]) + "</span></li>");
+		}
 	} else {
 		$("#question-answers").append("<div class = 'hidden'><input type = 'range' name='0' min='0' max='100' class><ul id = 'question-list' class = 'no-list font-15'></ul></div>");
 
 		if (values.length == 2) {
 			$("#question-list").append("<li class = 'inline-block left text-top border-box'>" + values[0] + "</li>");
-			$("#question-list").append("<li class = 'inline-block right text-top border-box'>" + values[1] + "</li>");	
+			$("#question-list").append("<li class = 'inline-block right text-top border-box'>" + values[1] + "</li>");
 		} else {
 			for (value in values) {
 				$("#question-list").append("<li class = 'inline-block center text-top border-box'>" + values[value] + "</li>");
@@ -387,15 +405,129 @@ function showValues(type, values) {
 
 		}
 
-		$("#question-list li").width( (100 - 5 * values.length * 2) / values.length + "%");
+		$("#question-list li").width((100 - 5 * values.length * 2) / values.length + "%");
 
 	}
 
 	$("#question-answers .hidden").slideDown('slow');
 }
 
+// Adds "Would you be willing to sign a petition on [treatment_title]?"
+function askPetition() {
+	debugger;
+	$("#question-answers").children().remove();
+	$("#question-answers").empty();
+	$(".question-header").remove();
+
+	var curr_question_ind = $(".question-selector-circle").index($(".selected"));
+	var curr_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind];
+	var next_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind + 1];
+	var answersArr = $("#user-questions").val();
+	var curr_answer = answersArr[curr_question_ind].split("|")[0];
+	var title = curr_question.title;
+	var question = "Will you be willing to sign a petition ";
+	var phrasing = "";
+	if (curr_answer <= 50){
+		// do not support
+
+		if (title === "gun_control"){
+			phrasing = "against increased gun control?";
+		}
+		else if (title === "global_warming"){
+			phrasing = "against global warming?";
+		}
+		else if (title === "abortion"){
+			phrasing = "against the legalization of abortion?";
+		}
+		else if (title === "same-sex_marriage"){
+			phrasing = "against the legalization of same-sex marriages?";
+		}
+		else if (title === "online_privacy"){
+			phrasing = "against the collection of personal online data?";
+		}
+		else if (title === "vaccination"){
+			phrasing = "against forced/required vaccinations?";
+		}
+		else if (title === "government_surveillance"){
+			phrasing = "against government surveillance?";
+		}
+		else if (title === "marijuana_legalization"){
+			phrasing = "against the legalization of marijuana?";
+		}
+		else if (title === "stem_cell_research"){
+			phrasing = "against stem cell research?";
+		}
+	}
+	else{
+		if (title === "gun_control"){
+			phrasing = "in support of increased gun control?";
+		}
+		else if (title === "global_warming"){
+			phrasing = "in support of regulations to combat global warming?";
+		}
+		else if (title === "abortion"){
+			phrasing = "in support of the legalization of abortion?";
+		}
+		else if (title === "same-sex_marriage"){
+			phrasing = "in support of the legalization of same-sex marriages?";
+		}
+		else if (title === "online_privacy"){
+			phrasing = "in support of the collection of personal online data?";
+		}
+		else if (title === "vaccination"){
+			phrasing = "in support of forced/required vaccinations?";
+		}
+		else if (title === "government_surveillance"){
+			phrasing = "in support of government surveillance?";
+		}
+		else if (title === "marijuana_legalization"){
+			phrasing = "in support of the legalization of marijuana?";
+		}
+		else if (title === "stem_cell_research"){
+			phrasing = "in support of stem cell research?";
+		}
+	}
+	question = question + phrasing;
+	
+	$("#question-answers").append("<div id = 'petition-section'><div class = 'font-black importance-header'>" + question + "</div></div>");
+
+	$("#question-answers").append("<div class = 'hidden'><ul id = 'question-list-larger' class = 'no-list font-15'></ul></div>");
+
+	$("#question-list-larger").append("<li class = 'left'><input type = 'radio' name = '3' value = 'Yes'><span class = 'question-text-text'>Yes</span></li>");
+	$("#question-list-larger").append("<li class = 'left'><input type = 'radio' name = '3' value = 'No'><span class = 'question-text-text'>No</span></li>");
+
+	if (curr_question_ind == $(".question-selector-circle").length - 1) { // if last question
+		// if current question is local treatment add a Next button?
+		/*if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
+			$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
+		}*/
+		// if not local treatment just add a Submit button 
+		if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
+			$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
+		} 
+		else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
+	}
+	// if current question is not identity treatment but next question is
+	else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
+		// next button used to get user info
+		$("#question-text input[type=button]").attr('id', 'get-user-info').val('Next');
+	} 
+	else { // if not last question and next question not identity treatment
+		$("#question-text input[type=button]").attr('id', 'next-question').val('Next');
+	}
+
+	$("#question-answers .hidden").slideDown('slow');
+	// Disables button until user answers question
+	$("#question-text input[type=button]").prop("disabled", true);
+
+
+$("#question-treatment").hide();
+
+}
+
+
 // Adds "How much have you thought about this topic in the past? after each importance question"
-function addHowOften(){
+function addHowOften() {
 	$("#question-treatment").remove();
 	$("#question-answers").children().remove();
 	$("#question-answers").empty();
@@ -407,34 +539,33 @@ function addHowOften(){
 
 	$("#question-answers").append("<div id = 'frequency-section'><div class = 'font-black importance-header'>How much have you thought about this topic in the past?</div></div>");
 	$("#frequency-section").append("<input type = 'range' name='2' min='0' max='100'><ul id = 'frequency-list' class = 'no-list font-15'></ul>");
-	$("#frequency-list").append("<li class = 'inline-block left text-top border-box'>Never</li>" + 
-		"<li class = 'inline-block right text-top border-box'>A lot</li>");	
+	$("#frequency-list").append("<li class = 'inline-block left text-top border-box'>Never</li>" + "<li class = 'inline-block right text-top border-box'>A lot</li>");
 	$("#frequency-list li").width("35%");
 
-	if (curr_question_ind == $(".question-selector-circle").length - 1) { // if last question
-		// if current question is local treatment add a Next button?
-		if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
-			$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
+	if (curr_question.title === "moral_dilemma") { // Skip petition question if question is moral dilemma
+		if (curr_question_ind == $(".question-selector-circle").length - 1) {
+			if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
+					$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
+			} 
+			else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
 		}
-		// if not local treatment just add a Submit button 
-		else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
+		else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
+			// next button used to get user info
+			$("#question-text input[type=button]").attr('id', 'get-user-info').val('Next');
+		} 
+		else { // if not last question and next question not identity treatment
+			$("#question-text input[type=button]").attr('id', 'next-question').val('Next');
+		}
 	} 
-	// if current question is not identity treatment but next question is
-	else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
-		// next button used to get user info
-		$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
-	} 
-
 	else { 
-		// next button used to get next question
-		$("#question-text input[type=button]").attr('id','next-question').val('Next');
-	}
-
+		$("#question-text input[type=button]").attr('id', 'petition-choice').val('Next');
+	}	
 	// Disables button until user answers question
 	$("#question-text input[type=button]").prop("disabled", true);
-
 	$("#question-treatment").hide();
+	
 }
+
 // Adds "How important is this to you" or "How hard was it for you to answer" (for moral dilemma)
 function addQuestionImportance() {
 	$("#question-treatment").remove();
@@ -450,14 +581,13 @@ function addQuestionImportance() {
 	if (curr_question.title == 'moral_dilemma') {
 		$("#question-answers").append("<div id = 'importance-section'><div class = 'font-black importance-header'>How hard was it for you to answer this question?</div></div>");
 		$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
-		$("#importance-list").append("<li class = 'inline-block left'>Not very hard</li>" + "<li class = 'inline-block right'>Very hard</li>");	
+		$("#importance-list").append("<li class = 'inline-block left'>Not very hard</li>" + "<li class = 'inline-block right'>Very hard</li>");
 		$("#importance-list li").width("50%");
-	} 
-	else {
+	} else {
 		$("#question-answers").append("<div id = 'importance-section'><div class = 'font-black importance-header'>How important is this topic for you?</div></div>");
 		$("#importance-section").append("<input type = 'range' name='1' min='0' max='100'><ul id = 'importance-list' class = 'no-list font-15'></ul>");
 		$("#importance-list").append("<li class = 'inline-block left'>Not Important</li>" +
-			"<li class = 'inline-block right'>Very Important</li>");	
+			"<li class = 'inline-block right'>Very Important</li>");
 		$("#importance-list li").width("50%");
 	}
 
@@ -481,8 +611,8 @@ function addQuestionImportance() {
 	$("#question-text input[type=button]").prop("disabled", true);
 
 	// if ($("#question-treatment").text().length > 500) {
-		//question.treatment.length > 500 && (question.treatment_type.toLowerCase() === "treatment_s" || question.treatment_type.toLowerCase() === "treatment_i" ||
-		//question.treatment_type.toLowerCase() === "treatment_g" )) {
+	//question.treatment.length > 500 && (question.treatment_type.toLowerCase() === "treatment_s" || question.treatment_type.toLowerCase() === "treatment_i" ||
+	//question.treatment_type.toLowerCase() === "treatment_g" )) {
 	$("#question-treatment").hide();
 	// }
 
@@ -508,9 +638,20 @@ function getAllAnswers() {
 
 		// Creates dictionary for each answer with necessary information
 		// UPDATE: Added frequency response after importance
-		userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], frequency: tempArr[2], 
-			treatment: treatment, treatment_l_type: localType, treatment_l_value: question.treatment_l_value, start_time: question.start_time, answer_time: question.answer_time};
-			userAnswers.push(userAnswer);
+		userAnswer = {
+			user_id: userID,
+			question_id: questionID,
+			question: tempArr[0],
+			importance: tempArr[1],
+			frequency: tempArr[2],
+			will_sign_petition: tempArr[3],
+			treatment: treatment,
+			treatment_l_type: localType,
+			treatment_l_value: question.treatment_l_value,
+			start_time: question.start_time,
+			answer_time: question.answer_time
+		};
+		userAnswers.push(userAnswer);
 
 		// Gets appropriate petition to display based on user's answer
 		if (question.type.toLowerCase() == 'range') {
@@ -529,18 +670,25 @@ function getAllAnswers() {
 			var treatment = question.treatment_type;
 			var ind = i + $("#question-text li").index($(this));
 			tempArr = answersArr[ind].split("|");
-			userAnswer = {user_id: userID, question_id: questionID, question: tempArr[0], importance: tempArr[1], frequency: tempArr[2], 
-				treatment: treatment};
-				userAnswers.push(userAnswer);
+			userAnswer = {
+				user_id: userID,
+				question_id: questionID,
+				question: tempArr[0],
+				importance: tempArr[1],
+				frequency: tempArr[2],
+				will_sign_petition: tempArr[3],
+				treatment: treatment
+			};
+			userAnswers.push(userAnswer);
 
-				if (question.type.toLowerCase() == 'range') {
-					if (tempArr[0] <= 50)
-						petitions[question.title + "|" + question._id] = question.petitions_1;
-					else
-						petitions[question.title + "|" + question._id] = question.petitions_2;
-				}
+			if (question.type.toLowerCase() == 'range') {
+				if (tempArr[0] <= 50)
+					petitions[question.title + "|" + question._id] = question.petitions_1;
+				else
+					petitions[question.title + "|" + question._id] = question.petitions_2;
+			}
 
-			});
+		});
 	}
 
 	submitQuestionnaire(userAnswers, petitions);
@@ -553,21 +701,22 @@ function submitQuestionnaire(answers, petitions) {
 		url: '/api/sendAnswers',
 		method: 'POST',
 		contentType: 'application/json',
-		data: JSON.stringify({answers: answers}),
+		data: JSON.stringify({
+			answers: answers
+		}),
 		success: function(response) {
-			$("#question-text").html("Thank you! Based on your answers, we invite you to sign the petitions below: " +
-				"<div id = 'petitions' class = 'left font-16'></div>");
+			$("#question-text").html("Thank you for taking the survey!" +	"<div id = 'petitions' class = 'left font-16'></div>");
 
-			console.log(petitions);
+/*			console.log(petitions);
 			for (var p in petitions) {
 				if (petitions[p].length > 0) {
-					$("#petitions").append("<div class = 'petition-link'>" + capitalizeSentence(p.split("|")[0]) + 
+					$("#petitions").append("<div class = 'petition-link'>" + capitalizeSentence(p.split("|")[0]) +
 						": <a href = '" + petitions[p] + "' id = '" + p.split("|")[1] + "' target = _blank>" + petitions[p] + "</a></div>");
 				}
-			}
+			}*/
 
 			// After petitions, displays button to invite friends to do questionnaire
-			$("#petitions").after("<br/>We also encourage you to invite your friends to participate in this study as well!" + 
+			$("#petitions").after("<br/>We encourage you to invite your friends to participate in this study as well!" +
 				"<br/><input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>");
 
 			var userID = d3.selectAll(".user-info").data()[0].id;
@@ -587,12 +736,15 @@ function getAllQuestions(questionnaire) {
 	$.ajax({
 		url: "/api/getRestQuestions",
 		method: "POST",
-		data: JSON.stringify({questionIds: questionIds, questionnaire: questionnaire}),
+		data: JSON.stringify({
+			questionIds: questionIds,
+			questionnaire: questionnaire
+		}),
 		dataType: "JSON",
 		contentType: "application/json",
 		success: function(response) {
 			displayAllQuestions(response);
-		}		
+		}
 	});
 }
 
@@ -608,33 +760,32 @@ function displayAllQuestions(questions) {
 			'</div>' +
 			'<div id = "question-text" class = "border-box">' +
 			'</div>' +
-			'</div>'); 
+			'</div>');
 		var numPrev = $(".question-selector-circle").length;
 		$("#question-text").width("20%");
 		$("#question-box").height("100% !important");
 
 		d3.select("#questionnaires-list").selectAll("li")
-		.data(questions)
-		.enter()
-		.append("li")
-		.attr("class", "clickable all-question")
-		.attr("id", function(d, i) {
-			var currNum = numPrev + i;
-			return 'question-'+ currNum;
-		})
-		.text(function(d, i) {
-			return d.question;
-		});
+			.data(questions)
+			.enter()
+			.append("li")
+			.attr("class", "clickable all-question")
+			.attr("id", function(d, i) {
+				var currNum = numPrev + i;
+				return 'question-' + currNum;
+			})
+			.text(function(d, i) {
+				return d.question;
+			});
 
 		for (var i in questions) {
 			$("#user-questions").val().push("|");
 		}
-	} 
-	else { // If no additional questions, then just display "Finish" button
-	$(".display-table").html('<div class = "display-table-cell font-18" id = "questionnaires-wrapper">' +
-		'<span id = "error-msg">Sorry! There are actually no more questions to answer. Please click below to finish this questionnaire. Thanks!</span></div>'+
-		'<div id = "question-text" class = "border-box">' +
-		'</div>');
+	} else { // If no additional questions, then just display "Finish" button
+		$(".display-table").html('<div class = "display-table-cell font-18" id = "questionnaires-wrapper">' +
+			'<span id = "error-msg">Sorry! There are actually no more questions to answer. Please click below to finish this questionnaire. Thanks!</span></div>' +
+			'<div id = "question-text" class = "border-box">' +
+			'</div>');
 	}
 }
 
@@ -648,6 +799,7 @@ function getQuestion() {
 function getQuestion(num) {
 	return d3.selectAll(".question-selector-circle").data()[num];
 }
+
 
 /* var question_str_arr = question.treatment.split("%");
 			var question_num_arr = [];
@@ -691,5 +843,3 @@ function getQuestion(num) {
 
 				data.push(temp_dict);
 			}*/
-
-
