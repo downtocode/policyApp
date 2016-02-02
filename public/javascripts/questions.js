@@ -705,7 +705,7 @@ function submitQuestionnaire(answers, petitions) {
 			answers: answers
 		}),
 		success: function(response) {
-			$("#question-text").html("Thank you for taking the survey!" +	"<div id = 'petitions' class = 'left font-16'></div>");
+			$("#question-text").html("Thank you for participate in this study!" +	"<div id = 'petitions' class = 'left font-16'></div>");
 
 /*			console.log(petitions);
 			for (var p in petitions) {
