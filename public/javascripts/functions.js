@@ -584,9 +584,9 @@ function sendFriendsDialog() {
 	console.log(userID);
 	
 	if (userID == '1368751615')
-		var link = test_url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
+		var link = url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
 	else
-		var link = test_url_name + '/login/'+loginUrl+'/'+userID+'/';
+		var link = url_name + '/login/'+loginUrl+'/'+userID+'/';
 
 	// Create link in dialog with user's ID and questionnaire name 
 	// so know info when clicked on
