@@ -10,7 +10,7 @@ $(document).ready(function() {
 	// Sets up FB object to use for FB API later
 	window.fbAsyncInit = function() {
 		FB.init({
-    		appId      : '486648534724015',// '150997527214'
+    		appId      : '1724641247754857', //486648534724015',// '150997527214'
     		cookie     : true,  // enable cookies to allow the server to access 
     		xfbml      : true,  // parse social plugins on this page
     		version    : 'v2.3' // use version 2.2

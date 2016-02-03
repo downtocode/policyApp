@@ -569,6 +569,7 @@ function askDemographics() {
 // Displays dialog box for inviting friends
 function sendFriendsDialog() {
 	// Get user's ID and questionnaire name
+	debugger;
 	var userID = d3.selectAll(".user-info").data()[0].id;
 	var url = ( window.location.href.lastIndexOf("/") == window.location.href.length - 1) ? 
 		window.location.href.substr(0, window.location.href.length - 1) : window.location.href;
@@ -583,9 +584,9 @@ function sendFriendsDialog() {
 	console.log(userID);
 	
 	if (userID == '1368751615')
-		var link = url_url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
+		var link = test_url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
 	else
-		var link = url_url_name + '/login/'+loginUrl+'/'+userID+'/';
+		var link = test_url_name + '/login/'+loginUrl+'/'+userID+'/';
 
 	// Create link in dialog with user's ID and questionnaire name 
 	// so know info when clicked on

@@ -57,11 +57,13 @@ $(document).ready(function() {
 
 		if (ind == $(".question-selector-circle").length - 1) {
 			if (question.treatment_type.toLowerCase() == 'treatment_l') {
-				$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'get-user-info' value = 'Prefer Not to Answer' />")
-			} else $("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'submit-questionnaire' value = 'Prefer Not to Answer' />")
+				$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'get-user-info' value = 'Prefer Not to Answer' />");
+			} 
+			// else $("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'submit-questionnaire' value = 'Prefer Not to Answer' />");
+			else $("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'get-user-info' value = 'Prefer Not to Answer' />");
 		} 
 		else
-			$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'skip-question' value = 'Prefer Not to Answer' />")
+			$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'skip-question' value = 'Prefer Not to Answer' />");
 	});
 
 
@@ -128,7 +130,6 @@ $(document).ready(function() {
 
 	// If user selects an answer for any input
 	$(document).on("change", "input, select", function() {
-		debugger;
 		if ($(".demographics-next").length == 0) {
 			$("input[type=button]").prop("disabled", false);
 
@@ -414,7 +415,6 @@ function showValues(type, values) {
 
 // Adds "Would you be willing to sign a petition on [treatment_title]?"
 function askPetition() {
-	debugger;
 	$("#question-answers").children().remove();
 	$("#question-answers").empty();
 	$(".question-header").remove();
@@ -505,7 +505,8 @@ function askPetition() {
 		if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
 			$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
 		} 
-		else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
+		//else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
+		else $("#question-text input[type=button]").attr('id','get-user-info').val('Submit!');
 	}
 	// if current question is not identity treatment but next question is
 	else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
@@ -547,7 +548,8 @@ function addHowOften() {
 			if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
 					$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
 			} 
-			else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
+			// else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
+			else $("#question-text input[type=button]").attr('id','get-user-info').val('Submit!');
 		}
 		else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
 			// next button used to get user info
@@ -705,7 +707,7 @@ function submitQuestionnaire(answers, petitions) {
 			answers: answers
 		}),
 		success: function(response) {
-			$("#question-text").html("Thank you for participate in this study!" +	"<div id = 'petitions' class = 'left font-16'></div>");
+			$("#question-text").html("Thank you for participating in this study!" +	"<div id = 'petitions' class = 'left font-16'></div>");
 
 /*			console.log(petitions);
 			for (var p in petitions) {
