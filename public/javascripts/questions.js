@@ -11,7 +11,7 @@ $(document).ready(function() {
 	// FB init
 	window.fbAsyncInit = function() {
 		FB.init({
-			appId: real_appId, // '150997527214' '486648534724015'
+			appId: testId, // '150997527214' '486648534724015'
 			cookie: true, // enable cookies to allow the server to access 
 			xfbml: true, // parse social plugins on this page
 			version: 'v2.3' // use version 2.2
@@ -102,6 +102,8 @@ $(document).ready(function() {
 		var next_question = d3.selectAll(".question-selector-circle").data()[ind + 1];
 		console.log(curr_question.treatment_type.toLowerCase(), 'treatment_l', ind + 1, $('.question-selector-circle').length - 1);
 
+		// if we are in identity questions, or the next question is not identity i.e. demographics is done, or we just got out of demographics hence 
+		// (".demographics-next") is still set and > 0
 		if (curr_question.treatment_type.toLowerCase() == 'treatment_i' || next_question.treatment_type.toLowerCase() != "treatment_i" || $(".demographics-next").length > 0) {
 			// Remove this question as the selected one
 			$('.selected').removeClass('selected');
@@ -173,7 +175,6 @@ $(document).ready(function() {
 			if (empty_inputs.length == 0 && $(".radio-header").length == $("input[type=radio]:checked").length) {
 				$("input[type=button]").prop("disabled", false);
 			}
-		}
 
 		d3.select("#user")
 			.selectAll("div")
@@ -181,6 +182,7 @@ $(document).ready(function() {
 			.enter()
 			.append("div")
 			.attr("class", "hidden user-info");
+		}
 	});
 
 	/*$("input[type=text], textarea, input[type=range]").each(function() {

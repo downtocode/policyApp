@@ -433,6 +433,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 
 
 function askDemographics() {
+	debugger;
 	getUserInfo(accessToken, function(data) {
 		console.log("Initial data: ");
 		console.log(data);
@@ -539,6 +540,7 @@ function askDemographics() {
 					else 						
 						$("#question-text").prepend("<br/>Now we would like to know what people like you believe. Please answer a few questions about yourself.");
 				}
+				debugger;
 				var ind = $(".question-selector-circle").index($(".selected"));
 				if (ind==$(".question-selector-circle").length-1)	{
 					$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Skip' class = 'clickable'/>" +
