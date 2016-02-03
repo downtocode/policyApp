@@ -433,7 +433,6 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 
 
 function askDemographics() {
-	debugger;
 	getUserInfo(accessToken, function(data) {
 		console.log("Initial data: ");
 		console.log(data);
@@ -540,7 +539,7 @@ function askDemographics() {
 					else 						
 						$("#question-text").prepend("<br/>Now we would like to know what people like you believe. Please answer a few questions about yourself.");
 				}
-				debugger;
+
 				var ind = $(".question-selector-circle").index($(".selected"));
 				if (ind==$(".question-selector-circle").length-1)	{
 					$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Skip' class = 'clickable'/>" +
@@ -571,7 +570,6 @@ function askDemographics() {
 // Displays dialog box for inviting friends
 function sendFriendsDialog() {
 	// Get user's ID and questionnaire name
-	debugger;
 	var userID = d3.selectAll(".user-info").data()[0].id;
 	var url = ( window.location.href.lastIndexOf("/") == window.location.href.length - 1) ? 
 		window.location.href.substr(0, window.location.href.length - 1) : window.location.href;

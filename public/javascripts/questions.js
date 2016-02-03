@@ -11,7 +11,7 @@ $(document).ready(function() {
 	// FB init
 	window.fbAsyncInit = function() {
 		FB.init({
-			appId: testId, // '150997527214' '486648534724015'
+			appId: appId, // '150997527214' '486648534724015'
 			cookie: true, // enable cookies to allow the server to access 
 			xfbml: true, // parse social plugins on this page
 			version: 'v2.3' // use version 2.2
@@ -41,7 +41,6 @@ $(document).ready(function() {
 
 	// If user clicks on "Show Choices" for question answers
 	$(document).on("click", "#show-values", function() {
-		debugger;
 		var ind = $('.question-selector-circle').index($('.selected'));
 		var question = d3.select(".question-selector-circle.selected").data()[0];
 		var values = getValues(question.type, question.values);
@@ -84,7 +83,6 @@ $(document).ready(function() {
 
 	// When user clicks "Next" button after frequency question
 	$(document).on("click", "#petition-choice", function() {
-		debugger;
 		$("skip-question").remove();
 		$("#submit-questionnaire").remove();
 		askPetition();
@@ -94,7 +92,6 @@ $(document).ready(function() {
 
 	// If user clicks on "Next" button for next question
 	$(document).on("click", "#next-question, #skip-question, #skip-demographics", function() {
-		debugger;
 		$("#skip-question").remove();
 		// Get the index of the current question
 		var ind = $('.question-selector-circle').index($('.selected'));
@@ -135,7 +132,6 @@ $(document).ready(function() {
 
 	// If user selects an answer for any input
 	$(document).on("change", "input, select", function() {
-		debugger;
 		if ($(".demographics-next").length == 0) {
 			$("input[type=button]").prop("disabled", false);
 
@@ -221,7 +217,6 @@ $(document).ready(function() {
 	// When user finishes submitting all questions and no longer wants to answer more
 	// Goes to page to get the user's information
 	$(document).on("click", "#get-user-info", function() {
-		debugger;
 		$(this).hide();
 		askDemographics();
 	});
@@ -230,7 +225,6 @@ $(document).ready(function() {
 	// If user is done answering all questions about themselves
 	// Time to submit the entire questionnaire!
 	$(document).on("click", "#submit-questionnaire", function() {
-		debugger;
 		if (d3.select(".user-info").data()[0] == undefined){
 			askDemographics();
 		}
@@ -309,7 +303,6 @@ function showQuestion(num) {
 
 // Shows treatment appropriately
 function showTreatment(num) {
-	debugger;
 	// Gets the corresponding question based on the index provided in variable num
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 
@@ -369,7 +362,6 @@ function showTreatment(num) {
 
 // Displays actual question text
 function showQuestionText(num) {
-	debugger;
 	var question = d3.selectAll(".question-selector-circle").data()[num];
 	if (question.title != 'moral_dilemma') {
 		$("#question-text").append("<div class = 'font-black question-header'>" + capitalize(question.question) + "</div>");
@@ -397,7 +389,6 @@ function getValues(type, values) {
 
 // Shows question's choices with appropriate input type (ie. slider, radio buttons)
 function showValues(type, values) {
-	debugger;
 	if ($(".question-header").text().length > 300) {
 		$("#question-answers").append("<br/>Should " + $(".question-header").text().split(" ")[0] + ": <br/>");
 	}
@@ -429,7 +420,6 @@ function showValues(type, values) {
 
 // Adds "Would you be willing to sign a petition on [treatment_title]?"
 function askPetition() {
-	debugger;
 	$("#question-answers").children().remove();
 	$("#question-answers").empty();
 	$(".question-header").remove();
