@@ -59,8 +59,8 @@ $(document).ready(function() {
 			if (question.treatment_type.toLowerCase() == 'treatment_l') {
 				$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'get-user-info' value = 'Prefer Not to Answer' />");
 			} 
-			// else $("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'submit-questionnaire' value = 'Prefer Not to Answer' />");
-			else $("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'get-user-info' value = 'Prefer Not to Answer' />");
+			else $("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'submit-questionnaire' value = 'Prefer Not to Answer' />");
+			// else $("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'get-user-info' value = 'Prefer Not to Answer' />");
 		} 
 		else
 			$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'skip-question' value = 'Prefer Not to Answer' />");
@@ -505,8 +505,8 @@ function askPetition() {
 		if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
 			$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
 		} 
-		//else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
-		else $("#question-text input[type=button]").attr('id','get-user-info').val('Submit!');
+		else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
+		//else $("#question-text input[type=button]").attr('id','get-user-info').val('Submit!');
 	}
 	// if current question is not identity treatment but next question is
 	else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
@@ -548,8 +548,8 @@ function addHowOften() {
 			if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
 					$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
 			} 
-			// else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
-			else $("#question-text input[type=button]").attr('id','get-user-info').val('Submit!');
+			else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
+			// else $("#question-text input[type=button]").attr('id','get-user-info').val('Submit!');
 		}
 		else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
 			// next button used to get user info
