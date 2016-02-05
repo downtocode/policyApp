@@ -18,12 +18,12 @@ html, body {
 }
 
 body#music {
-	background: url('../images/music-bg.jpg');
+	/*background: url('../images/music-bg.jpg');*/
 	background-size: cover;
 }
 
 body#admin {
-	background: url('../images/music-bg.jpg');
+	/*background: url('../images/music-bg.jpg');*/
 	background-size: cover;
 }
 

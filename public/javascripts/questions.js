@@ -501,6 +501,8 @@ function askPetition() {
 	$("#question-list-larger").append("<li class = 'left'><input type = 'radio' name = '3' value = 'Yes'><span class = 'question-text-text'>Yes</span></li>");
 	$("#question-list-larger").append("<li class = 'left'><input type = 'radio' name = '3' value = 'No'><span class = 'question-text-text'>No</span></li>");
 
+
+	$("#question-treatment").append("<div class = 'font-black bold' id = 'question-footnote'>All petitions will be forwarded to petitions2congress.com</div>");
 	if (curr_question_ind == $(".question-selector-circle").length - 1) { // if last question
 		// if current question is local treatment add a Next button?
 		/*if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {

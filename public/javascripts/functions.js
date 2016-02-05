@@ -391,12 +391,12 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 								for (var p in curr_data) {
 									local_t_value = curr_data[p];
 									var ans = isNaN(parseInt(p)) ? 'said they would "' + p + '"' : ( (parseInt(p) == 0) ? "do not " : "");
-									str_wv_1 += ', ' + curr_data[p] + '% ' + ans + phrasing;
+									str += ', ' + curr_data[p] + '% ' + ans + phrasing;
 								}
 
-								str_wv_1 += ".";
+								str += ".";
 								questions[curr_ind].treatment_l_value = local_t_value;
-								questions[curr_ind].treatment = str_wv_1;
+								questions[curr_ind].treatment = str;
 							}
 						}
 					}
