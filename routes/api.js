@@ -324,6 +324,7 @@ router.post('/api/sendCSV', function(req, res, next) {
 							'","frequency_' + curr_title + 
 							'","treatment_' + curr_title + 
 							'","will_sign_petition_' + curr_title +
+							'","identity_value_' + curr_title + 
 							'","local_type_' + curr_title + 
 							'","local_value_' + curr_title + // the value from friends
 							'","start_time_' + curr_title + 
@@ -387,19 +388,20 @@ router.post('/api/sendCSV', function(req, res, next) {
 							// Add their answer/importance/treatment/petition/etc info for each question
 							for (var s in lineArr) {
 								var currQuestion = lineArr[s];
-
-								if (currQuestion in user)
+								if (currQuestion in user){
 									newLine += "," + removeCommasAddQuotes(user[currQuestion].question) + "," + 
 										removeCommasAddQuotes(user[currQuestion].importance) + "," +
 										removeCommasAddQuotes(user[currQuestion].frequency) + "," + 
 										removeCommasAddQuotes(user[currQuestion].treatment) + "," + 
 										removeCommasAddQuotes(user[currQuestion].will_sign_petition) + "," +
+										removeCommasAddQuotes(user[currQuestion].identity_value) + "," +
 										removeCommasAddQuotes(user[currQuestion].treatment_l_type) + "," + 
 										removeCommasAddQuotes(user[currQuestion].treatment_l_value) + "," +
 										removeCommasAddQuotes(user[currQuestion].start_time) + "," + 
 										removeCommasAddQuotes(user[currQuestion].answer_time);
+								}
 								else
-									newLine += "," + "," + "," + "," + "," + "," + "," + "," + ",";
+									newLine += "," + "," + "," + "," + "," + "," + "," + "," + "," + ",";
 
 								if (userPetition.indexOf(parseInt(currQuestion)) >= 0)
 									newLine += ",1";
@@ -719,7 +721,6 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 
 				console.log("DONE!");
 			}
-
 			// Once finish for all questions, send the values back for use in questionnaire
 			res.send({probabilities: user_probabilities});
 

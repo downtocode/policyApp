@@ -421,6 +421,13 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 			}
 			$("#user-questions").val(emptyArr);
 
+			ans_array = [];
+			for (var i in questions){
+				ans_array.push("");
+			}
+
+			$("#user-questions-ii").val(ans_array);
+
 			callback();
 
 			console.log(questions);
@@ -849,14 +856,20 @@ function getIdentityTreatments(questionIds, demographics) {
 			var ind = $('.question-selector-circle').index($('.selected'));
 			var all_data = d3.selectAll(".question-selector-circle").data();
 
+
 			for (var i = ind; i < all_data.length; i++) {
+				// add probability value to current question
+				var curr_question = d3.selectAll(".question-selector-circle").data()[i];
+				var n = treatments.probabilities[all_data[i].title];
+				shareIdentityValue(i, n);
+				// $("#question-selector").append("<div id = 'identity-values' class = 'hidden' name = " + i + " value = " + n +" </div>")
+				// curr_question.identity_value = treatments.probabilities[all_data[i].title];
 				all_data[i].treatment = all_data[i].phrasing_identity.replace("X%", treatments.probabilities[all_data[i].title]+"%");
 			}
 
 			console.log(all_data);
 
 			d3.selectAll(".question-selector-circle").data(all_data);
-
 			showQuestion(ind);
 
 		}

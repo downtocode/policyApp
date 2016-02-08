@@ -627,6 +627,16 @@ function addQuestionImportance() {
 
 }
 
+// used to pass an identity value wherever it is created
+// id is the question id, val is the identity value
+function shareIdentityValue(id, val){
+	// var curr_question = d3.selectAll(".question-selector-circle").data()[id];
+	// curr_question.identity_value = val;
+	// $("#user-questions").val()[id] = "" + val;
+	$("#user-questions-ii").val()[id] = "" + val;
+}
+
+
 // Gets all user answers and submits to database
 function getAllAnswers() {
 	var answersArr = $("#user-questions").val();
@@ -636,6 +646,7 @@ function getAllAnswers() {
 	var petitions = {};
 	var end_date = new Date();
 	var end_time = end_date.getTime();
+	var answerDict = $("#user-questions-ii").val();
 
 	// Gets all main policy questions
 	$(".question-selector-circle").each(function(i) {
@@ -643,7 +654,10 @@ function getAllAnswers() {
 		var questionID = question._id;
 		var treatment = question.treatment_type;
 		var localType = question.local_type;
-		tempArr = answersArr[i].split("|"); // answersArr now has three elements after this split. Third is 'frequency of thought' value
+		tempArr = answersArr[i].split("|"); // answersArr now has four elements after this split. Third is 'frequency of thought' value. Fourth is willingess to sign petition
+		identity_value = answerDict[i];
+		
+
 
 		// Creates dictionary for each answer with necessary information
 		// UPDATE: Added frequency response after importance
@@ -654,6 +668,7 @@ function getAllAnswers() {
 			importance: tempArr[1],
 			frequency: tempArr[2],
 			will_sign_petition: tempArr[3],
+			identity_value: identity_value,
 			treatment: treatment,
 			treatment_l_type: localType,
 			treatment_l_value: question.treatment_l_value,
