@@ -197,11 +197,13 @@ li {
 }
 
 header {
-	height: 50px;
+	height: 60px;
 	width: 100%;
 	font-size: 28px;
-	background-color: #000;
-	font-weight: 200;
+	/*background-color: #000;*/
+	background-color: #AE1E23;
+	/*font-weight: 200;*/
+	font-weight: 400;
 }
 
 header > span {
@@ -215,7 +217,8 @@ header ul {
 
 #cornell-logo {
 	position: absolute;
-	width: 170px;
+	width: 210px;
+	/*width: 15%;*/
 	left: 10px;
 	top: 4px;
 
@@ -303,7 +306,8 @@ input[type=button] {
 
 #container {
 	position: absolute;
-	top: 50px;
+	/*top: 50px;*/
+	top: 60px;
 	bottom: 0px;
 	left: 15%;
 	right: 15%;
@@ -661,7 +665,7 @@ input[type=button]:disabled {
 	background: rgba(256, 256, 256, .6);
 	position:absolute;
 	bottom: 0px;
-	top: 50px;
+	top: 60px;
 	left: 15%;
 	right: 15%;
 	overflow: auto;
