@@ -15,7 +15,7 @@ $(document).ready(function() {
 	// Initializes the FB object using app details
 	window.fbAsyncInit = function() {
 		FB.init({
-			appId      : testappId,// '150997527214' // original:'486648534724015'
+			appId      : real_appId,// '150997527214' // original:'486648534724015'
 			cookie     : true,  // enable cookies to allow the server to access 
 			xfbml      : true,  // parse social plugins on this page
 			version    : 'v2.3' // use version 2.2
@@ -45,7 +45,7 @@ function statusChangeCallback(url, response) {
 		$.ajax({
 			url: 'https://graph.facebook.com/oauth/access_token',
 			method: 'POST',
-			data: {grant_type: 'fb_exchange_token', client_id: testappId, client_secret: testsecret, fb_exchange_token: accessToken},
+			data: {grant_type: 'fb_exchange_token', client_id: real_appId, client_secret: real_secret, fb_exchange_token: accessToken},
 			success: function(response) {
 				//var d = new Date(); 'cb7830bb2f2376e1d88b89645de92f0b'
 				//var expiresTime = response.authResponse.expires + d.getTime();
@@ -77,7 +77,7 @@ function statusChangeCallback(url, response) {
 				});*/
 
 
-				window.location.href = test_url_name+url;
+				window.location.href = url_name+url;
 			}
 		});
 	} else if (response.status === 'not_authorized') {
