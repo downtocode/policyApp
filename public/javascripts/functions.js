@@ -384,7 +384,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 									phrasing = "support stem cell research";
 								}
 
-								// if question is online privacy change phrasing to avoid "do not are very"
+
 
 
 								var local_t_value = 0;
@@ -591,9 +591,9 @@ function sendFriendsDialog() {
 	console.log(userID);
 	
 	if (userID == '1368751615')
-		var link = test_url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
+		var link = url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
 	else
-		var link = test_url_name + '/login/'+loginUrl+'/'+userID+'/';
+		var link = url_name + '/login/'+loginUrl+'/'+userID+'/';
 
 	// Create link in dialog with user's ID and questionnaire name 
 	// so know info when clicked on

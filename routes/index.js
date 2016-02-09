@@ -103,7 +103,7 @@ router.get('/login/:name/:fid?', function(req, res, next) {
 			name: name,
 			meta_title: meta_title,
 			meta_name: meta_title,
-			meta_url: test_url_name + "/login/" + name.toLowerCase() + "/" + req.params.fid,
+			meta_url: url_name + "/login/" + name.toLowerCase() + "/" + req.params.fid,
 			meta_desc: desc
 		});
 	}
