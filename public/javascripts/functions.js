@@ -599,7 +599,8 @@ function sendFriendsDialog() {
 	// so know info when clicked on
 	FB.ui({
 		method: 'send',
-		link: link
+		link: link,
+		picture: '../../images/cornell.png'
 	});
 }
 
