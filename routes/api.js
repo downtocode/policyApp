@@ -282,7 +282,7 @@ router.post('/api/getFriendData', function(req, res, next) {
 router.post('/api/sendCSV', function(req, res, next) {
 	var db = req.db; 
 	// var questionnaire = req.body.questionnaire;
-	var questionnaire = 'policy'
+	var questionnaire = 'policy';
 	// Adds extra demographics that were not asked to use in CSV
 	var extra_demo = ['first_name','last_name', 'gender'];
 
@@ -338,7 +338,7 @@ router.post('/api/sendCSV', function(req, res, next) {
 							header += ',"user_' + demographics[d].name+'"';
 						}
 						
-						var userDemographics = {}
+						var userDemographics = {};
 
 						for (var j in users) {
 							userDemographics[users[j].id] = users[j];
@@ -563,7 +563,6 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 				// ie. codes[location] or codes[income]
 				// makes it easier for look up
 				for (var k in codes_init)
-					console.log(type);
 					codes[codes_init[k].type] = codes_init[k];
 
 				console.log(codes);
