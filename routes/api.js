@@ -193,7 +193,7 @@ router.post('/api/addFriend', function(req, res, next) {
 // Get list of demographics to ask user
 router.get('/api/getDemographics', function(req, res, next) {
 	var db = req.db;
-	db.demographics.find({}, function(err, demographics) {
+	db.demographics.find().sort( { _id: 1}, function(err, demographics) {
 		res.send(demographics);
 	});
 });

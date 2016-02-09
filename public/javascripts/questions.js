@@ -3,7 +3,7 @@
 // policy questionnaire.									//
 //////////////////////////////////////////////////////////////
 
-var testId = '1729142133971435';
+var testappId = '1729142133971435';
 var real_appId = '1724641247754857';
 
 $(document).ready(function() {
