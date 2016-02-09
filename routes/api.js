@@ -150,7 +150,6 @@ router.post('/api/getQuestionsControl', function(req, res, next) {
 router.post('/api/sendAnswers', function(req, res, next) {
 	var db = req.db;
 	var answers = req.body.answers;
-	console.log("Answers about to BE SENT TO MONGO" + answers);
 	var userId = answers[0].user_id;
 	for (var i in answers) {
 		var currDetails = {user_id: userId, question_id: answers[i].question_id};
@@ -310,8 +309,10 @@ router.post('/api/sendCSV', function(req, res, next) {
 						var header = "user";
 
 						// First get all extra demographics from above
-						for (var j in extra_demo)
+						for (var j in extra_demo){
+							console.log(removeCommasAddQuotes(extra_demo[j]));
 							header += "," + removeCommasAddQuotes(extra_demo[j]);
+						}
 
 						var lineArr = [];
 
@@ -562,6 +563,7 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 				// ie. codes[location] or codes[income]
 				// makes it easier for look up
 				for (var k in codes_init)
+					console.log(type);
 					codes[codes_init[k].type] = codes_init[k];
 
 				console.log(codes);

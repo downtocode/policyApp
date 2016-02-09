@@ -57,7 +57,7 @@ function hasCookie(cookieName) {
 
 // Gets user's FB information using FB API
 function getUserInfo(accessToken, callback) {
-	var url = 'https://graph.facebook.com/me';
+	var url = 'https://graph.facebook.com/me?fields=first_name,last_name,name,id,gender';
 	$.ajax({
 		url: url,
 		data: {access_token: accessToken},
@@ -566,7 +566,7 @@ function askDemographics() {
 					.append("div")
 					.attr("class", "hidden user-info");
 
-				console.log(data);
+
 			}
 		});
 		
@@ -591,9 +591,9 @@ function sendFriendsDialog() {
 	console.log(userID);
 	
 	if (userID == '1368751615')
-		var link = url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
+		var link = test_url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
 	else
-		var link = url_name + '/login/'+loginUrl+'/'+userID+'/';
+		var link = test_url_name + '/login/'+loginUrl+'/'+userID+'/';
 
 	// Create link in dialog with user's ID and questionnaire name 
 	// so know info when clicked on
