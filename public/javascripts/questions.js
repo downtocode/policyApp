@@ -436,10 +436,10 @@ function askPetition() {
 		// do not support
 
 		if (title === "gun_control"){
-			phrasing = "against increased gun control?";
+			phrasing = "to protect The Second Amendment?";
 		}
 		else if (title === "global_warming"){
-			phrasing = "against global warming?";
+			phrasing = "against legislation limiting green gas emissions?";
 		}
 		else if (title === "abortion"){
 			phrasing = "against the legalization of abortion?";
@@ -448,19 +448,19 @@ function askPetition() {
 			phrasing = "against the legalization of same-sex marriages?";
 		}
 		else if (title === "online_privacy"){
-			phrasing = "against the collection of personal online data?";
+			phrasing = "to protect the privacy of online personal data?";
 		}
 		else if (title === "vaccination"){
 			phrasing = "against forced/required vaccinations?";
 		}
 		else if (title === "government_surveillance"){
-			phrasing = "against government surveillance?";
+			phrasing = "against NSA spying programs?";
 		}
 		else if (title === "marijuana_legalization"){
 			phrasing = "against the legalization of marijuana?";
 		}
 		else if (title === "stem_cell_research"){
-			phrasing = "against stem cell research?";
+			phrasing = "to ban stem cell research?";
 		}
 	}
 	else{
@@ -468,7 +468,7 @@ function askPetition() {
 			phrasing = "in support of increased gun control?";
 		}
 		else if (title === "global_warming"){
-			phrasing = "in support of regulations to combat global warming?";
+			phrasing = "in support of legislation limiting green gas emissions?";
 		}
 		else if (title === "abortion"){
 			phrasing = "in support of the legalization of abortion?";
@@ -477,19 +477,19 @@ function askPetition() {
 			phrasing = "in support of the legalization of same-sex marriages?";
 		}
 		else if (title === "online_privacy"){
-			phrasing = "in support of the collection of personal online data?";
+			phrasing = "against the excessive privacy protection of personal online data?";
 		}
 		else if (title === "vaccination"){
-			phrasing = "in support of forced/required vaccinations?";
+			phrasing = "in support of mandated children vaccinations?";
 		}
 		else if (title === "government_surveillance"){
-			phrasing = "in support of government surveillance?";
+			phrasing = "in support of NSA spying programs?";
 		}
 		else if (title === "marijuana_legalization"){
 			phrasing = "in support of the legalization of marijuana?";
 		}
 		else if (title === "stem_cell_research"){
-			phrasing = "in support of stem cell research?";
+			phrasing = "for Government to allow stem cell research?";
 		}
 	}
 	question = question + phrasing;
@@ -629,11 +629,11 @@ function addQuestionImportance() {
 
 // used to pass an identity value wherever it is created
 // id is the question id, val is the identity value
-function shareIdentityValue(id, val){
+function shareIdentityValue(id, val, support){
 	// var curr_question = d3.selectAll(".question-selector-circle").data()[id];
 	// curr_question.identity_value = val;
 	// $("#user-questions").val()[id] = "" + val;
-	$("#user-questions-ii").val()[id] = "" + val;
+	$("#user-questions-ii").val()[id] = "" + val + "|" + support;
 }
 
 
@@ -655,7 +655,8 @@ function getAllAnswers() {
 		var treatment = question.treatment_type;
 		var localType = question.local_type;
 		tempArr = answersArr[i].split("|"); // answersArr now has four elements after this split. Third is 'frequency of thought' value. Fourth is willingess to sign petition
-		identity_value = answerDict[i];
+		var identity_value = answerDict[i].split("|")[0];
+		var identity_support = answerDict[i].split("|")[1];
 		
 
 
@@ -669,6 +670,7 @@ function getAllAnswers() {
 			frequency: tempArr[2],
 			will_sign_petition: tempArr[3],
 			identity_value: identity_value,
+			identity_support: identity_support,
 			treatment: treatment,
 			treatment_l_type: localType,
 			treatment_l_value: question.treatment_l_value,

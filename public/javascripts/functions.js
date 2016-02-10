@@ -423,7 +423,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 
 			ans_array = [];
 			for (var i in questions){
-				ans_array.push("");
+				ans_array.push("|");
 			}
 
 			$("#user-questions-ii").val(ans_array);
@@ -565,7 +565,6 @@ function askDemographics() {
 					.enter()
 					.append("div")
 					.attr("class", "hidden user-info");
-
 
 			}
 		});
@@ -856,15 +855,35 @@ function getIdentityTreatments(questionIds, demographics) {
 			var ind = $('.question-selector-circle').index($('.selected'));
 			var all_data = d3.selectAll(".question-selector-circle").data();
 
+			var support = Math.random() > 0.5 ? true : false;
 
 			for (var i = ind; i < all_data.length; i++) {
 				// add probability value to current question
 				var curr_question = d3.selectAll(".question-selector-circle").data()[i];
 				var n = treatments.probabilities[all_data[i].title];
-				shareIdentityValue(i, n);
-				// $("#question-selector").append("<div id = 'identity-values' class = 'hidden' name = " + i + " value = " + n +" </div>")
-				// curr_question.identity_value = treatments.probabilities[all_data[i].title];
-				all_data[i].treatment = all_data[i].phrasing_identity.replace("X%", treatments.probabilities[all_data[i].title]+"%");
+				shareIdentityValue(i, n, support);
+				
+				if (support){
+					all_data[i].treatment = all_data[i].phrasing_identity.replace("X%", treatments.probabilities[all_data[i].title]+"%");
+				}
+				else{
+					var percent = 100 - treatments.probabilities[all_data[i].title];
+					all_data[i].treatment = all_data[i].phrasing_identity.replace("X%", percent+"%");
+
+					if (all_data[i].phrasing_identity.indexOf("support") > -1){
+						all_data[i].treatment = all_data[i].treatment.replace("support", "oppose");
+					}
+					else if(all_data[i].phrasing_identity.indexOf("are very concerned") > -1){
+						all_data[i].treatment = all_data[i].treatment.replace("are very concerned", "are NOT very concerned");
+					}
+					else if(all_data[i].phrasing_identity.indexOf("approve") > -1){
+						all_data[i].treatment = all_data[i].treatment.replace("approve", "do NOT approve");	
+					}
+					else if(all_data[i].phrasing_identity.indexOf("believe") > -1){
+						all_data[i].treatment = all_data[i].treatment.replace("believe", "do NOT believe");
+					}
+				}
+
 			}
 
 			console.log(all_data);

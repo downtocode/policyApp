@@ -108,12 +108,14 @@ $(document).ready(function() {
 		$(this).remove();
 		var ind = $('.question-selector-circle').index($('.selected'));
 		showSong(ind);
+		$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'skip-question' value = 'Prefer Not to Answer' />");
 	});
 
 	// When user rates the song and clicks the "Next" button for
 	// how well they know the song
 	$(document).on("click", "#next-important", function() {
 		$("svg").remove();
+		$("#skip-question").remove();
 		addMusicKnowledge();
 
 		// Get current question's index so that we can get the next one
@@ -136,12 +138,19 @@ $(document).ready(function() {
 	// When user either finishes the knowledge question, skips the question,
 	// or skips the demographics, go to the next question
 	$(document).on("click", "#next-question, #skip-question, #skip-demographics", function() {
-   		$("#skip-question").remove();
-
+   	$("#skip-question").remove();
    		// Get index of current question
-   		var ind = $('.question-selector-circle').index($('.selected'));
+   	var ind = $('.question-selector-circle').index($('.selected'));
+   	var curr_question_ind = $(".question-selector-circle").index($(".selected"));
 		var curr_question = d3.selectAll(".question-selector-circle").data()[ind];
 		var next_question = d3.selectAll(".question-selector-circle").data()[ind + 1];
+
+		
+		if (curr_question_ind == $(".question-selector-circle").length - 1) {
+			$("#next-important").attr('id','answer-more').val('Submit!');
+		} else {
+			$("#next-important").attr('id','next-question').val('Next');
+		}
 
 		// Checks if this is the demographics
    		if ( $(".demographics-next").length > 0) {
@@ -161,6 +170,7 @@ $(document).ready(function() {
 	// When user gives rating, adds their rating to a hidden value in 
 	// an HTML div 
    	$(document).on("click", "svg", function() {
+   		debugger;
    		// Checks if this is the rating at the end with all songs
 		if ($(".all-question").length == 0) // if not, then index is as is
 			var ind = $(".question-selector-circle").index($(".selected"));
@@ -170,7 +180,7 @@ $(document).ready(function() {
 		// Adds user's answer to the array
 		var blah = $("#user-questions").val()[ind].split("|");
 		blah[0] = $(".selected-star").length;
-		$("#user-questions").val()[ind] = blah.join("|");		
+		$("#user-questions").val()[ind] = blah.join("|");
 	});
 
    	// When user answers a question
@@ -470,6 +480,9 @@ function showTreatment(num) {
 
 	// Adds "Next" button
 	$("#question-text").append("<input type='button' class='custom-button clickable' id='show-song' value='Next'/>");
+
+	// Adds "Skip" button
+
 }
 
 // Shows song itself from YouTube
