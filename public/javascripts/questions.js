@@ -430,7 +430,7 @@ function askPetition() {
 	var answersArr = $("#user-questions").val();
 	var curr_answer = answersArr[curr_question_ind].split("|")[0];
 	var title = curr_question.title;
-	var question = "Will you be willing to sign a petition ";
+	var question = "Are you willing to sign a petition ";
 	var phrasing = "";
 	if (curr_answer <= 50){
 		// do not support
@@ -439,7 +439,7 @@ function askPetition() {
 			phrasing = "to protect The Second Amendment?";
 		}
 		else if (title === "global_warming"){
-			phrasing = "against legislation limiting green gas emissions?";
+			phrasing = "against legislation limiting greenhouse gas emissions?";
 		}
 		else if (title === "abortion"){
 			phrasing = "against the legalization of abortion?";
@@ -448,10 +448,10 @@ function askPetition() {
 			phrasing = "against the legalization of same-sex marriages?";
 		}
 		else if (title === "online_privacy"){
-			phrasing = "to protect the privacy of online personal data?";
+			phrasing = "to increase the protection of personal online data?";
 		}
 		else if (title === "vaccination"){
-			phrasing = "against forced/required vaccinations?";
+			phrasing = "against mandating children vaccinations?";
 		}
 		else if (title === "government_surveillance"){
 			phrasing = "against NSA spying programs?";
@@ -468,7 +468,7 @@ function askPetition() {
 			phrasing = "in support of increased gun control?";
 		}
 		else if (title === "global_warming"){
-			phrasing = "in support of legislation limiting green gas emissions?";
+			phrasing = "in support of legislation limiting greenhouse gas emissions?";
 		}
 		else if (title === "abortion"){
 			phrasing = "in support of the legalization of abortion?";
@@ -477,10 +477,10 @@ function askPetition() {
 			phrasing = "in support of the legalization of same-sex marriages?";
 		}
 		else if (title === "online_privacy"){
-			phrasing = "against the excessive privacy protection of personal online data?";
+			phrasing = "against excessive protection of personal online data?";
 		}
 		else if (title === "vaccination"){
-			phrasing = "in support of mandated children vaccinations?";
+			phrasing = "in support of mandating children vaccinations?";
 		}
 		else if (title === "government_surveillance"){
 			phrasing = "in support of NSA spying programs?";
