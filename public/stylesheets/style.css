@@ -402,10 +402,13 @@ svg {
 
 #question-list, #importance-list, .importance-list {
 	padding: 0px;
-	width: 600px;
+	width: auto;
 	margin: 5px auto;
 }
 
+#frequency-list{
+	padding-left: 0px;
+}
 .importance-list-2 {
 	width: 115% !important;
 	margin-left: -10% !important;
@@ -635,7 +638,7 @@ input[type=button]:disabled {
 }
 
 #importance-section {
-	width: 600px;
+	width: auto;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -815,9 +818,13 @@ rect {
 	font-size: 13px;
 }
 
-@media only screen and (max-device-width: 480px) {
+@media only screen and (max-device-width: 750px) {
 	div#wrapper {
 		width: 400px;
+	}
+
+	#cornell-logo{
+		display: none;
 	}
 
 
@@ -873,6 +880,34 @@ rect {
 	position: absolute !important;
 }
 
+input[type='range'] {
+	margin-top: 10px;
+	width: auto;
+	-webkit-appearance: none;
+	border-radius: 5px;
+	box-shadow: inset 0 0 5px rgba(150,150,150,.5);
+	background-color: rgba(50,50,50,.4);
+	height: 7px;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+input[type=text], input[type=search], input[type=password], textarea, select {
+	-webkit-appearance: none;
+	background-color: rgba(250,250,250,.6);
+	font-size: 18px;
+	padding: 5px 10px;
+	border: 1px solid #B2B2B2;
+	border-radius: 15px;
+	margin: 10px;
+	width: auto;
+}
+
+#question-list, #importance-list, .importance-list {
+	padding: 0px;
+	width: auto;
+	margin: 5px auto;
+}
 }
 
 
