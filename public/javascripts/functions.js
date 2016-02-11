@@ -6,7 +6,7 @@
 
 var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI';
 var prev_time;
-var test_url_name = 'http://localhost:5000'; //http://stark-crag-dev.herokuapp.com';
+// var url_name = 'http://localhost:5000'; 
 var url_name = 'https://stark-crag-dev.herokuapp.com';
 var is_wave2 = 0; // 0 means false (i.e. NOT wave 2); 1 means true (i.e. we ARE in wave 2)
 

@@ -3,8 +3,8 @@
 // policy questionnaire.									//
 //////////////////////////////////////////////////////////////
 
-var testappId = '1729142133971435';
-var real_appId = '1724641247754857';
+// var real_appId = '1729142133971435'; // for local
+var real_appId = '1724641247754857'; // REAL real
 
 $(document).ready(function() {
 
@@ -548,7 +548,7 @@ function addHowOften() {
 	$("#question-answers").append("<div id = 'frequency-section'><div class = 'font-black importance-header'>How much have you thought about this topic in the past?</div></div>");
 	$("#frequency-section").append("<input type = 'range' name='2' min='0' max='100'><ul id = 'frequency-list' class = 'no-list font-15'></ul>");
 	$("#frequency-list").append("<li class = 'inline-block left text-top border-box'>Never</li>" + "<li class = 'inline-block right text-top border-box'>A lot</li>");
-	$("#frequency-list li").width("35%");
+	$("#frequency-list li").width("50%");
 
 	if (curr_question.title === "moral_dilemma") { // Skip petition question if question is moral dilemma
 		if (curr_question_ind == $(".question-selector-circle").length - 1) {
