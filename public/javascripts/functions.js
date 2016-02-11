@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
 // This file has functions used by both types of 			//
 // questionnaires (music + policy), such as creating 		//
 // treatments.												//
@@ -464,79 +464,156 @@ function askDemographics() {
 				var musicNoDemo = ['vote', 'vote_next', 'political_upbringing'];
 				var policyNoDemo = ['music_play', 'music_play_years', 'music_taste', 'music_childhood'];
 
+				if ( $(window).width() < 480){
+					// Checks for what information we are missing
+				// For each one, add to page
+					for (var i in dataWanted) {
+						if (!(dataWanted[i].name in data) && ( (questionnaire === 'policy' && policyNoDemo.indexOf(dataWanted[i].name) == -1 ) || 
+							( questionnaire === 'music' && musicNoDemo.indexOf(dataWanted[i].name) == -1 ) ) ) {
+
+							if (dataWanted[i].type.toLowerCase() == 'text') {
+								 $("#question-text").append("<div class = 'font-15 demographics-header'>" +
+										capitalize(dataWanted[i].question) + 
+										": <br/><input class = 'font-15' type = 'text' name = '" + dataWanted[i].name + "'/></div>");
+							}
+							
+							else if (dataWanted[i].type.toLowerCase() == 'range') {
+								data[dataWanted[i].name] = 50;
+								$("#question-text").append("<div class = 'font-15 demographics-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
+									"<input type = 'range' name='" + dataWanted[i].name + "' min='0' max='100'>" +
+									"<ul class = 'importance-list no-list font-15'></ul></div>");
+
+								var values = dataWanted[i].values.split(",");
+								if (values.length == 2) {
+									$(".importance-list:last").append("<li class = 'inline-block left'>" + values[0] + "</li>");
+									$(".importance-list:last").append("<li class = 'inline-block right'>" + values[1] + "</li>");
+								} 
+								else {
+									for (var k in values) {
+										$(".importance-list:last").append("<li class = 'inline-block center'>" + values[k] + "</li>");
+									}
+								}
+								
+
+								$(".importance-list:last li").width(100/ values.length + "%");
+								
+							} 
+							else if (dataWanted[i].type.toLowerCase() == 'radio') {
+								var values = dataWanted[i].values.split(",");
+								$("#question-text").append("<div class = 'font-15 demographics-header radio-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
+									"<ul class = 'no-list font-15 question-list-larger-mob'></ul></div>");
+								for (var j in values) {
+									$(".question-list-larger-mob:last").append("<li class = 'left'><input type = 'radio' name = '" + dataWanted[i].name + "' value = '"+values[j].trim()+"'><span class = 'question-text-text'>" + capitalize(values[j]) + "</span></li>");		
+								}
+							} 
+							else if (dataWanted[i].type.toLowerCase() == 'select') {
+								var values = dataWanted[i].values.split(",");
+								//var location_prev = $("input[type=text]:last").parent();
+								//( questionnaire === 'music' ) ? $("input[type=text]:last") : $("input[type=range]:last").after();
+
+								$("#question-text").append("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) + 
+									": <select name = '" + dataWanted[i].name + "'></div>");
+
+								if (dataWanted[i].question.length >= 50) {
+									$("select:last").before("</br>");
+									$("select:last").css("margin-top", "10px");
+								}
+
+								/*if (dataWanted[i].name === 'income') {
+									for (var j in values) {
+										var curr_value = (values[j].indexOf("$") >= 0) ? values[j].split("$")[1].replace(/[\D]/g, "") : "Other";
+										$("select:last").append("<option value = '"+curr_value+"'>" + capitalize(values[j]) + "</option>");		
+									}
+
+									var second_last = $("select:last option:nth-last-child(2)");
+									$(second_last).val(">" + $(second_last).val())
+								} else {*/
+								for (var j in values) {
+									$("select:last").append("<option value = '"+values[j].trim()+"'>" + capitalize(values[j]) + "</option>");		
+								}
+								//}
+								
+							}
+
+							hasAllData = false;
+						}
+					}
+				}
+				else{
 				// Checks for what information we are missing
 				// For each one, add to page
-				for (var i in dataWanted) {
-					if (!(dataWanted[i].name in data) && ( (questionnaire === 'policy' && policyNoDemo.indexOf(dataWanted[i].name) == -1 ) || 
-						( questionnaire === 'music' && musicNoDemo.indexOf(dataWanted[i].name) == -1 ) ) ) {
+					for (var i in dataWanted) {
+						if (!(dataWanted[i].name in data) && ( (questionnaire === 'policy' && policyNoDemo.indexOf(dataWanted[i].name) == -1 ) || 
+							( questionnaire === 'music' && musicNoDemo.indexOf(dataWanted[i].name) == -1 ) ) ) {
 
-						if (dataWanted[i].type.toLowerCase() == 'text') {
-							 $("#question-text").append("<div class = 'font-15 demographics-header'>" +
-									capitalize(dataWanted[i].question) + 
-									": <br/><input class = 'font-15' type = 'text' name = '" + dataWanted[i].name + "'/></div>");
-						}
-						
-						else if (dataWanted[i].type.toLowerCase() == 'range') {
-							data[dataWanted[i].name] = 50;
-							$("#question-text").append("<div class = 'font-15 demographics-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
-								"<input type = 'range' name='" + dataWanted[i].name + "' min='0' max='100'>" +
-								"<ul class = 'importance-list no-list font-15'></ul></div>");
+							if (dataWanted[i].type.toLowerCase() == 'text') {
+								 $("#question-text").append("<div class = 'font-15 demographics-header'>" +
+										capitalize(dataWanted[i].question) + 
+										": <br/><input class = 'font-15' type = 'text' name = '" + dataWanted[i].name + "'/></div>");
+							}
+							
+							else if (dataWanted[i].type.toLowerCase() == 'range') {
+								data[dataWanted[i].name] = 50;
+								$("#question-text").append("<div class = 'font-15 demographics-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
+									"<input type = 'range' name='" + dataWanted[i].name + "' min='0' max='100'>" +
+									"<ul class = 'importance-list no-list font-15'></ul></div>");
 
-							var values = dataWanted[i].values.split(",");
-							if (values.length == 2) {
-								$(".importance-list:last").append("<li class = 'inline-block left'>" + values[0] + "</li>");
-								$(".importance-list:last").append("<li class = 'inline-block right'>" + values[1] + "</li>");
+								var values = dataWanted[i].values.split(",");
+								if (values.length == 2) {
+									$(".importance-list:last").append("<li class = 'inline-block left'>" + values[0] + "</li>");
+									$(".importance-list:last").append("<li class = 'inline-block right'>" + values[1] + "</li>");
+								} 
+								else {
+									for (var k in values) {
+										$(".importance-list:last").append("<li class = 'inline-block center'>" + values[k] + "</li>");
+									}
+								}
+								
+
+								$(".importance-list:last li").width(100/ values.length + "%");
+								
 							} 
-							else {
-								for (var k in values) {
-									$(".importance-list:last").append("<li class = 'inline-block center'>" + values[k] + "</li>");
-								}
-							}
-							
-
-							$(".importance-list:last li").width(100/ values.length + "%");
-							
-						} 
-						else if (dataWanted[i].type.toLowerCase() == 'radio') {
-							var values = dataWanted[i].values.split(",");
-							$("#question-text").append("<div class = 'font-15 demographics-header radio-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
-								"<ul class = 'no-list font-15 question-list-larger'></ul></div>");
-							for (var j in values) {
-								$(".question-list-larger:last").append("<li class = 'left inline'><input type = 'radio' name = '" + dataWanted[i].name + "' value = '"+values[j].trim()+"'><span class = 'question-text-text'>" + capitalize(values[j]) + "</span></li>");		
-								if ( (j + 1) % 3 == 0)
-									$(".question-list-larger:last").append("<br/>");
-							}
-						} 
-						else if (dataWanted[i].type.toLowerCase() == 'select') {
-							var values = dataWanted[i].values.split(",");
-							//var location_prev = $("input[type=text]:last").parent();
-							//( questionnaire === 'music' ) ? $("input[type=text]:last") : $("input[type=range]:last").after();
-
-							$("#question-text").append("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) + 
-								": <select name = '" + dataWanted[i].name + "'></div>");
-
-							if (dataWanted[i].question.length >= 50) {
-								$("select:last").before("</br>");
-								$("select:last").css("margin-top", "10px");
-							}
-
-							/*if (dataWanted[i].name === 'income') {
+							else if (dataWanted[i].type.toLowerCase() == 'radio') {
+								var values = dataWanted[i].values.split(",");
+								$("#question-text").append("<div class = 'font-15 demographics-header radio-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
+									"<ul class = 'no-list font-15 question-list-larger'></ul></div>");
 								for (var j in values) {
-									var curr_value = (values[j].indexOf("$") >= 0) ? values[j].split("$")[1].replace(/[\D]/g, "") : "Other";
-									$("select:last").append("<option value = '"+curr_value+"'>" + capitalize(values[j]) + "</option>");		
+									$(".question-list-larger:last").append("<li class = 'left inline'><input type = 'radio' name = '" + dataWanted[i].name + "' value = '"+values[j].trim()+"'><span class = 'question-text-text'>" + capitalize(values[j]) + "</span></li>");		
+									if ( (j + 1) % 3 == 0)
+										$(".question-list-larger:last").append("<br/>");
+								}
+							} 
+							else if (dataWanted[i].type.toLowerCase() == 'select') {
+								var values = dataWanted[i].values.split(",");
+								//var location_prev = $("input[type=text]:last").parent();
+								//( questionnaire === 'music' ) ? $("input[type=text]:last") : $("input[type=range]:last").after();
+
+								$("#question-text").append("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) + 
+									": <select name = '" + dataWanted[i].name + "'></div>");
+
+								if (dataWanted[i].question.length >= 50) {
+									$("select:last").before("</br>");
+									$("select:last").css("margin-top", "10px");
 								}
 
-								var second_last = $("select:last option:nth-last-child(2)");
-								$(second_last).val(">" + $(second_last).val())
-							} else {*/
-							for (var j in values) {
-								$("select:last").append("<option value = '"+values[j].trim()+"'>" + capitalize(values[j]) + "</option>");		
-							}
-							//}
-							
-						}
+								/*if (dataWanted[i].name === 'income') {
+									for (var j in values) {
+										var curr_value = (values[j].indexOf("$") >= 0) ? values[j].split("$")[1].replace(/[\D]/g, "") : "Other";
+										$("select:last").append("<option value = '"+curr_value+"'>" + capitalize(values[j]) + "</option>");		
+									}
 
-						hasAllData = false;
+									var second_last = $("select:last option:nth-last-child(2)");
+									$(second_last).val(">" + $(second_last).val())
+								} else {*/
+								for (var j in values) {
+									$("select:last").append("<option value = '"+values[j].trim()+"'>" + capitalize(values[j]) + "</option>");		
+								}
+								//}
+								
+							}
+
+							hasAllData = false;
+						}
 					}
 				}
 

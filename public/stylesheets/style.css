@@ -832,6 +832,15 @@ rect {
 	margin-left: 5px;
   }
 
+  .inline {
+	display: ;
+	}
+
+	#question-list-larger-mob, .question-list-larger-mob {
+	padding: 0px;
+	display: inline;
+	margin: 5px auto;
+	}
 
 	/***************** CONSENT FORM ******************/
 	#consent-form, #references {
