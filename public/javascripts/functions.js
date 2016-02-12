@@ -4,9 +4,11 @@
 // treatments.												//
 //////////////////////////////////////////////////////////////
 
-var apiKey = app.api_key;
+
+var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI';
 var prev_time;
-var url_name = app.url_name;
+// var url_name = 'http://localhost:5000';
+var url_name = 'https://stark-crag-dev.herokuapp.com'; 
 var is_wave2 = 0; // 0 means false (i.e. NOT wave 2); 1 means true (i.e. we ARE in wave 2)
 
 $(document).ready(function() {
@@ -620,7 +622,7 @@ function askDemographics() {
 					if (questionnaire === 'music')
 						$("#question-text").prepend("<br/>We would like to know a little bit more about you. Please answer a few questions about yourself.");
 					else 						
-						$("#question-text").prepend("<br/>Now we would like to know what people like you believe. Please answer a few questions about yourself.");
+						$("#question-text").prepend("<br/>Now we would like to know what people like you believe. Please answer a few questions about yourself. Based on your answers, we can tell you what most people with your background think based on national polls.");
 				}
 
 				var ind = $(".question-selector-circle").index($(".selected"));
@@ -681,7 +683,7 @@ function sendFriendsDialog() {
 // Makes the bar graph using the percentages in database
 function makeBarGraph(data) {
 	var margin = {top: 20, right: 20, bottom: 50, left: 50},
-		width = 400 - margin.left - margin.right,
+		width = 350 - margin.left - margin.right,
 		height = 250 - margin.top - margin.bottom;
 
 	var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
@@ -707,18 +709,30 @@ function makeBarGraph(data) {
  	x.domain(data.map(function(d) { return d.year; }));
 	y.domain([d3.min(data, function(d) { return +d.value; }) - 10, d3.max(data, function(d) { return +d.value; }) + 10]);
 
-	svg.append("g")
-		.attr("class", "x axis")
-		.attr("transform", "translate(0," + height + ")")
-		.call(xAxis)
-		.append("text")
-		.attr("y", 40)
-		.attr("x", "35%")
-		.style("text-anchor", "start")
-		.text(function(d) {
-			console.log(d); return "Year";
-		});
+	var curr_question_ind = $(".question-selector-circle").index($(".selected"));
+	var curr_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind];
 
+	if (curr_question.title === 'online_privacy'){
+		svg.append("g")
+			.attr("class", "x axis")
+			.attr("transform", "translate(0," + height + ")")
+			.call(xAxis)
+			.selectAll(".tick text")
+			.call(wrap, x.rangeBand());
+	}
+	else{
+		svg.append("g")
+			.attr("class", "x axis")
+			.attr("transform", "translate(0," + height + ")")
+			.call(xAxis)
+			.append("text")
+			.attr("y", 40)
+			.attr("x", "35%")
+			.style("text-anchor", "start")
+			.text(function(d) {
+				console.log(d); return "Year";
+			});
+	}
 	svg.append("g")
 		.attr("class", "y axis")
 		.call(yAxis)
@@ -761,6 +775,29 @@ function makeBarGraph(data) {
 		.text(function(d) { return d.value + "%"; });
 }
 
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+      }
+    }
+  });
+}
 
 function type(d) {
   d.value = +d.value;

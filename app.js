@@ -11,18 +11,14 @@ var connect = require('connect'),
   // conf = require('./config');
 var routes = requireDir('./routes');
 
-require('dotenv').load();
 var app = express();
 var server = app.listen(process.env.PORT || 5000);
 //var io = require('socket.io').listen(server); // this tells socket.io to use our express server
 
-var api_key = process.env.API_KEY;
+/*var api_key = process.env.API_KEY;
 var url_name = process.env.LOCAL_URI;
 var app_id = process.env.REAL_APP_ID;
-var app_secret = process.env.REAL_SECRET;
-
-console.log("API Key: " + process.env.API_KEY);
-console.log("Local Url: " + process.env.LOCAL_URI);
+var app_secret = process.env.REAL_SECRET;*/
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
