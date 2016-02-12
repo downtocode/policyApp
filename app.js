@@ -14,6 +14,10 @@ var app = express();
 var server = app.listen(process.env.PORT || 5000);
 //var io = require('socket.io').listen(server); // this tells socket.io to use our express server
 
+/*
+console.log("API Key: " + process.env.API_KEY);
+console.log("Local Url: " + process.env.LOCAL_URI);*/
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
