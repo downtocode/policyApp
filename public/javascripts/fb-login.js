@@ -3,13 +3,15 @@
 // able to access the FB API calls.							//
 //////////////////////////////////////////////////////////////
 
-var real_appId = '1724641247754857'; // for live
-var real_secret = 'ecc1220ee8ccd42a989eae6e35862bb9'; // for live
-var url_name = 'https://stark-crag-dev.herokuapp.com';
+// var real_appId = '1724641247754857'; // for live
+// var real_secret = 'ecc1220ee8ccd42a989eae6e35862bb9'; // for live
+// var url_name = 'https://stark-crag-dev.herokuapp.com';
 // var real_appId = '1729142133971435'; // for local
 // var real_secret = 'cb7830bb2f2376e1d88b89645de92f0b'; // for local
 // var url_name = 'http://localhost:5000'; 
-
+var real_appId = process.env.LOCAL_APP_ID;
+var real_secret = process.env.LOCAL_APP_SECRET;
+var url_name = process.env.LOCAL_URI;
 
 $(document).ready(function() {
 

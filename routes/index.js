@@ -6,8 +6,9 @@
 
 var express = require('express');
 var router = express.Router();
-var url_name = 'https://stark-crag-dev.herokuapp.com';
+// var url_name = 'https://stark-crag-dev.herokuapp.com';
 // var url_name = 'http://localhost:5000';
+var url_name = process.env.LOCAL_URI;
 
 // Capitalize word (ie. policy -> Policy)
 function capitalize(str) {

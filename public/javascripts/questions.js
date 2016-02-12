@@ -4,7 +4,8 @@
 //////////////////////////////////////////////////////////////
 
 // var real_appId = '1729142133971435'; // for local
-var real_appId = '1724641247754857'; // REAL real
+// var real_appId = '1724641247754857'; // REAL real
+var real_appId = process.env.LOCAL_APP_ID;
 
 $(document).ready(function() {
 
