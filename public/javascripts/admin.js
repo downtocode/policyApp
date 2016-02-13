@@ -197,6 +197,7 @@ function downloadAnswers(){
 }
 
 function downloadFriends() {
+	// first get friends who have taken the survey
 	$.ajax({
 		url: '/api/sendFriendCSV',
 		method: 'GET',
