@@ -200,7 +200,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 			// which means they have answers
 			// If more than 5, we want to use local treatments
 			if (friends.data.length >= 0)
-				hasLocal = is_wave2
+				hasLocal = is_wave2;
 				
 				// if hasLocal == 1 this is wave 2. Only present either local treatment or control questions
 				// if hasLocal == 0 this is wave 1. Shuffle all treatments except local
@@ -208,6 +208,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 				// If has local treatment, then get all friend IDs so can retrieve
 				// their answers from backend later
 			var app_friends = [];
+			console.log("Just before adding friends");
 			for (var i in friends.data){
 				console.log("Adding friend: " + i);
 				app_friends.push(friends.data[i].id);

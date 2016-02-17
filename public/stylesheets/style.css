@@ -453,6 +453,10 @@ svg {
 	margin-top: 10px;
 }
 
+#invite-link {
+	font-size: 14px;
+	font-weight: 500;
+}
 #user-comments {
 	width: 400px;
 	height: 100px;

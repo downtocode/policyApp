@@ -741,12 +741,16 @@ function submitQuestionnaire(answers, petitions) {
 				}
 			}*/
 
-			// After petitions, displays button to invite friends to do questionnaire
-			$("#petitions").after("<br/>We encourage you to invite your friends to participate in this study as well!" +
-				"<br/><input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>");
-
 			var userID = d3.selectAll(".user-info").data()[0].id;
-			// Change text to say Microworkers.com instead of Amazon Mechanical Turk
+			// After petitions, displays button to invite friends to do questionnaire
+				
+			
+			$("#petitions").after("<div class = 'font-black bold' id = 'question-footnote'>You can invite friends by clicking the 'Finish' button below, or by sending them the following link:</div>");
+			$("#question-footnote").after("<br/><div id = 'invite-link'>https://stark-crag-dev.herokuapp.com/login/policy/" + userID +"</div>");
+			$("#invite-link").after("<br/><input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>");
+			$("#petitions").after("<br/>We encourage you to invite your friends to participate in this study as well!");
+			
+			// Display Microworkers value
 			$("#invite-friends").after("<br/>Your Microworkers value is: " + userID);
 		}
 	});
