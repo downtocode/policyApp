@@ -170,6 +170,8 @@ router.post('/api/sendUser', function(req, res, next) {
 		console.log(success);
 		if (!err)
 			res.send(success);
+		else
+			console.log("error while attempting to SEND USER");
 	});
 });
 
@@ -181,8 +183,8 @@ router.post('/api/addFriend', function(req, res, next) {
 	db.friends.insert({userID: data.userID, friendID: data.friendID}, function(err, success) {
 		if (!err){
 			db.friends.find({friendID: data.friendID}, function(err, users) {
-				console.log(users);
-				if (users.length >= 5) {
+				if(!err){
+					console.log(users);
 					console.log(data.friendID + " has " + users.length + " friends who took the quiz");
 				}
 			});
@@ -451,29 +453,39 @@ router.get('/api/sendFriendCSV', function(req, res, next) {
 				for (var j in friends) {
 
 					var currFriend = friends[j];
-					console.log(currFriend);
+					// console.log(currFriend);
 
 					// If userID is in currFriend, then this is a userID-friendID pair
 					if ("userID" in currFriend) {
-						// So check if the friendID already exists in our dictionary of user->[friends invited]
-						/*if (currFriend.friendID in inviteDict) {
-							inviteDict[currFriend.friendID].push(currFriend.userID);
+						// Check if this userID already exists in our dictionary of user->[friends invited]
+						/*if (currFriend.userID in inviteDict && currFriend.userID != currFriend.friendID) {
+							inviteDict[currFriend.userID].push(currFriend.friendID);
 						} else {
-							inviteDict[currFriend.friendID] = [currFriend.userID];
+							if(currFriend.friendID != currFriend.userID)
+								inviteDict[currFriend.userID] = [currFriend.friendID];
 							console.log(inviteDict);
 						}*/
-						inviteDict[currFriend.userID] = currFriend.friendID;
+						// if the friendID is not the same user i.e. the user can't invite themselves
+						if (currFriend.userID in inviteDict){
+							// do nothing
+							continue;
+						}
+						else{
+							if (currFriend.friendID != currFriend.userID && currFriend.friendID != "policy")
+								inviteDict[currFriend.userID] = currFriend.friendID;
+						}
 					} 
 
-					// Else this is a userID-[friends list] pair
+					// Else this is a user_id-[friends list] pair
 					else if ("user_id" in currFriend) {
 						if (currFriend.friends.length > maxNumFriends) 
 							maxNumFriends = currFriend.friends.length;
 
 						if (currFriend.user_id in friendsDict) {
-							friendsDict[currFriend.user_id].push.apply(friendsDict[currFriend.user_id], currFriend.friends);
+							// friendsDict[currFriend.user_id].push.apply(friendsDict[currFriend.user_id], currFriend.friends);
+							Array.prototype.push.apply(friendsDict[currFriend.user_id], currFriend.friends);
 						} else {
-							friendsDict[currFriend.user_id] = currFriend.friends;
+							friendsDict[currFriend.user_id] = [currFriend.friends];
 						}
 					}
 				}

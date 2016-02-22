@@ -833,6 +833,7 @@ function getNewIdentityTreatments(curr_ind) {
 
 // Submit user data into database
 function submitUserInfo(i) {
+	debugger;
 	var user = d3.select(".user-info").data()[0];
 	var userID = user.id;
 
