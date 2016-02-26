@@ -7,8 +7,8 @@
 
 var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI';
 var prev_time;
-// var url_name = 'http://localhost:5000';
-var url_name = 'https://stark-crag-dev.herokuapp.com'; 
+var url_name = 'http://localhost:5000';
+// var url_name = 'https://stark-crag-dev.herokuapp.com';
 var is_wave2 = 0; // 0 means false (i.e. NOT wave 2); 1 means true (i.e. we ARE in wave 2)
 
 $(document).ready(function() {
@@ -390,7 +390,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 								}
 
 
-
+								// TODO: Fix phrasing for identity treatment to avoid "Do not are very"
 
 								var local_t_value = 0;
 								for (var p in curr_data) {
@@ -679,8 +679,8 @@ function sendFriendsDialog() {
 	// Create link in dialog with user's ID and questionnaire name 
 	// so know info when clicked on
 	FB.ui({
-		method: 'send',
-		link: link
+		method: 'share',
+		href: link
 	});
 }
 
@@ -972,7 +972,7 @@ function getIdentityTreatments(questionIds, demographics) {
 			var ind = $('.question-selector-circle').index($('.selected'));
 			var all_data = d3.selectAll(".question-selector-circle").data();
 
-			var support = Math.random() > 0.5 ? true : false;
+			var support = Math.random() > 0.5;
 
 			for (var i = ind; i < all_data.length; i++) {
 				// add probability value to current question

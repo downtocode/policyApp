@@ -3,8 +3,8 @@
 // policy questionnaire.									//
 //////////////////////////////////////////////////////////////
 
-// var real_appId = '1729142133971435'; // for local
-var real_appId = '1724641247754857'; // REAL appid
+var real_appId = '1729142133971435'; // for local
+// var real_appId = '1724641247754857'; // REAL appid
 
 $(document).ready(function() {
 
@@ -88,6 +88,13 @@ $(document).ready(function() {
 		askPetition();
 	});
 
+    // When user clicks "Next" or "Skip" after the very last question, ask where they found this survey
+    $(document).on("click", "#ask-source", function() {
+        $("skip-question").remove();
+        $("#submit-questionnaire").remove();
+        addLinkSource();
+    })
+
 
 
 	// If user clicks on "Next" button for next question
@@ -97,10 +104,10 @@ $(document).ready(function() {
 		var ind = $('.question-selector-circle').index($('.selected'));
 		var curr_question = d3.selectAll(".question-selector-circle").data()[ind];
 		var next_question = d3.selectAll(".question-selector-circle").data()[ind + 1];
-		console.log(curr_question.treatment_type.toLowerCase(), 'treatment_l', ind + 1, $('.question-selector-circle').length - 1);
 
-		// if we are in identity questions, or the next question is not identity i.e. demographics is done, or we just got out of demographics hence 
-		// (".demographics-next") is still set and > 0
+		// if we are in identity questions,
+        // or the next question is not identity i.e. demographics is done,
+        // or we just got out of demographics i.e. (".demographics-next") is still set and > 0
 		if (curr_question.treatment_type.toLowerCase() == 'treatment_i' || next_question.treatment_type.toLowerCase() != "treatment_i" || $(".demographics-next").length > 0) {
 			// Remove this question as the selected one
 			$('.selected').removeClass('selected');
@@ -503,7 +510,8 @@ function askPetition() {
 
 	$("#petition-section").append("<div class = 'font-black bold' id = 'question-footnote'>[All petitions will be forwarded to <a href='http://www.petition2congress.com' target='_blank'>petition2congress.com</a>]</div>");
 
-	if (curr_question_ind == $(".question-selector-circle").length - 1) { // if last question
+    // if last question
+	if (curr_question_ind == $(".question-selector-circle").length - 1) {
 		// if current question is local treatment add a Next button?
 		/*if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
 			$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
@@ -511,8 +519,10 @@ function askPetition() {
 		// if not local treatment just add a Submit button 
 		if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
 			$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
-		} 
-		else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
+		}
+        // TODO check if there is a case where submit-questionnaire is still needed
+        //else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
+        else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Next');
 		//else $("#question-text input[type=button]").attr('id','get-user-info').val('Submit!');
 	}
 	// if current question is not identity treatment but next question is
@@ -533,6 +543,28 @@ $("#question-treatment").hide();
 
 }
 
+// Add question to ask where the user found this survey
+function addLinkSource(){
+	$("#question-treatment").remove();
+	$("#question-answers").children().remove();
+	$("#question-answers").empty();
+	$(".question-header").remove();
+    $("#question-title").remove();
+
+	$("#question-answers").append("<div id = 'source-section'><div class = 'font-black font-15 select-header'>" +
+		"How did you hear about this survey?</div></div>");
+	$("#source-section").append("<br><select name = 'source'></select>");
+    $("select:last").append("<option value = 'Microworkers'>Microworkers</option>");
+    $("select:last").append("<option value = 'Facebook'>Invited by a facebook friend</option>");
+    $("select:last").append("<option value = 'OtherSource'>Other (Please specify)</option>");
+
+    $("#source-selection").append("<input type = 'text' name = 'specify'>");
+    $("#question-text input[type=button]").attr('id', 'submit-questionnaire').val('Submit!');
+
+    $("#question-text input[type=button]").prop("disabled", true);
+    $("#question-treatment").hide();
+
+}
 
 // Adds "How much have you thought about this topic in the past? after each importance question"
 function addHowOften() {
