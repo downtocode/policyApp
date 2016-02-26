@@ -8,6 +8,7 @@
 		<meta property="og:description" content= <%-JSON.stringify(meta_desc)%> />
 		<meta property="og:image" content= "https://stark-crag-dev.herokuapp.com/images/cornell_logo_small.jpg" />
 		<meta property="og:app_id" content= <%= meta_title %> />
+		<meta property="fb:app_id" content= <%-JSON.stringify(app_id)%> />
 		<link href='//fonts.googleapis.com/css?family=Lato:100,300,400,100italic,300italic,400italic' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="../../../stylesheets/style.css">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
@@ -18,7 +19,7 @@
 			$(document).ready(function() {
 				// Returns appropriate consent form text for questionnaire
 				// Also creates FB button for logging in with the necessary permissions
-				var name = <%-JSON.stringify(name)%>
+				var name = <%-JSON.stringify(name)%>;
 				var url = window.location.href.split("/login/")[1];
 
 				if (name.toLowerCase() === 'music') {

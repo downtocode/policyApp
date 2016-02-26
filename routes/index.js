@@ -6,8 +6,10 @@
 
 var express = require('express');
 var router = express.Router();
-//var url_name = 'http://localhost:5000';
- var url_name = 'https://stark-crag-dev.herokuapp.com';
+////var url_name = 'http://localhost:5000';
+//var app_id = '1724641247754857';
+var url_name = 'https://stark-crag-dev.herokuapp.com';
+var app_id = '1729142133971435';
 
 // Capitalize word (ie. policy -> Policy)
 function capitalize(str) {
@@ -104,7 +106,8 @@ router.get('/login/:name/:fid?', function(req, res, next) {
 			meta_title: meta_title,
 			meta_name: meta_title,
 			meta_url: url_name + "/login/" + name.toLowerCase() + "/" + req.params.fid,
-			meta_desc: desc
+			meta_desc: desc,
+			app_id: app_id
 		});
 	}
 });
