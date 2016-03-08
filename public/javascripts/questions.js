@@ -4,7 +4,7 @@
 //////////////////////////////////////////////////////////////
 
 //var real_appId = '1729142133971435'; // for local
- var real_appId = '1724641247754857'; // REAL appid
+var real_appId = '1724641247754857'; // REAL appid
 
 $(document).ready(function() {
 
@@ -777,9 +777,9 @@ function submitQuestionnaire(answers, petitions) {
 			// After petitions, displays button to invite friends to do questionnaire
 				
 			
-			$("#petitions").after("<div class = 'font-black bold' id = 'question-footnote'>You can invite friends by clicking the 'Finish' button below, or by sending them the following link:</div>");
+			$("#petitions").after("<div class = 'font-black bold' id = 'question-footnote'>You can invite friends by clicking the 'Share' button below, or by sending them the following link:</div>");
 			$("#question-footnote").after("<br/><div id = 'invite-link'>https://stark-crag-dev.herokuapp.com/login/policy/" + userID +"</div>");
-			$("#invite-link").after("<br/><input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>");
+			$("#invite-link").after("<br/><input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Share'/>");
 			$("#petitions").after("<br/>We encourage you to invite your friends to participate in this study as well!");
 			
 			// Display Microworkers value

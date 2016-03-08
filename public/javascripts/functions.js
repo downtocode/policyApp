@@ -686,10 +686,16 @@ function sendFriendsDialog() {
 
 // Makes the bar graph using the percentages in database
 function makeBarGraph(data) {
-	var margin = {top: 20, right: 20, bottom: 50, left: 50},
-		width = 350 - margin.left - margin.right,
-		height = 250 - margin.top - margin.bottom;
-
+	if ( $(window).width() < 750) {
+		var margin = {top: 20, right: 20, bottom: 50, left: 50},
+			width = 300 - margin.left - margin.right,
+			height = 250 - margin.top - margin.bottom;
+	}
+	else {
+		var margin = {top: 20, right: 20, bottom: 50, left: 50},
+			width = 375 - margin.left - margin.right,
+			height = 250 - margin.top - margin.bottom;
+	}
 	var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
 	var y = d3.scale.linear().range([height, 0]);
 
@@ -716,6 +722,7 @@ function makeBarGraph(data) {
 	var curr_question_ind = $(".question-selector-circle").index($(".selected"));
 	var curr_question = d3.selectAll(".question-selector-circle").data()[curr_question_ind];
 
+	// Custom attributes for online_privacy because it doesn't have "Year" on the x-axis
 	if (curr_question.title === 'online_privacy'){
 		svg.append("g")
 			.attr("class", "x axis")
