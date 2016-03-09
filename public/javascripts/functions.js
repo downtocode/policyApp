@@ -1140,8 +1140,17 @@ function setTime(d, ind) {
 }
 
 // Gets the current date as the starting time for survey
+// Time is in UTC and in the format: MM-DD-YYYY HH:MM:SS (in 24h)
 function setDate(d, ind) {
-	var n = d.toLocaleString();
+	//var n = d.toLocaleString();
+	// change time to YYYY-MM-DD HH:MM:SS (in 24h)
+	var hr = d.getUTCHours() < 10 ? "0" + d.getUTCHours() : d.getUTCHours();
+	var min = d.getUTCMinutes() < 10 ? "0" + d.getUTCMinutes() : d.getUTCMinutes();
+	var sec = d.getUTCSeconds() < 10 ? "0" + d.getUTCSeconds() : d.getUTCSeconds();
+	var yr = d.getUTCFullYear();
+	var month = d.getUTCMonth() < 10 ? "0" + (d.getUTCMonth() + 1) : (d.getUTCMonth() + 1);
+	var day = d.getUTCDate() < 10 ? "0" + d.getUTCDate() : d.getUTCDate();
+	var n = month + "/" + day + "/" + yr + " " + hr + ":" + min + ":" + sec + " (UTC)";
 	var all_data = d3.selectAll(".question-selector-circle").data();
 	all_data[ind].start_time = n;
 	d3.selectAll(".question-selector-circle").data(all_data);
