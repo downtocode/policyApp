@@ -3,8 +3,8 @@
 // policy questionnaire.									//
 //////////////////////////////////////////////////////////////
 
-//var real_appId = '1729142133971435'; // for local
-var real_appId = '1724641247754857'; // REAL appid
+var real_appId = '1729142133971435'; // for local
+//var real_appId = '1724641247754857'; // REAL appid
 
 $(document).ready(function() {
 

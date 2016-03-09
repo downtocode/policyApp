@@ -154,9 +154,10 @@ router.post('/api/sendAnswers', function(req, res, next) {
 	for (var i in answers) {
 		var currDetails = {user_id: userId, question_id: answers[i].question_id};
 		// Updates instead of inserts in case user is taking quiz second time; will overwrite previous data
-		console.log(answers[i]);
-		//db.userAnswers.update(currDetails, answers[i], {upsert:true});
-		db.userAnswers.insert(currDetails, answers[i]);
+		console.log("Answer for question id : " + answers[i].question_id + answers[i]);
+		//console.log(answers[i]);
+		db.userAnswers.update(currDetails, answers[i], {upsert:true});
+		//db.userAnswers.insert(currDetails, answers[i]);
 	}
 	res.send({success: 'success'});
 });
