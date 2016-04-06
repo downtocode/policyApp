@@ -221,7 +221,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 			// See how many friends are also using the app
 			// which means they have answers
 			// If more than 5, we want to use local treatments
-			if (friends.data.length >= 0)
+			if (friends.data.length >= 3)
 				hasLocal = is_wave2;
 
 				// if hasLocal == 1 this is wave 2. Only present either local treatment or control questions
