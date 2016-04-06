@@ -408,7 +408,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 									var sub_end = (phrasing.lastIndexOf(".") == phrasing.length - 1) ? phrasing.length-2 : phrasing.length-1;
 									phrasing = phrasing.trim().substring(0, sub_end);
 								}
-								else if (questions[curr_ind].title === 'stem_cell_research') {
+								else if (questions[curr_ind].title === 'stem_cell') {
 									phrasing = "support stem cell research";
 								}
 

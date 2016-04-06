@@ -465,13 +465,13 @@ function askPetition() {
 		else if (title === "vaccination"){
 			phrasing = "against mandating children vaccinations?";
 		}
-		else if (title === "government_surveillance"){
+		else if (title === "gov"){
 			phrasing = "against NSA spying programs?";
 		}
 		else if (title === "marijuana_legalization"){
 			phrasing = "against the legalization of marijuana?";
 		}
-		else if (title === "stem_cell_research"){
+		else if (title === "stem_cell"){
 			phrasing = "to ban stem cell research?";
 		}
 	}
@@ -494,13 +494,13 @@ function askPetition() {
 		else if (title === "vaccination"){
 			phrasing = "in support of mandating children vaccinations?";
 		}
-		else if (title === "government_surveillance"){
+		else if (title === "gov"){
 			phrasing = "in support of NSA spying programs?";
 		}
 		else if (title === "marijuana_legalization"){
 			phrasing = "in support of the legalization of marijuana?";
 		}
-		else if (title === "stem_cell_research"){
+		else if (title === "stem_cell"){
 			phrasing = "for Government to allow stem cell research?";
 		}
 	}
