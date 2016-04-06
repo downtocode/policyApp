@@ -4,12 +4,15 @@
 //////////////////////////////////////////////////////////////
 
 
-//var real_appId = '1729142133971435'; // for local
-//var real_secret = 'cb7830bb2f2376e1d88b89645de92f0b'; // for local
-//var url_name = 'http://localhost:5000';
+// var real_appId = '1729142133971435'; // for local
+// var real_secret = 'cb7830bb2f2376e1d88b89645de92f0b'; // for local
+// var url_name = 'http://localhost:5000';
 var real_appId = '1724641247754857'; // REAL appid
 var real_secret = 'ecc1220ee8ccd42a989eae6e35862bb9'; // REAL secret
 var url_name = 'https://stark-crag-dev.herokuapp.com';
+// var real_appId = '252635238413356';
+// var real_secret = 'a0536667cd672579d067e9366aa26c9c';
+// var url_name = 'https://stark-crag-loc.herokuapp.com';
 
 $(document).ready(function() {
 
@@ -17,7 +20,7 @@ $(document).ready(function() {
 	window.fbAsyncInit = function() {
 		FB.init({
 			appId      : real_appId,// '150997527214' // original:'486648534724015'
-			cookie     : true,  // enable cookies to allow the server to access 
+			cookie     : true,  // enable cookies to allow the server to access
 			xfbml      : true,  // parse social plugins on this page
 			version    : 'v2.3' // use version 2.2
 		});
@@ -87,7 +90,7 @@ function statusChangeCallback(url, response) {
 	} else {
 	  // The person is not logged into Facebook, so we're not sure if
 	  // they are logged into this app or not.
-	  
+
 	  document.getElementById('status').innerHTML = 'Please log into Facebook.';
 	}
 }
@@ -118,8 +121,3 @@ function showModal(url) {
 
   $("#invite-modal").append("<input type = 'button' class = 'custom-button clickable' id = 'invite-button' value = 'Invite!' />");
 }
-
-
-
-
-

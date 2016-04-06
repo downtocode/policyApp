@@ -7,9 +7,12 @@
 
 var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI';
 var prev_time;
-//var url_name = 'http://localhost:5000';
+// var url_name = 'http://localhost:5000';
 var url_name = 'https://stark-crag-dev.herokuapp.com';
-var is_wave2 = 0; // 0 means false (i.e. NOT wave 2); 1 means true (i.e. we ARE in wave 2)
+// var url_name = 'https://stark-crag-loc.herokuapp.com'; // local treatment
+var is_wave2 = 1; // 0 means false (i.e. NOT wave 2); 1 means true (i.e. we ARE in wave 2)
+var demogr_values = {};
+var valid_demogr_types = ['school', 'race', 'political', 'state', 'maritalstatus', 'religion', 'income', 'employment'];
 
 $(document).ready(function() {
 	// When user clicks on "Got It" button for instructions, show first question
@@ -29,9 +32,28 @@ function capitalize(string) {
 	return string.charAt(0).toUpperCase() + string.substring(1, string.length);
 }
 
+function setDemValues(){
+	$.ajax({
+		url: '/api/getDemValues',
+		dataType: 'JSON',
+		success: function (dem_values) {
+			demogr_values = dem_values;
+		}
+	});
+}
+
+// Return the integer value of value 'val' of demographic type 'type'
+function getDemValue(type, val){
+	if (demogr_values == {}){
+		setDemValues();
+	}
+
+	return demogr_values[type][val];
+}
+
 // Returns cappitalized sentence (ie. policy questionnaire -> Policy Questionnaire)
 function capitalizeSentence(string) {
-	var strArr = string.split(/[\s_]+/);	
+	var strArr = string.split(/[\s_]+/);
 	for (var word in strArr) {
 		strArr[word] = capitalize(strArr[word]);
 	}
@@ -43,7 +65,7 @@ function capitalizeSentence(string) {
 function hasCookie(cookieName) {
 	var cookies = document.cookie.split(";");
 
-	// Loops over all cookies to check if name matches desired 
+	// Loops over all cookies to check if name matches desired
 	for (var cookie in cookies) {
 		var currCookie = cookies[cookie].split("=");
 		if (currCookie[0].trim() === cookieName && currCookie[1].trim().length > 0) {
@@ -53,7 +75,7 @@ function hasCookie(cookieName) {
 
 	// Just in case, creates a cookie that expires in the past (aka deletes cookie)
 	document.cookie = cookieName+'=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-	return null; 
+	return null;
 }
 
 // Gets user's FB information using FB API
@@ -188,27 +210,28 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 	}
 	// Gets list of friends who have also taken questionnaire
 	$.ajax({
-		url: 'https://graph.facebook.com/me?fields=friends,accounts', 
+		url: 'https://graph.facebook.com/me?fields=friends,accounts',
 		data: {access_token: accessToken},
 		dataType: 'jsonp',
 		success: function(friend_data) {
 			var friends = friend_data.friends;
 			var local_treatments = [];
 			var local_treatments_ids = [];
-			var hasLocal = 0;  
+			var hasLocal = 0;
 			// See how many friends are also using the app
 			// which means they have answers
 			// If more than 5, we want to use local treatments
 			if (friends.data.length >= 0)
 				hasLocal = is_wave2;
-				
+
 				// if hasLocal == 1 this is wave 2. Only present either local treatment or control questions
 				// if hasLocal == 0 this is wave 1. Shuffle all treatments except local
-			
+
 				// If has local treatment, then get all friend IDs so can retrieve
 				// their answers from backend later
 			var app_friends = [];
 			console.log("Just before adding friends");
+			debugger;
 			for (var i in friends.data){
 				console.log("Adding friend: " + i);
 				app_friends.push(friends.data[i].id);
@@ -228,8 +251,8 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 				var treatments = [];
 				Math.random() < 0.5 ? treatments.push('treatment_l') : treatments.push('control');
 				shuffle(treatments);
-				var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control','treatment_l'];  
-			} 
+				var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control','treatment_l'];
+			}
 
 			else { // Otherwise just use regular treatments
 				var treatments = ['treatment_g', 'treatment_s', 'control'];
@@ -238,12 +261,12 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 				var every_treatment = ['treatment_g', 'treatment_g2', 'treatment_s', 'control'];
 
 			}
-			console.log('Currently in wave 2: ' + (hasLocal == 1 ? 'True' : 'False'));	
+			console.log('Currently in wave 2: ' + (hasLocal == 1 ? 'True' : 'False'));
 			// Only add identity treatment if not the music questionnaire and is policy wave 1
 			if (questionnaire != 'music' && hasLocal!=1) {
 				console.log("Adding identity treatment");
 				treatments.push('treatment_i');    // this adds 'treatment_i' to the end of the treatments array
-				every_treatment.push('treatment_i');					
+				every_treatment.push('treatment_i');
 			}
 
 			// Figure out how many of each treatment we need based on the number of questions
@@ -269,7 +292,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 					var treatment_i_start = all_treatments.length;
 				for (var i = 0; i < numEach; i++)
 					all_treatments.push(treatments[t]);
-				if (extraTreatments.indexOf(treatments[t]) > -1) 
+				if (extraTreatments.indexOf(treatments[t]) > -1)
 					all_treatments.push(treatments[t]);
 			}
 
@@ -279,7 +302,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 			// Makes sure that all questions given identity treatment actually have an identity treatment
 			if (hasIdentity != undefined) {
 				do { shuffle(questions); } while (!hasIdentityTreatment(questions, treatment_i_start, hasIdentity));
-			} 
+			}
 			else {
 				shuffle(questions);
 			}
@@ -290,18 +313,18 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 				var treatment = all_treatments[q];
 				question.treatment_type = treatment;
 				question.local_type = hasLocal;
-				
+
 				if (treatment == 'treatment_l') {
 					// If local treatment, then add question ID so can fetch from database
 					local_treatments.push(q);
 					local_treatments_ids.push(question._id);
-				} 
+				}
 				else {
 					// If global, chose between global1 and global2 randomly
 					if (treatment == 'treatment_g') {
 						if (question.treatment_g2 == undefined) {
 							question.treatment_type = 'treatment_g';
-						} 
+						}
 						else {
 							var rand_g = Math.floor(Math.random() * 2);
 							if (rand_g == 0)
@@ -311,7 +334,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 						}
 					}
 
-					// If identity, add to list of all identity treatments 
+					// If identity, add to list of all identity treatments
 					// so can figure out from demographics later
 					if (treatment == 'treatment_i') {
 						question.treatment = "Identity Treatment";
@@ -329,7 +352,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 						}
 					}
 				}
-				
+
 			}
 
 			if (hasLocal == 1) {
@@ -362,10 +385,10 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 								count++;
 							}
 
-						} 
+						}
 						else {
 							for (var ind in local_treatments) {
-								// For each local treatment, find its corresponding answers using the 
+								// For each local treatment, find its corresponding answers using the
 								// index in array and corresponding ID
 								var curr_ind = local_treatments[ind];
 								var curr_id = local_treatments_ids[ind];
@@ -378,13 +401,13 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 								var str_wv_1 = "Out of your Facebook friends who have taken the survey";
 
 								var phrasing = "";
-								
+
 								console.log(questions[curr_ind]);
 								if (questions[curr_ind].phrasing_identity.length > 0) {
 									phrasing = questions[curr_ind].phrasing_identity.split("background,")[1];
 									var sub_end = (phrasing.lastIndexOf(".") == phrasing.length - 1) ? phrasing.length-2 : phrasing.length-1;
 									phrasing = phrasing.trim().substring(0, sub_end);
-								} 
+								}
 								else if (questions[curr_ind].title === 'stem_cell_research') {
 									phrasing = "support stem cell research";
 								}
@@ -406,7 +429,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 						}
 					}
 				});
-			} 
+			}
 
 			// Once all questions are done being set up, adds them as value to div for access later
 			d3.select("#question-selector").selectAll("div")
@@ -436,7 +459,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 			callback();
 
 			console.log(questions);
-			
+
 		}
 
 	});
@@ -473,15 +496,15 @@ function askDemographics() {
 					// Checks for what information we are missing
 				// For each one, add to page
 					for (var i in dataWanted) {
-						if (!(dataWanted[i].name in data) && ( (questionnaire === 'policy' && policyNoDemo.indexOf(dataWanted[i].name) == -1 ) || 
+						if (!(dataWanted[i].name in data) && ( (questionnaire === 'policy' && policyNoDemo.indexOf(dataWanted[i].name) == -1 ) ||
 							( questionnaire === 'music' && musicNoDemo.indexOf(dataWanted[i].name) == -1 ) ) ) {
 
 							if (dataWanted[i].type.toLowerCase() == 'text') {
 								 $("#question-text").append("<div class = 'font-15 demographics-header'>" +
-										capitalize(dataWanted[i].question) + 
+										capitalize(dataWanted[i].question) +
 										": <br/><input class = 'font-15' type = 'text' name = '" + dataWanted[i].name + "'/></div>");
 							}
-							
+
 							else if (dataWanted[i].type.toLowerCase() == 'range') {
 								data[dataWanted[i].name] = 50;
 								$("#question-text").append("<div class = 'font-15 demographics-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
@@ -492,31 +515,31 @@ function askDemographics() {
 								if (values.length == 2) {
 									$(".importance-list:last").append("<li class = 'inline-block left'>" + values[0] + "</li>");
 									$(".importance-list:last").append("<li class = 'inline-block right'>" + values[1] + "</li>");
-								} 
+								}
 								else {
 									for (var k in values) {
 										$(".importance-list:last").append("<li class = 'inline-block center'>" + values[k] + "</li>");
 									}
 								}
-								
+
 
 								$(".importance-list:last li").width(100/ values.length + "%");
-								
-							} 
+
+							}
 							else if (dataWanted[i].type.toLowerCase() == 'radio') {
 								var values = dataWanted[i].values.split(",");
 								$("#question-text").append("<div class = 'font-15 demographics-header radio-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
 									"<ul class = 'no-list font-15 question-list-larger-mob'></ul></div>");
 								for (var j in values) {
-									$(".question-list-larger-mob:last").append("<li class = 'left'><input type = 'radio' name = '" + dataWanted[i].name + "' value = '"+values[j].trim()+"'><span class = 'question-text-text'>" + capitalize(values[j]) + "</span></li>");		
+									$(".question-list-larger-mob:last").append("<li class = 'left'><input type = 'radio' name = '" + dataWanted[i].name + "' value = '"+values[j].trim()+"'><span class = 'question-text-text'>" + capitalize(values[j]) + "</span></li>");
 								}
-							} 
+							}
 							else if (dataWanted[i].type.toLowerCase() == 'select') {
 								var values = dataWanted[i].values.split(",");
 								//var location_prev = $("input[type=text]:last").parent();
 								//( questionnaire === 'music' ) ? $("input[type=text]:last") : $("input[type=range]:last").after();
 
-								$("#question-text").append("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) + 
+								$("#question-text").append("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) +
 									": <select name = '" + dataWanted[i].name + "'></div>");
 
 								if (dataWanted[i].question.length >= 50) {
@@ -527,17 +550,17 @@ function askDemographics() {
 								/*if (dataWanted[i].name === 'income') {
 									for (var j in values) {
 										var curr_value = (values[j].indexOf("$") >= 0) ? values[j].split("$")[1].replace(/[\D]/g, "") : "Other";
-										$("select:last").append("<option value = '"+curr_value+"'>" + capitalize(values[j]) + "</option>");		
+										$("select:last").append("<option value = '"+curr_value+"'>" + capitalize(values[j]) + "</option>");
 									}
 
 									var second_last = $("select:last option:nth-last-child(2)");
 									$(second_last).val(">" + $(second_last).val())
 								} else {*/
 								for (var j in values) {
-									$("select:last").append("<option value = '"+values[j].trim()+"'>" + capitalize(values[j]) + "</option>");		
+									$("select:last").append("<option value = '"+values[j].trim()+"'>" + capitalize(values[j]) + "</option>");
 								}
 								//}
-								
+
 							}
 
 							hasAllData = false;
@@ -548,15 +571,15 @@ function askDemographics() {
 				// Checks for what information we are missing
 				// For each one, add to page
 					for (var i in dataWanted) {
-						if (!(dataWanted[i].name in data) && ( (questionnaire === 'policy' && policyNoDemo.indexOf(dataWanted[i].name) == -1 ) || 
+						if (!(dataWanted[i].name in data) && ( (questionnaire === 'policy' && policyNoDemo.indexOf(dataWanted[i].name) == -1 ) ||
 							( questionnaire === 'music' && musicNoDemo.indexOf(dataWanted[i].name) == -1 ) ) ) {
 
 							if (dataWanted[i].type.toLowerCase() == 'text') {
 								 $("#question-text").append("<div class = 'font-15 demographics-header'>" +
-										capitalize(dataWanted[i].question) + 
+										capitalize(dataWanted[i].question) +
 										": <br/><input class = 'font-15' type = 'text' name = '" + dataWanted[i].name + "'/></div>");
 							}
-							
+
 							else if (dataWanted[i].type.toLowerCase() == 'range') {
 								data[dataWanted[i].name] = 50;
 								$("#question-text").append("<div class = 'font-15 demographics-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
@@ -567,33 +590,33 @@ function askDemographics() {
 								if (values.length == 2) {
 									$(".importance-list:last").append("<li class = 'inline-block left'>" + values[0] + "</li>");
 									$(".importance-list:last").append("<li class = 'inline-block right'>" + values[1] + "</li>");
-								} 
+								}
 								else {
 									for (var k in values) {
 										$(".importance-list:last").append("<li class = 'inline-block center'>" + values[k] + "</li>");
 									}
 								}
-								
+
 
 								$(".importance-list:last li").width(100/ values.length + "%");
-								
-							} 
+
+							}
 							else if (dataWanted[i].type.toLowerCase() == 'radio') {
 								var values = dataWanted[i].values.split(",");
 								$("#question-text").append("<div class = 'font-15 demographics-header radio-header'>" + capitalize(dataWanted[i].question) + "<br/>"+
 									"<ul class = 'no-list font-15 question-list-larger'></ul></div>");
 								for (var j in values) {
-									$(".question-list-larger:last").append("<li class = 'left inline'><input type = 'radio' name = '" + dataWanted[i].name + "' value = '"+values[j].trim()+"'><span class = 'question-text-text'>" + capitalize(values[j]) + "</span></li>");		
+									$(".question-list-larger:last").append("<li class = 'left inline'><input type = 'radio' name = '" + dataWanted[i].name + "' value = '"+values[j].trim()+"'><span class = 'question-text-text'>" + capitalize(values[j]) + "</span></li>");
 									if ( (j + 1) % 3 == 0)
 										$(".question-list-larger:last").append("<br/>");
 								}
-							} 
+							}
 							else if (dataWanted[i].type.toLowerCase() == 'select') {
 								var values = dataWanted[i].values.split(",");
 								//var location_prev = $("input[type=text]:last").parent();
 								//( questionnaire === 'music' ) ? $("input[type=text]:last") : $("input[type=range]:last").after();
 
-								$("#question-text").append("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) + 
+								$("#question-text").append("<div class = 'font-15 demographics-header select-header'>" + capitalize(dataWanted[i].question) +
 									": <select name = '" + dataWanted[i].name + "'></div>");
 
 								if (dataWanted[i].question.length >= 50) {
@@ -604,17 +627,17 @@ function askDemographics() {
 								/*if (dataWanted[i].name === 'income') {
 									for (var j in values) {
 										var curr_value = (values[j].indexOf("$") >= 0) ? values[j].split("$")[1].replace(/[\D]/g, "") : "Other";
-										$("select:last").append("<option value = '"+curr_value+"'>" + capitalize(values[j]) + "</option>");		
+										$("select:last").append("<option value = '"+curr_value+"'>" + capitalize(values[j]) + "</option>");
 									}
 
 									var second_last = $("select:last option:nth-last-child(2)");
 									$(second_last).val(">" + $(second_last).val())
 								} else {*/
 								for (var j in values) {
-									$("select:last").append("<option value = '"+values[j].trim()+"'>" + capitalize(values[j]) + "</option>");		
+									$("select:last").append("<option value = '"+values[j].trim()+"'>" + capitalize(values[j]) + "</option>");
 								}
 								//}
-								
+
 							}
 
 							hasAllData = false;
@@ -625,7 +648,7 @@ function askDemographics() {
 				if (!hasAllData) {
 					if (questionnaire === 'music')
 						$("#question-text").prepend("<br/>We would like to know a little bit more about you. Please answer a few questions about yourself.");
-					else 						
+					else
 						$("#question-text").prepend("<br/>Now we would like to know what people like you believe. Please answer a few questions about yourself. Based on your answers, we can tell you what most people with your background think based on national polls.");
 				}
 
@@ -633,7 +656,7 @@ function askDemographics() {
 				if (ind==$(".question-selector-circle").length-1)	{
 					$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Skip' class = 'clickable'/>" +
 						"<input type = 'button' id = 'submit-questionnaire' value = 'Next' class = 'demographics-next clickable' disabled/>");
-				} 
+				}
 				else {$("#question-text").append("<br/><input type = 'button' id = 'skip-demographics' value = 'Skip' class = 'clickable'/>" +
 					"<input type = 'button' id = 'next-question' value = 'Next' class = 'demographics-next clickable' disabled/>");
 				}
@@ -650,7 +673,7 @@ function askDemographics() {
 
 			}
 		});
-		
+
 
 	});
 }
@@ -659,24 +682,24 @@ function askDemographics() {
 function sendFriendsDialog() {
 	// Get user's ID and questionnaire name
 	var userID = d3.selectAll(".user-info").data()[0].id;
-	var url = ( window.location.href.lastIndexOf("/") == window.location.href.length - 1) ? 
+	var url = ( window.location.href.lastIndexOf("/") == window.location.href.length - 1) ?
 		window.location.href.substr(0, window.location.href.length - 1) : window.location.href;
 	var urlArray = url.split("//")[1].split("/");
-	
+
 	if (urlArray.length > 3) {
 		var loginUrl = urlArray[urlArray.length - 2];
-	} 
+	}
 	else
 		var loginUrl = urlArray[urlArray.length - 1];
 
 	console.log(userID);
-	
+
 	if (userID == '1368751615')
 		var link = url_name + '/login/'+loginUrl+'/'+userID+userID+'/';
 	else
 		var link = url_name + '/login/'+loginUrl+'/'+userID+'/';
 
-	// Create link in dialog with user's ID and questionnaire name 
+	// Create link in dialog with user's ID and questionnaire name
 	// so know info when clicked on
 	FB.ui({
 		method: 'share',
@@ -715,7 +738,7 @@ function makeBarGraph(data) {
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	$(svg).css("margin-left", -1 * margin.left + "px");
- 
+
  	x.domain(data.map(function(d) { return d.year; }));
 	y.domain([d3.min(data, function(d) { return +d.value; }) - 10, d3.max(data, function(d) { return +d.value; }) + 10]);
 
@@ -853,12 +876,12 @@ function submitUserInfo(i) {
 		data: JSON.stringify(user),
 		success: function(response) {
 			console.log(response);
-			var url = ( window.location.href.lastIndexOf("/") == window.location.href.length - 1) ? 
+			var url = ( window.location.href.lastIndexOf("/") == window.location.href.length - 1) ?
 				window.location.href.substr(0, window.location.href.length - 1) : window.location.href;
 			var urlArray = url.split("//")[1].split("/");
 
 			console.log(urlArray);
-			
+
 			if (urlArray.length > 3) {
 				var loginUrl = urlArray[urlArray.length - 2];
 				$.ajax({
@@ -866,7 +889,7 @@ function submitUserInfo(i) {
 					url: '/api/addFriend',
 					data: {userID: userID, friendID: urlArray[urlArray.length - 1], questionnaire: urlArray[urlArray.length - 2]}
 				});
-			} 
+			}
 		}
 	});
 
@@ -884,12 +907,12 @@ function submitUserInfo(i) {
 	$("#question-box div").html("<div id = 'question-text'></div>");
 	$("#question-text").empty();
 
-	// If moral dilemma, need to separate question differently so that last part of question 
+	// If moral dilemma, need to separate question differently so that last part of question
 	// is only shown after user clicks "Next"
 	if (question.title == 'moral_dilemma') {
 		var i = question.question.lastIndexOf(". ");
 		var q = question.question.substr(0, i);
-		$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(q) + ".</div>"); 
+		$("#question-text").html("<div class = 'font-black question-header'>" + capitalize(q) + ".</div>");
 	}
 
 	// Shows the appropriate treatment on screen
@@ -909,8 +932,8 @@ function submitUserInfo(i) {
 		} else {
 			$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Show Choices'/>");
 		}
-	}*/	
-//} 
+	}*/
+//}
 
 /*function showTreatment(num) {
 	// Gets the corresponding question based on the index provided in variable num
@@ -918,17 +941,17 @@ function submitUserInfo(i) {
 
 	// Displays the question's title (ie. Moral Dilemma, Same-Sex Marriage)
 	$("#question-text").prepend("<div id = 'question-title'>" + capitalizeSentence(question.title) +"</div>");
-	
+
 	// If there is a treatment (ie. not control)
 	if (question.treatment_type.toLowerCase() != 'control' && question.treatment != undefined) {
 		// If we want to create a graph for the treatment (ie. global treatment)
 		if (question.treatment.indexOf("|") >= 0 && question.treatment_type.toLowerCase() != "treatment_s" && question.title != "moral_dilemma") {
 			var arr = question.treatment.split('|');
-			$("#question-text").append("<div class = 'font-black font-18 bold' id = 'question-treatment'>" + 
+			$("#question-text").append("<div class = 'font-black font-18 bold' id = 'question-treatment'>" +
 				capitalize(arr[0]) + "<br/></div>");
 
 			var data = [];
-			
+
 			// Set up data in format that is understandable to d3 library
 			data.push({"year": arr[1].split(":")[0].trim(), "value": arr[1].split(":")[1].trim()});
 			data.push({"year": arr[2].split(":")[0].trim(), "value": arr[2].split(":")[1].trim()});
@@ -957,7 +980,7 @@ function submitUserInfo(i) {
 		}
 
 	}
-	
+
 
 	$("#question-text").append("<input type='button' class='custom-button clickable' id='show-values' value='Next'/>");
 
@@ -986,7 +1009,7 @@ function getIdentityTreatments(questionIds, demographics) {
 				var curr_question = d3.selectAll(".question-selector-circle").data()[i];
 				var n = treatments.probabilities[all_data[i].title];
 				shareIdentityValue(i, n, support);
-				
+
 				if (support){
 					all_data[i].treatment = all_data[i].phrasing_identity.replace("X%", treatments.probabilities[all_data[i].title]+"%");
 				}
@@ -1001,7 +1024,7 @@ function getIdentityTreatments(questionIds, demographics) {
 						all_data[i].treatment = all_data[i].treatment.replace("are very concerned", "are NOT very concerned");
 					}
 					else if(all_data[i].phrasing_identity.indexOf("approve") > -1){
-						all_data[i].treatment = all_data[i].treatment.replace("approve", "do NOT approve");	
+						all_data[i].treatment = all_data[i].treatment.replace("approve", "do NOT approve");
 					}
 					else if(all_data[i].phrasing_identity.indexOf("believe") > -1){
 						all_data[i].treatment = all_data[i].treatment.replace("believe", "do NOT believe");
@@ -1034,12 +1057,12 @@ function getIdentityNames() {
 
 // Uses YouTube API to fetch all main songs from YouTube playlist
 function getMainYoutubePlaylist(songs, nexPageToken, callback) {
-	// If exceeds 50 songs (max num API can get at once), keeps looping through list 
+	// If exceeds 50 songs (max num API can get at once), keeps looping through list
 	if (nextPageToken == null || nextPageToken == undefined)
 		var nextPageToken = "";
 	else nextPageToken = "&pageToken="+nextPageToken;
 
-	if (songs == null || songs == undefined) 
+	if (songs == null || songs == undefined)
 		songs = [];
 
 	$.ajax({
@@ -1070,7 +1093,7 @@ function getYoutubePlaylist(songs, nextPageToken, callback) {
 		nextPageToken = "";
 	else nextPageToken = "&pageToken="+nextPageToken;
 
-	if (songs == null || songs == undefined) 
+	if (songs == null || songs == undefined)
 		songs = [];
 
 	$.ajax({
@@ -1092,7 +1115,7 @@ function getYoutubePlaylist(songs, nextPageToken, callback) {
 	});
 }
 
-// Uses YouTube API to get all song info, ie. song title and num likes for treatments 
+// Uses YouTube API to get all song info, ie. song title and num likes for treatments
 function getYoutubeSongs(songs, callback) {
 	var all_songs = [];
 	var count = 0;
@@ -1155,7 +1178,3 @@ function setDate(d, ind) {
 	all_data[ind].start_time = n;
 	d3.selectAll(".question-selector-circle").data(all_data);
 }
-
-
-
-

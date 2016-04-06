@@ -8,8 +8,10 @@ var express = require('express');
 var router = express.Router();
 var app_id = '1724641247754857';
 var url_name = 'https://stark-crag-dev.herokuapp.com';
-//var app_id = '1729142133971435'; //for local
-//var url_name = 'http://localhost:5000';
+// var app_id = '1729142133971435'; //for local
+// var url_name = 'http://localhost:5000';
+// var app_id = '252635238413356';
+// var url_name = 'https://stark-crag-loc.herokuapp.com';
 
 // Capitalize word (ie. policy -> Policy)
 function capitalize(str) {
@@ -28,7 +30,7 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 	// Get parameters if they have
 	// :name means there is a name variable for which questionnaire
 	// :fid means there is a value for a friend ID so we can add connection to backend
-	// :fid? with question mark means fid is optional 
+	// :fid? with question mark means fid is optional
 	// ie. /music or /music/12345667
 	var db = req.db;
 	var name = req.params.name;
@@ -84,7 +86,7 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 	}
 });
 
-// Loads login page and contains information for the FB metadata 
+// Loads login page and contains information for the FB metadata
 // (what shows up when invite friends dialog is displayed)
 router.get('/login/:name/:fid?', function(req, res, next) {
 	var name = capitalize(req.params.name);

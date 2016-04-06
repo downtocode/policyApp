@@ -3,8 +3,9 @@
 // policy questionnaire.									//
 //////////////////////////////////////////////////////////////
 
-//var real_appId = '1729142133971435'; // for local
+// var real_appId = '1729142133971435'; // for local
 var real_appId = '1724641247754857'; // REAL appid
+// var real_appId = '252635238413356'; // local treatment app
 
 $(document).ready(function() {
 
@@ -12,7 +13,7 @@ $(document).ready(function() {
 	window.fbAsyncInit = function() {
 		FB.init({
 			appId: real_appId, // '150997527214' '486648534724015'
-			cookie: true, // enable cookies to allow the server to access 
+			cookie: true, // enable cookies to allow the server to access
 			xfbml: true, // parse social plugins on this page
 			version: 'v2.3' // use version 2.2
 		});
@@ -58,10 +59,10 @@ $(document).ready(function() {
 		if (ind == $(".question-selector-circle").length - 1) {
 			if (question.treatment_type.toLowerCase() == 'treatment_l') {
 				$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'get-user-info' value = 'Prefer Not to Answer' />");
-			} 
+			}
 			else $("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'submit-questionnaire' value = 'Prefer Not to Answer' />");
 			// else $("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'get-user-info' value = 'Prefer Not to Answer' />");
-		} 
+		}
 		else
 			$("#next-important").after("<br/><input type = 'button' class = 'custom-button clickable' id = 'skip-question' value = 'Prefer Not to Answer' />");
 	});
@@ -169,7 +170,11 @@ $(document).ready(function() {
 			// Get all the user data
 			var user = d3.select(".user-info").data()[0];
 
-			user[$(this).attr("name")] = $(this).val();
+			// Record an int value instead of the string value
+			var typ = $(this).attr("name");
+			var val = getDemValue(typ, $(this).val());
+			//user[$(this).attr("name")] = $(this).val();
+			user[typ] = val;
 
 			var empty_inputs = $('input[type=radio]').filter(function() {
 				return this.value == "";
@@ -280,7 +285,7 @@ function showQuestion(num) {
 	$("#question-box div").html("<div id = 'question-text'></div>");
 	$("#question-text").empty();
 
-	// If moral dilemma, need to separate question differently so that last part of question 
+	// If moral dilemma, need to separate question differently so that last part of question
 	// is only shown after user clicks "Next"
 	if (question.title == 'moral_dilemma') {
 		var i = question.question.lastIndexOf(". ");
@@ -500,7 +505,7 @@ function askPetition() {
 		}
 	}
 	question = question + phrasing;
-	
+
 	$("#question-answers").append("<div id = 'petition-section'><div class = 'font-black importance-header'>" + question + "</div></div>");
 
 	$("#question-answers").append("<div class = 'hidden'><ul id = 'question-list-larger' class = 'no-list font-15'></ul></div>");
@@ -516,7 +521,7 @@ function askPetition() {
 		/*if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
 			$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
 		}*/
-		// if not local treatment just add a Submit button 
+		// if not local treatment just add a Submit button
 		if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
 			$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
 		}
@@ -529,7 +534,7 @@ function askPetition() {
 	else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
 		// next button used to get user info
 		$("#question-text input[type=button]").attr('id', 'get-user-info').val('Next');
-	} 
+	}
 	else { // if not last question and next question not identity treatment
 		$("#question-text input[type=button]").attr('id', 'next-question').val('Next');
 	}
@@ -586,25 +591,25 @@ function addHowOften() {
 		if (curr_question_ind == $(".question-selector-circle").length - 1) {
 			if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
 					$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
-			} 
+			}
 			else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
 			// else $("#question-text input[type=button]").attr('id','get-user-info').val('Submit!');
 		}
 		else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
 			// next button used to get user info
 			$("#question-text input[type=button]").attr('id', 'get-user-info').val('Next');
-		} 
+		}
 		else { // if not last question and next question not identity treatment
 			$("#question-text input[type=button]").attr('id', 'next-question').val('Next');
 		}
-	} 
-	else { 
+	}
+	else {
 		$("#question-text input[type=button]").attr('id', 'petition-choice').val('Next');
-	}	
+	}
 	// Disables button until user answers question
 	$("#question-text input[type=button]").prop("disabled", true);
 	$("#question-treatment").hide();
-	
+
 }
 
 // Adds "How important is this to you" or "How hard was it for you to answer" (for moral dilemma)
@@ -638,12 +643,12 @@ function addQuestionImportance() {
 	/*if (curr_question_ind == $(".question-selector-circle").length - 1) {
 		if (curr_question.treatment_type.toLowerCase()=='treatment_l'  ) {
 			$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
-		} 
+		}
 		else $("#question-text input[type=button]").attr('id','submit-questionnaire').val('Submit!');
-	} 
+	}
 	else if (curr_question.treatment_type.toLowerCase() != "treatment_i" && next_question.treatment_type.toLowerCase() == "treatment_i") {
 		$("#question-text input[type=button]").attr('id','get-user-info').val('Next');
-	} 
+	}
 	else {
 		$("#question-text input[type=button]").attr('id','next-question').val('Next');
 	}*/
@@ -689,7 +694,7 @@ function getAllAnswers() {
 		tempArr = answersArr[i].split("|"); // answersArr now has four elements after this split. Third is 'frequency of thought' value. Fourth is willingess to sign petition
 		var identity_value = answerDict[i].split("|")[0];
 		var identity_support = answerDict[i].split("|")[1];
-		
+
 
 
 		// Creates dictionary for each answer with necessary information
@@ -775,13 +780,13 @@ function submitQuestionnaire(answers, petitions) {
 
 			var userID = d3.selectAll(".user-info").data()[0].id;
 			// After petitions, displays button to invite friends to do questionnaire
-				
-			
+
+
 			$("#petitions").after("<div class = 'font-black bold' id = 'question-footnote'>You can invite friends by clicking the 'Share' button below, or by sending them the following link:</div>");
 			$("#question-footnote").after("<br/><div id = 'invite-link'>https://stark-crag-dev.herokuapp.com/login/policy/" + userID +"</div>");
 			$("#invite-link").after("<br/><input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Share'/>");
 			$("#petitions").after("<br/>We encourage you to invite your friends to participate in this study as well!");
-			
+
 			// Display Microworkers value
 			$("#invite-friends").after("<br/>Your Microworkers value is: " + userID);
 		}
@@ -871,15 +876,15 @@ function getQuestion(num) {
 
 			for (var i = 0; i < question_str_arr.length - 1; i++) {
 				question_num_arr.push(question_str_arr[i].substr(question_str_arr[i].length - 3, question_str_arr[i].length - 1).replace(/,/g, " ").trim());
-				
+
 				if (question_str_arr[i].indexOf("19") >= 0) {
-					question_year_arr.push(question_str_arr[i].substr(question_str_arr[i].indexOf("19"), question_str_arr[i].indexOf("19") + 2).replace(/,/g, " ").trim());				
+					question_year_arr.push(question_str_arr[i].substr(question_str_arr[i].indexOf("19"), question_str_arr[i].indexOf("19") + 2).replace(/,/g, " ").trim());
 				}
-			
+
 				if (question_str_arr[i].indexOf("20") >= 0) {
 					question_year_arr.push(question_str_arr[i].substr(question_str_arr[i].indexOf("20"), question_str_arr[i].indexOf("20") + 2).split(",")[0].trim());
 				}
-			
+
 			}
 
 			for (var j in question_year_arr) {
@@ -898,8 +903,8 @@ function getQuestion(num) {
 			for (var k in years) {
 				var temp_dict = {};
 				temp_dict["year"] = k
-				temp_dict["value"] = 
-				
+				temp_dict["value"] =
+
 				/*for (var l in years[k])
 					temp_dict["value_" + l] = years[k][l];
 

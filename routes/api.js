@@ -23,7 +23,7 @@ function capitalizeTitle(str, split) {
 function removeCommasAddQuotes(str) {
 	if (typeof str === 'number')
 		str = str.toString();
-	if (str != undefined) 
+	if (str != undefined)
 		str = str.replace(/,/g, "");
 	return '"' + str + '"';
 }
@@ -72,7 +72,7 @@ router.post('/api/addQuestionnaire', function(req, res, next) {
 	});
 });
 
-// Gets all questions in a certain questionnaire 
+// Gets all questions in a certain questionnaire
 router.post('/api/getAllQuestions', function(req, res, next) {
 	var db = req.db;
 	var query = req.body;
@@ -177,7 +177,7 @@ router.post('/api/sendUser', function(req, res, next) {
 	});
 });
 
-// Adds pair of friend IDs to backend so we can keep track of who was the invitee and 
+// Adds pair of friend IDs to backend so we can keep track of who was the invitee and
 // who was the invited
 router.post('/api/addFriend', function(req, res, next) {
 	var db = req.db;
@@ -218,7 +218,7 @@ router.post('/api/getFriendData', function(req, res, next) {
 		if (!err) {
 			var friend_answers = {};
 			var friend_counts = {};
-				
+
 			// Tallies up or averages friends' answers based on type of questionnaire
 			if (questionnaire === 'music') {
 				// For music, gets average star rating
@@ -227,7 +227,7 @@ router.post('/api/getFriendData', function(req, res, next) {
 					console.log(curr_answer);
 					if (friendData[i].question_id in friend_answers) {
 						friend_counts[friendData[i].question_id] += 1;
-						friend_answers[friendData[i].question_id] += curr_answer;							
+						friend_answers[friendData[i].question_id] += curr_answer;
 					} else {
 						friend_counts[friendData[i].question_id] = 1;
 						friend_answers[friendData[i].question_id] = curr_answer;
@@ -243,7 +243,7 @@ router.post('/api/getFriendData', function(req, res, next) {
 				// For policy, gets whether majority of friends were for or against policy
 				for (var i in friendData) {
 					if (friendData[i].question.length > 0) {
-						var curr_answer = (isNaN(parseInt(friendData[i].question))) ? 
+						var curr_answer = (isNaN(parseInt(friendData[i].question))) ?
 							friendData[i].question :
 							Math.floor( parseInt(friendData[i].question) / 51 );
 
@@ -272,7 +272,7 @@ router.post('/api/getFriendData', function(req, res, next) {
 						friend_answers[j][k] = Math.round(100 * (friend_answers[j][k]/friend_counts[j]), 2);
 					}
 				}
-				
+
 			}
 
 			console.log(friend_answers);
@@ -284,7 +284,7 @@ router.post('/api/getFriendData', function(req, res, next) {
 
 // Creates downloadable CSV for answers
 router.post('/api/sendCSV', function(req, res, next) {
-	var db = req.db; 
+	var db = req.db;
 	// var questionnaire = req.body.questionnaire;
 	var questionnaire = 'policy';
 	// Adds extra demographics that were not asked to use in CSV
@@ -323,17 +323,17 @@ router.post('/api/sendCSV', function(req, res, next) {
 						// Get all question titles and appropriate information in user answers
 						for (var i in questions) {
 							var curr_title = capitalizeTitle(questions[i].title, " ");
-							// 
-							header += ',"opinion_' + curr_title + 
-							'","importance_' + curr_title + 
-							'","frequency_' + curr_title + 
-							'","treatment_' + curr_title + 
+							//
+							header += ',"opinion_' + curr_title +
+							'","importance_' + curr_title +
+							'","frequency_' + curr_title +
+							'","treatment_' + curr_title +
 							'","will_sign_petition_' + curr_title +
-							'","identity_value_' + curr_title + 
+							'","i_val_' + curr_title + 
 							'","identity_support_' + curr_title +
-							'","local_type_' + curr_title + 
+							'","local_type_' + curr_title +
 							'","local_value_' + curr_title + // the value from friends
-							'","start_time_' + curr_title + 
+							'","start_time_' + curr_title +
 							'","answer_time_' + curr_title +
 							'","petition_' + curr_title + '"';
 							lineArr.push(questions[i]._id);
@@ -342,7 +342,7 @@ router.post('/api/sendCSV', function(req, res, next) {
 						for (var d in demographics) {
 							header += ',"user_' + demographics[d].name+'"';
 						}
-						
+
 						var userDemographics = {};
 
 						for (var j in users) {
@@ -371,18 +371,18 @@ router.post('/api/sendCSV', function(req, res, next) {
 							var user = userAnswersArr[p];
 							var userPetition = [];
 
-							// Get their petition information 
+							// Get their petition information
 							if (userPetitions[p] != undefined)
 								userPetition = userPetitions[p];
 
 							// Get their demographic information
 							var currUserDemo = {};
-							if (userDemographics[p] != undefined) 
+							if (userDemographics[p] != undefined)
 								currUserDemo = userDemographics[p];
 
 							// Remove commas so they don't mess up CSV
 							var newLine = "" + removeCommasAddQuotes(p);
-							
+
 							// Add their extra demographic information
 							for (var j in extra_demo) {
 								if (extra_demo[j] in currUserDemo)
@@ -395,16 +395,16 @@ router.post('/api/sendCSV', function(req, res, next) {
 							for (var s in lineArr) {
 								var currQuestion = lineArr[s];
 								if (currQuestion in user){
-									newLine += "," + removeCommasAddQuotes(user[currQuestion].question) + "," + 
+									newLine += "," + removeCommasAddQuotes(user[currQuestion].question) + "," +
 										removeCommasAddQuotes(user[currQuestion].importance) + "," +
-										removeCommasAddQuotes(user[currQuestion].frequency) + "," + 
-										removeCommasAddQuotes(user[currQuestion].treatment) + "," + 
+										removeCommasAddQuotes(user[currQuestion].frequency) + "," +
+										removeCommasAddQuotes(user[currQuestion].treatment) + "," +
 										removeCommasAddQuotes(user[currQuestion].will_sign_petition) + "," +
 										removeCommasAddQuotes(user[currQuestion].identity_value) + "," +
 										removeCommasAddQuotes(user[currQuestion].identity_support) + "," +
-										removeCommasAddQuotes(user[currQuestion].treatment_l_type) + "," + 
+										removeCommasAddQuotes(user[currQuestion].treatment_l_type) + "," +
 										removeCommasAddQuotes(user[currQuestion].treatment_l_value) + "," +
-										removeCommasAddQuotes(user[currQuestion].start_time) + "," + 
+										removeCommasAddQuotes(user[currQuestion].start_time) + "," +
 										removeCommasAddQuotes(user[currQuestion].answer_time);
 								}
 								else
@@ -412,7 +412,7 @@ router.post('/api/sendCSV', function(req, res, next) {
 
 								if (userPetition.indexOf(parseInt(currQuestion)) >= 0)
 									newLine += ",1";
-								else 
+								else
 									newLine += ",0";
 							}
 
@@ -476,11 +476,11 @@ router.get('/api/sendFriendCSV', function(req, res, next) {
 							if (currFriend.friendID != currFriend.userID && currFriend.friendID != "policy")
 								inviteDict[currFriend.userID] = currFriend.friendID;
 						}
-					} 
+					}
 
 					// Else this is a user_id-[friends list] pair
 					else if ("user_id" in currFriend) {
-						if (currFriend.friends.length > maxNumFriends) 
+						if (currFriend.friends.length > maxNumFriends)
 							maxNumFriends = currFriend.friends.length;
 
 						if (currFriend.user_id in friendsDict) {
@@ -504,7 +504,7 @@ router.get('/api/sendFriendCSV', function(req, res, next) {
 				}
 
 				var allUserString =  [headerString];
-				
+
 
 				for (var i in users) {
 					var currUserID = users[i].id;
@@ -587,7 +587,7 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 				for (var curr_demo in demographics) {
 					console.log(curr_demo);
 
-					// Start making the lookup string 
+					// Start making the lookup string
 					// ALWAYS STARTS WITH _I
 					var curr_demo_str = "_I" + curr_demo.replace(/_/g, "").replace(/-/g,"");
 
@@ -619,18 +619,18 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 								// (meaning that it is within that interval),
 								// break out of the loop
 								// else increment prev_key and move onto the next interval
-								// ie. if the keys are [1000, 1500, 2000], the user is 1200, 
+								// ie. if the keys are [1000, 1500, 2000], the user is 1200,
 								// and prev_key starts at 1
 								// then 1200 > 1000 so prev_key = 2, and we move to 1500
 								// but 1200 < 1500 so we know 1200 > 1000 and 1200 < 1500
 								// so the corresponding code value is 2
 								if ( isNaN(curr_income) || user_demo < curr_income) {
 									break;
-								} else 
+								} else
 									prev_key++;
 							}
 
-							
+
 						} else { // Else they left it blank and will be counted as "Prefer not to answer"
 							prev_key = 11;
 						}
@@ -653,7 +653,7 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 						// Get the codes for that demographic
 						var curr_code = codes[curr_demo];
 
-						// If the user has a code within that demographic 
+						// If the user has a code within that demographic
 						if (user_demo in curr_code) {
 							// Get corresponding code number and append it to end of string
 							curr_demo_str += "_" + curr_code[user_demo];
@@ -661,7 +661,7 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 							// If so, append the code for "Other"
 							curr_demo_str += "_" + curr_code["Other"];
 						}
-						
+
 						// Again, make sure we have a value for that code
 						if (curr_question[curr_demo_str] != undefined && curr_question[curr_demo_str] != "") {
 							// Using string, we can now get the coef value
@@ -678,7 +678,7 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 					// ie. if the coefficient is just a value * coef
 					// age, children
 					else if (curr_demo_str in curr_question) {
-						
+
 						// If there is a coefficient value for that demo and not 0
 						if (curr_question[curr_demo_str] != undefined) {
 							// Children is binary, so 0 for 0 children
@@ -687,19 +687,19 @@ router.post('/api/getIdentityTreatment', function(req, res, next) {
 								var temp = (user_demo == 0) ? 0 : 1;
 								curr_user_identity += curr_question[curr_demo_str] * temp;
 								console.log("2 | " + curr_demo_str + ": " + user_demo * temp);
-							} else { 
+							} else {
 								// Else we just get the user's demo value and multiply it by the coefficient
 								curr_user_identity += user_demo * curr_question[curr_demo_str];
 								console.log("3 | " + curr_demo_str + ": " + user_demo * curr_question[curr_demo_str]);
 							}
-						
+
 							// If we are doing age, we also need to do age^2
 							if (curr_demo == "age") {
 								// square age, divide by 1000, multiply by age^2 coeff
-								curr_user_identity += ((user_demo * user_demo) / 1000) * curr_question["_Iage2"];	
+								curr_user_identity += ((user_demo * user_demo) / 1000) * curr_question["_Iage2"];
 								console.log("4 | " + curr_demo_str + ": " + ((user_demo * user_demo) / 1000) * curr_question["_Iage2"]);
 							}
-						
+
 						}
 
 					}
@@ -770,7 +770,7 @@ router.post('/api/saveNewSongs', function(req, res, next) {
 			}
 		});
 	}
-	
+
 });
 
 // Saves any new main songs in YouTube playlist
@@ -786,7 +786,7 @@ router.post('/api/saveMainSongs', function(req, res, next) {
 			}
 		});
 	}
-	
+
 });
 
 
@@ -802,7 +802,3 @@ router.post('/api/saveFriends', function(req, res, next) {
 
 
 module.exports = router;
-
-
-
-
