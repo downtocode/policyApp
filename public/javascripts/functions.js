@@ -231,7 +231,6 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 				// their answers from backend later
 			var app_friends = [];
 			console.log("Just before adding friends");
-			debugger;
 			for (var i in friends.data){
 				console.log("Adding friend: " + i);
 				app_friends.push(friends.data[i].id);
