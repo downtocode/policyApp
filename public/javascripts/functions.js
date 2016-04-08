@@ -422,6 +422,13 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 									str += ', ' + curr_data[p] + '% ' + ans + phrasing;
 								}
 
+								// if 'are very concerned' exists then remove 'do not'
+
+								if(str.indexOf('are very concerned') > -1){
+									// remove 'do not'
+									str.replace('do not', '');
+								}
+
 								str += ".";
 								questions[curr_ind].treatment_l_value = local_t_value;
 								questions[curr_ind].treatment = str;
