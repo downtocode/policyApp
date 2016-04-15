@@ -404,9 +404,9 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 
 								console.log("current data: " + curr_data);
 								// string for wave 2
-								var str = "Out of your Facebook friends whom you invited to take the survey";
+								var str_old = "Out of your Facebook friends whom you invited to take the survey";
 								// string for wave 1
-								var str_wv_1 = "Out of your Facebook friends who have taken the survey";
+								var str = "Out of your Facebook friends who have taken the survey";
 
 								var phrasing = "";
 
@@ -428,12 +428,10 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 									var value = curr_data[p];
 									console.log("friend value: " + local_t_value);
 									if (value >= 50 ){
-										// 80% answered ...
-										// most of your friends answered ...
-										str += ', most of your friends ' + ans + phrasing;
+										str += ', most ' + ans + phrasing;
 									}
 									else{
-										str += ', less than half of your friends ' + ans + phrasing;
+										str += ', less than half ' + ans + phrasing;
 									}
 								}
 
