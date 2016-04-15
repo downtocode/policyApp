@@ -70,8 +70,10 @@ $(document).ready(function() {
 
 	// If user clicks "Next" button to get importance value
 	$(document).on("click", "#next-important", function() {
+		debugger;
 		$("#skip-question").remove();
 		$("#submit-questionnaire").remove();
+		$("#get-user-info").remove();
 		addQuestionImportance();
 	});
 
