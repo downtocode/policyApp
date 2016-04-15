@@ -149,7 +149,16 @@ function getFriendsAnswers(questions, question, callback) {
 			var str = "According to your Facebook friends who also took the survey";
 			for (var p in data) {
 				console.log('data from friend: ' + data)
-				str += ', ' + data[p] + '% answered "' + p + '"';
+				var value = data[p];
+				if (value >= 50 ){
+					// 80% answered ...
+					// most of your friends answered ...
+					str += ', most of your friends answered "' + p + '"';
+				}
+				else{
+					str += ', less than half of your friends answered "' + p + '"';
+				}
+				// str += ', ' + data[p] + '% answered "' + p + '"';
 			}
 
 			str += ".";
@@ -393,7 +402,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 								var curr_id = local_treatments_ids[ind];
 								var curr_data = data[curr_id];
 
-								console.log(curr_data);
+								console.log("current data: " + curr_data);
 								// string for wave 2
 								var str = "Out of your Facebook friends whom you invited to take the survey";
 								// string for wave 1
@@ -411,18 +420,24 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 									phrasing = "support stem cell research";
 								}
 
-
-								// TODO: Fix phrasing for identity treatment to avoid "Do not are very"
-
 								var local_t_value = 0;
 								for (var p in curr_data) {
 									local_t_value = curr_data[p];
 									var ans = isNaN(parseInt(p)) ? 'said they would "' + p + '"' : ( (parseInt(p) == 0) ? "do not " : "");
 									str += ', ' + curr_data[p] + '% ' + ans + phrasing;
+									var value = curr_data[p];
+									console.log("friend value: " + local_t_value);
+									if (value >= 50 ){
+										// 80% answered ...
+										// most of your friends answered ...
+										str += ', most of your friends "' + ans + phrasing;
+									}
+									else{
+										str += ', less than half of your friends "' + ans + phrasing;
+									}
 								}
 
 								// if 'are very concerned' exists then remove 'do not'
-
 								if(str.indexOf('are very concerned') > -1){
 									// remove 'do not'
 									str.replace('do not', '');
