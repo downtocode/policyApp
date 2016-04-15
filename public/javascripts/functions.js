@@ -424,16 +424,16 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 								for (var p in curr_data) {
 									local_t_value = curr_data[p];
 									var ans = isNaN(parseInt(p)) ? 'said they would "' + p + '"' : ( (parseInt(p) == 0) ? "do not " : "");
-									str += ', ' + curr_data[p] + '% ' + ans + phrasing;
+									// str += ', ' + curr_data[p] + '% ' + ans + phrasing;
 									var value = curr_data[p];
 									console.log("friend value: " + local_t_value);
 									if (value >= 50 ){
 										// 80% answered ...
 										// most of your friends answered ...
-										str += ', most of your friends "' + ans + phrasing;
+										str += ', most of your friends ' + ans + phrasing;
 									}
 									else{
-										str += ', less than half of your friends "' + ans + phrasing;
+										str += ', less than half of your friends ' + ans + phrasing;
 									}
 								}
 
