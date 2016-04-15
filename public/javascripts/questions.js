@@ -172,7 +172,7 @@ $(document).ready(function() {
 
 			// Record an int value instead of the string value
 			var typ = $(this).attr("name");
-			var val = getDemValue(typ, $(this).val());
+			var val = $(this).val();
 			//user[$(this).attr("name")] = $(this).val();
 			user[typ] = val;
 
