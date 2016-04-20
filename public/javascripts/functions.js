@@ -134,6 +134,7 @@ function getAllTreatments() {
 	return ['treatment_g', 'treatment_g2', 'treatment_l', 'treatment_s', 'control', 'treatment_i'];
 }
 
+// LOOKS LIKE ITS NOT BEING CALLED
 // If local treatment is being used, then gets friends' results
 function getFriendsAnswers(questions, question, callback) {
 	console.log(questions);
@@ -376,6 +377,7 @@ function createTreatments(accessToken, questions, callback, hasIdentity) {
 				10152909706628845];*/
 
 				// If local, get friend data
+				// app_friends a list of friends who have taken it, local_treatments_ids is list of questions that you are currently viewing, questionnaire is either policy or music
 				$.ajax({
 					url: '/api/getFriendData',
 					contentType: 'application/json',
@@ -509,6 +511,7 @@ function askDemographics() {
 				$(this).hide();
 				var questionnaire = d3.select(".question-selector-circle").data()[0].questionnaire;
 				var musicNoDemo = ['vote', 'vote_next', 'political_upbringing'];
+				// TO EDIT
 				var policyNoDemo = ['music_play', 'music_play_years', 'music_taste', 'music_childhood'];
 
 				if ( $(window).width() < 480){
@@ -673,6 +676,9 @@ function askDemographics() {
 
 				var ind = $(".question-selector-circle").index($(".selected"));
 				if (ind==$(".question-selector-circle").length-1)	{
+					$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Skip' class = 'clickable'/>" +
+						"<input type = 'button' id = 'submit-questionnaire' value = 'Next' class = 'demographics-next clickable' disabled/>");
+				}else if (questionnaire == "music") {
 					$("#question-text").append("<br/><input type = 'button' id = 'submit-questionnaire' value = 'Skip' class = 'clickable'/>" +
 						"<input type = 'button' id = 'submit-questionnaire' value = 'Next' class = 'demographics-next clickable' disabled/>");
 				}
@@ -1144,7 +1150,9 @@ function getYoutubeSongs(songs, callback) {
 			url: url,
 			dataType: 'JSON',
 			success: function(response) {
+				console.log("response: " + response);
 				var curr_song = response.items[0];
+				console.log("curr_song: " + curr_song);
 				var title = curr_song.snippet.title;
 				var treatment_g = curr_song.statistics.likeCount;
 				var url = "https://www.youtube.com/embed/"+curr_song.id;

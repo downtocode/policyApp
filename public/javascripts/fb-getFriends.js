@@ -147,7 +147,7 @@ $(document).ready(function() {
 
 		
 		if (curr_question_ind == $(".question-selector-circle").length - 1) {
-			$("#next-important").attr('id','answer-more').val('Submit!');
+			$("#next-important").attr('id','get-user-info').val('Submit!');
 		} else {
 			$("#next-important").attr('id','next-question').val('Next');
 		}
@@ -170,7 +170,7 @@ $(document).ready(function() {
 	// When user gives rating, adds their rating to a hidden value in 
 	// an HTML div 
    	$(document).on("click", "svg", function() {
-   		debugger;
+   		// debugger;
    		// Checks if this is the rating at the end with all songs
 		if ($(".all-question").length == 0) // if not, then index is as is
 			var ind = $(".question-selector-circle").index($(".selected"));
