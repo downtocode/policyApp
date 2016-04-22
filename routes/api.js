@@ -291,6 +291,134 @@ router.post('/api/getFriendData', function(req, res, next) {
 	});
 });
 
+router.post('/api/sendMusiCSV', function(req, res, next) {
+	var db = req.db; 
+	var questionnaire = 'music';
+
+	// Adds extra demographics that were not asked to use in CSV
+	var extra_demo = ['first_name','last_name', 'gender'];
+
+	// Get all users
+	db.users.find({}, function(err, users) {
+		// Get all questions
+		db.questions.find({questionnaire: questionnaire}, function(err, questions) {
+			// Gest all user answers
+			db.userAnswers.find({}, function(err, userAnswers) {
+				// Get all demographics
+				db.demographics.find({}, function(err, demographics) {
+					// Get all petitions clicked
+					db.petitions.find({}, function(err, petitions) {
+						var userPetitions = {};
+						for (var p in petitions) {
+							if (petitions[p].user_id in userPetitions)
+								userPetitions[petitions[p].user_id].push(parseInt(petitions[p].petition));
+							else
+								userPetitions[petitions[p].user_id] = [parseInt(petitions[p].petition)];
+						}
+
+
+						// Write header and make header array
+						var header = "user";
+
+						// First get all extra demographics from above
+						for (var j in extra_demo)
+							header += "," + removeCommasAddQuotes(extra_demo[j]);
+
+						var lineArr = [];
+
+						// Get all question titles and appropriate information in user answers
+						for (var i in questions) {
+							var curr_title = capitalizeTitle(questions[i].title, " ");
+							header += ',"opinion_' + curr_title + '","importance_' + curr_title + '","treatment_' + curr_title + '","local_type_' + curr_title + '","start_time_' + curr_title + '","answer_time_' + curr_title+'","petition_' + curr_title + '"';
+							lineArr.push(questions[i]._id);
+						}
+
+						// Get all demographics
+						for (var d in demographics) {
+							header += ',"user_' + demographics[d].name+'"';
+						}
+
+						var userDemographics = {}
+
+						for (var j in users) {
+							userDemographics[users[j].id] = users[j];
+						}
+
+						var userAnswersArr = {}
+
+						// user_ids -> question_id -> user_question_answer
+
+						// Make dictionary of all users and their answers
+						for (var k in userAnswers) {
+							if (userAnswers[k].user_id in userAnswersArr) {
+								userAnswersArr[userAnswers[k].user_id][userAnswers[k].question_id] = userAnswers[k];
+							} else {
+								var newDict = {};
+								newDict[userAnswers[k].question_id] = userAnswers[k];
+								userAnswersArr[userAnswers[k].user_id] = newDict;
+							}
+						}
+
+						var allLines = [header];
+
+						// For each user
+						for (var p in userAnswersArr) {
+							var user = userAnswersArr[p];
+							var userPetition = [];
+
+							// Get their petition information 
+							if (userPetitions[p] != undefined)
+								userPetition = userPetitions[p];
+
+							// Get their demographic information
+							var currUserDemo = {};
+							if (userDemographics[p] != undefined) 
+								currUserDemo = userDemographics[p];
+
+							// Remove commas so they don't mess up CSV
+							var newLine = "" + removeCommasAddQuotes(p);
+							
+							// Add their extra demographic information
+							for (var j in extra_demo) {
+								if (extra_demo[j] in currUserDemo)
+									newLine += "," + removeCommasAddQuotes(currUserDemo[extra_demo[j]]);
+								else
+									newLine += ",";
+							}
+
+							// Add their answer/importance/treatment/petition/etc info for each question
+							for (var s in lineArr) {
+								var currQuestion = lineArr[s];
+
+								if (currQuestion in user)
+									newLine += "," + removeCommasAddQuotes(user[currQuestion].question) + "," + removeCommasAddQuotes(user[currQuestion].importance) + "," + removeCommasAddQuotes(user[currQuestion].treatment) + "," + removeCommasAddQuotes(user[currQuestion].treatment_l_type) + "," + removeCommasAddQuotes(user[currQuestion].start_time) + "," + removeCommasAddQuotes(user[currQuestion].answer_time);
+								else
+									newLine += "," + "," + "," + "," + "," + ",";
+
+								if (userPetition.indexOf(parseInt(currQuestion)) >= 0)
+									newLine += ",1";
+								else 
+									newLine += ",0";
+							}
+
+							// Add their demographic inforamtion
+							for (var r in demographics) {
+								if (demographics[r].name in currUserDemo)
+									newLine += "," + removeCommasAddQuotes(currUserDemo[demographics[r].name]);
+								else
+									newLine += ",";
+							}
+							allLines.push(newLine);
+						}
+
+						res.send(allLines);
+					});
+				});
+			});
+		});
+	});
+});
+
 // Creates downloadable CSV for answers
 router.post('/api/sendCSV', function(req, res, next) {
 	var db = req.db;

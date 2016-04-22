@@ -36,6 +36,7 @@ $(document).ready(function() {
 	$(document).on("click", "#download-answers", function() {
 		downloadAnswers();
 		downloadFriends();
+		downloadMusicAnswers();
 	});
 
 	$(document).on("click", "#add-button", function() {
@@ -141,6 +142,27 @@ function addQuestionnaire(questions) {
 		success: function(res) {
 			$("#save-response").addClass(res.font);
 			$("#save-response").text(res.msg);
+		}
+	});
+}
+
+function downloadMusicAnswers(){
+	$.ajax({
+		url: '/api/sendMusicCSV',
+		method: 'POST',
+		contentType: 'application/json',
+		data: JSON.stringify({questionnaire: questionnaires[0]}),
+		dataType: 'JSON',
+		success: function(data) {
+			var data_str = data.join('\r\n');
+			//csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+			var a = document.createElement('a');
+			a.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(data_str);
+			a.target = '_blank';
+			a.download = 'music_answers_file.csv';
+
+			document.body.appendChild(a);
+			a.click();
 		}
 	});
 }
