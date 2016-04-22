@@ -49,7 +49,7 @@ router.get('/home/:name/:fid?', function(req, res, next) {
 		};
 
 		if (name.toLowerCase() === "music") {
-			query.main = 1;
+			query.main = 1; // main is a field, mark as main and it will appear
 		}
 
 		db.questions.find(query, {}, limit, function(err, questions) {

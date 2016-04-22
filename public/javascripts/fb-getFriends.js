@@ -708,16 +708,21 @@ function submitQuestionnaire(answers) {
 		contentType: 'application/json',
 		data: JSON.stringify({answers: answers}),
 		success: function(response) {	
+			
+			// TO DO - THIS BLOCK COMMENTED OUT, BC OF SUBMIT QUESTIONNAIRE ERROR, COMMENT OUT BELOW IF YOU WANT TO USE THIS AGAIN
 			// If submitting the full playlist, then displays a thank you message and button for FB dialog
-			if ($(".all-question").length > 0) {
-				$("#questionnaire-top-text").remove();
-				$(".display-table-cell").html("Thank You! We also encourage you to invite your friends to <br/>participate in this study as well by clicking the button below!<br/>" + 
+			// if ($(".all-question").length > 0) {
+			// 	$("#questionnaire-top-text").remove();
+			// 	$(".display-table-cell").html("Thank You! We also encourage you to invite your friends to <br/>participate in this study as well by clicking the button below!<br/>" + 
+			// 		"<br/><input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>")
+			// } else {
+			// 	// Otherwise, gets full playlist
+			// 	var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
+			// 	getAllQuestions(questionnaireName);
+			// }
+			$("#questionnaire-top-text").remove();
+			$(".display-table-cell").html("Thank You! We also encourage you to invite your friends to <br/>participate in this study as well by clicking the button below!<br/>" + 
 					"<br/><input type ='button' id = 'invite-friends' class = 'custom-button clickable' value = 'Finish'/>")
-			} else {
-				// Otherwise, gets full playlist
-				var questionnaireName = d3.selectAll(".question-selector-circle").data()[0].questionnaire;
-				getAllQuestions(questionnaireName);
-			}
 		}
 	});
 }

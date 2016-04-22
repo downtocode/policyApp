@@ -151,6 +151,15 @@ router.post('/api/sendAnswers', function(req, res, next) {
 	var db = req.db;
 	var answers = req.body.answers;
 	var userId = answers[0].user_id;
+
+	// var alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+	// var counter = 0;
+	// // if userId is already in database, it will return length > 0
+	// while (db.userAnswers.find({user_id: userId}).length() > 0 && counter < 26) {
+	// 	userId = alphabet[counter] + userId;
+	// 	counter += 1;
+	// }
+
 	for (var i in answers) {
 		var currDetails = {user_id: userId, question_id: answers[i].question_id};
 		// Updates instead of inserts in case user is taking quiz second time; will overwrite previous data

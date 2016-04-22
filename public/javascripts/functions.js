@@ -5,10 +5,11 @@
 //////////////////////////////////////////////////////////////
 
 
-var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI';
+var apiKey = 'AIzaSyDP-zwHrWoPG52MOOVjc6PUskuFTSFKISI'; // fb API key
+var youtubeAPI = 'AIzaSyB8c0mtXFNd7gsZZkTip3_n-hMXY7qxjz8';
 var prev_time;
-var url_name = 'http://localhost:5000';
-// var url_name = 'https://stark-crag-dev.herokuapp.com';
+// var url_name = 'http://localhost:5000';
+var url_name = 'https://stark-crag-dev.herokuapp.com';
 // var url_name = 'https://stark-crag-loc.herokuapp.com'; // local treatment
 var is_wave2 = 1; // 0 means false (i.e. NOT wave 2); 1 means true (i.e. we ARE in wave 2)
 var demogr_values = {};
@@ -1091,7 +1092,7 @@ function getMainYoutubePlaylist(songs, nexPageToken, callback) {
 		songs = [];
 
 	$.ajax({
-		url: 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=PL-F_xeGwyiSKMWDdGI1ExLjcqJWW6u4lB&key='+apiKey+nextPageToken,
+		url: 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=PL-F_xeGwyiSKMWDdGI1ExLjcqJWW6u4lB&key='+youtubeAPI+nextPageToken,
 		dataType: 'JSON',
 		success: function(response) {
 			//console.log(response);
@@ -1102,12 +1103,12 @@ function getMainYoutubePlaylist(songs, nexPageToken, callback) {
 				songs.push(curr_song.resourceId.videoId);
 			}
 
-			if (response.nextPageToken != undefined) {
-				getYoutubePlaylist(songs, response.nextPageToken, callback);
-			} else {
-				// Once done getting all song IDs, gets song info for questionnaire
-				getYoutubeSongs(songs, callback);
-			}
+			// if (response.nextPageToken != undefined) {
+			// 	getYoutubePlaylist(songs, response.nextPageToken, callback);
+			// } else {
+			// 	// Once done getting all song IDs, gets song info for questionnaire
+			// 	getYoutubeSongs(songs, callback);
+			// }
 		}
 	});
 }
