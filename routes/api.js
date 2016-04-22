@@ -301,7 +301,7 @@ router.post('/api/sendMusicCSV', function(req, res, next) {
 	// Get all users
 	db.users.find({}, function(err, users) {
 		// Get all questions
-		db.questions.find({questionnaire: questionnaire}, function(err, questions) {
+		db.questions.find({questionnaire: questionnaire, main: 1}, function(err, questions) {
 			// Gest all user answers
 			db.userAnswers.find({}, function(err, userAnswers) {
 				// Get all demographics
