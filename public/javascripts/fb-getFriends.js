@@ -126,7 +126,7 @@ $(document).ready(function() {
 		// If the next one is the last one, the following "Next" button 
 		// is a "Submit" button instead 
 		if (curr_question_ind == $(".question-selector-circle").length - 1) {
-			$("#next-important").attr('id','answer-more').val('Submit!');
+			$("#next-important").attr('id','get-user-info').val('Submit!');
 		} else {
 			$("#next-important").attr('id','next-question').val('Next');
 		}
