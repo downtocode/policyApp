@@ -291,7 +291,7 @@ router.post('/api/getFriendData', function(req, res, next) {
 	});
 });
 
-router.post('/api/sendMusiCSV', function(req, res, next) {
+router.post('/api/sendMusicCSV', function(req, res, next) {
 	var db = req.db; 
 	var questionnaire = 'music';
 
