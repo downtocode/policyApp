@@ -513,7 +513,7 @@ function askDemographics() {
 				var questionnaire = d3.select(".question-selector-circle").data()[0].questionnaire;
 				var musicNoDemo = ['vote', 'vote_next', 'political_upbringing'];
 				// TO EDIT
-				var policyNoDemo = ['music_play', 'music_play_years', 'music_taste', 'music_childhood'];
+				var policyNoDemo = ['music_play', 'music_play_years', 'music_experience', 'music_childhood', 'music_legends'];
 
 				if ( $(window).width() < 480){
 					// Checks for what information we are missing
